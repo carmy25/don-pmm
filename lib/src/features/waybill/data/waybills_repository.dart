@@ -15,12 +15,8 @@ class WaybillList extends _$WaybillList {
 
   Future<void> addWaybill(Waybill waybill) async {
     final previousState = await future;
-    if (!previousState.contains(waybill)) {
-      state = AsyncData([...previousState, waybill]);
-    } else {
-      final tmpState = [...previousState];
-      state = AsyncData(tmpState);
-    }
+    final newState = {waybill, ...previousState}.toList();
+    state = AsyncData(newState);
   }
 }
 

@@ -44,6 +44,7 @@ dependencies:
   flutter_localizations:
       sdk: flutter
   file_picker: ^6.1.1
+  flutter_editable_table: ^1.1.2
 
 dev_dependencies:
   flutter_test:

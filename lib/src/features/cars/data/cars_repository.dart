@@ -15,11 +15,7 @@ class CarList extends _$CarList {
 
   Future<void> addCar(Car car) async {
     final previousState = await future;
-    if (!previousState.contains(car)) {
-      state = AsyncData([...previousState, car]);
-    } else {
-      final tmpState = [...previousState];
-      state = AsyncData(tmpState);
-    }
+    final newState = {car, ...previousState}.toList();
+    state = AsyncData(newState);
   }
 }

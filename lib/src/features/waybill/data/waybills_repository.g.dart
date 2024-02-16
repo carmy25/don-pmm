@@ -156,7 +156,7 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillListHash() => r'24a6330b38ce22432c7e19082bfbb3f7bc2a0a73';
+String _$waybillListHash() => r'e53c7e0eab90d327c3b5350888d64df32e91d3a9';
 
 /// See also [WaybillList].
 @ProviderFor(WaybillList)

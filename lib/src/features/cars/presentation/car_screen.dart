@@ -2,6 +2,7 @@ import 'package:donpmm/src/features/cars/data/cars_repository.dart';
 import 'package:donpmm/src/features/waybill/presentation/waybill_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../waybill/domain/waybill.dart';
 import '../../waybill/presentation/waybills_list_widget.dart';
@@ -71,7 +72,10 @@ class CarScreenState extends ConsumerState {
                       context,
                       MaterialPageRoute(
                           builder: (context) => WaybillScreen(
-                              waybill: Waybill(number: '', car: car))),
+                              waybill: Waybill(
+                                  uuid: const Uuid().v4(),
+                                  number: '',
+                                  car: car))),
                     );
                   },
                 ),
@@ -85,9 +89,10 @@ class CarScreenState extends ConsumerState {
                   padding: const EdgeInsets.all(14.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      car.name = nameInput.text;
-                      car.number = numberInput.text;
-                      ref.read(carListProvider.notifier).addCar(car);
+                      ref.read(carListProvider.notifier).addCar(Car(
+                          uuid: car.uuid,
+                          name: nameInput.text,
+                          number: numberInput.text));
                       Navigator.pop(context);
                     },
                     child: const Text('Зберегти'),

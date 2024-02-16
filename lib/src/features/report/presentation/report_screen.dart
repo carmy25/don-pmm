@@ -2,6 +2,7 @@ import 'package:donpmm/src/features/report/application/report_service.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../cars/domain/car.dart';
@@ -60,7 +61,7 @@ class ReportScreenState extends ConsumerState {
                       child: DropdownMenu(
                           dropdownMenuEntries: dropdownMenuEntries,
                           controller: unitNameController,
-                          label: const Text('Назва підрозділу'))),
+                          label: const Text('Підрозділ'))),
                   Flexible(
                       child: TextField(
                     controller:
@@ -106,7 +107,10 @@ class ReportScreenState extends ConsumerState {
                         context,
                         MaterialPageRoute(
                             builder: (context) => CarScreen(
-                                  car: Car(name: '', number: ''),
+                                  car: Car(
+                                      uuid: const Uuid().v4(),
+                                      name: '',
+                                      number: ''),
                                 )),
                       );
                     },
@@ -129,7 +133,7 @@ class ReportScreenState extends ConsumerState {
           ),
         ));
   }
-
+  /*
   void _showAutoDismissAlert(BuildContext context, String path) {
     showDialog(
       context: context,
@@ -145,7 +149,7 @@ class ReportScreenState extends ConsumerState {
         );
       },
     );
-  }
+  }*/
 
   void _saveReport(BuildContext context) async {
     await ref
@@ -157,8 +161,7 @@ class ReportScreenState extends ConsumerState {
       fileName: 'Донесення.xlsx',
     );
     if (outputFile != null) {
-      // ignore: use_build_context_synchronously
-      _showAutoDismissAlert(context, outputFile);
+      //XXX: Crashes time to time: _showAutoDismissAlert(context, outputFile);
       repo.saveToFile(outputFile);
     }
   }
