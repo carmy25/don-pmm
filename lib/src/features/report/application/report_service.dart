@@ -1,8 +1,10 @@
 import 'dart:io';
 
-import 'package:excel/excel.dart';
+import 'package:donpmm/src/features/report/data/report_repository.dart';
+import 'package:excel/excel.dart' as excel;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -12,35 +14,90 @@ class ReportService {
   ReportService({required this.ref});
   final Ref ref;
 
-  _copyAssetToFile(String assetName, String destPath) async {
-    ByteData data = await rootBundle.load(assetName);
-    List<int> bytes =
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-
-    await File(destPath).writeAsBytes(bytes);
-  }
-
   saveToFile(String path) async {
-    _copyAssetToFile('assets/template.xlsx', path);
-    final excel = await _readExcel(path);
-    debugPrint('Excel file: ${excel.hashCode}');
-    await _formatReportingTable(excel);
+    final excel = await _readExcel('assets/new_template.xlsx');
+
+    _formatReportingTable(excel);
+    _fixStyles(excel);
+
+    final bytes = excel.save(fileName: path)!;
+    await File(path).writeAsBytes(bytes);
   }
 
-  _formatReportingTable(Excel excel) async {
-    for (var row in excel.tables['Донесення']!.rows) {
-      for (var cell in row) {
-        debugPrint(
-            '${cell?.value.toString()} ${cell?.rowIndex}/${cell?.columnIndex}');
-      }
+  _fixStyles(excel.Excel excel) {
+    _fixReportStyles(excel);
+  }
+
+  _fixReportStyles(excel.Excel xl) {
+    excel.Sheet reportSheet = xl['Донесення'];
+    final alignCenterStyle =
+        excel.CellStyle(horizontalAlign: excel.HorizontalAlign.Center);
+    var cell = reportSheet.cell(excel.CellIndex.indexByString('A2'));
+    cell.cellStyle = alignCenterStyle;
+
+    cell = reportSheet.cell(excel.CellIndex.indexByString('A3'));
+    cell.cellStyle = alignCenterStyle;
+
+    cell = reportSheet.cell(excel.CellIndex.indexByString('A4'));
+    cell.cellStyle = alignCenterStyle;
+
+    final codesStyle = excel.CellStyle(
+        horizontalAlign: excel.HorizontalAlign.Center,
+        leftBorder: excel.Border(borderStyle: excel.BorderStyle.Thin),
+        rightBorder: excel.Border(borderStyle: excel.BorderStyle.Thin),
+        bottomBorder: excel.Border(borderStyle: excel.BorderStyle.Thin),
+        fontSize: 10,
+        fontFamily: 'Times New Roman');
+
+    for (final a in List<String>.generate(
+        11, (index) => String.fromCharCode(97 + index),
+        growable: false)) {
+      reportSheet.cell(excel.CellIndex.indexByString('${a}12')).cellStyle =
+          codesStyle;
     }
   }
 
-  Future<Excel> _readExcel(String path) async {
-    final bytes = await File(path).readAsBytes();
-    final excel = Excel.decodeBytes(bytes);
-    return excel;
+  _formatReportingTable(excel.Excel xl) {
+    final report = ref.read(reportRepositoryProvider);
+    excel.Sheet reportSheet = xl['Донесення'];
+
+    // Unit name
+    var cell = reportSheet.cell(excel.CellIndex.indexByString('H8'));
+    cell.value = excel.TextCellValue(report.value?.unitName ?? 'No Name');
+
+    // Date range
+    cell = reportSheet.cell(excel.CellIndex.indexByString('A4'));
+    cell.value = excel.TextCellValue(_formatDateRange(report.value?.dtRange));
+
+    if (report.value?.dtRange == null) return;
+    DateFormat format = DateFormat('dd.MM.yy');
+    // Start date
+    cell = reportSheet.cell(excel.CellIndex.indexByString('D10'));
+    final startText =
+        'перебувало на початок звітнього періоду(${format.format(report.value!.dtRange.start)})';
+    cell.value = excel.TextCellValue(startText);
+
+    // End date
+    cell = reportSheet.cell(excel.CellIndex.indexByString('K10'));
+    final endText =
+        'наявність станом на (${format.format(report.value!.dtRange.end)})';
+    cell.value = excel.TextCellValue(endText);
   }
+
+  Future<excel.Excel> _readExcel(String name) async {
+    ByteData data = await rootBundle.load(name);
+    List<int> bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    return excel.Excel.decodeBytes(bytes);
+  }
+}
+
+String _formatDateRange(DateTimeRange? dtRange) {
+  if (dtRange == null) return 'NO DATE SET';
+  final startDate = dtRange.start;
+  final endDate = dtRange.end;
+  DateFormat format = DateFormat('dd.MM.yyyy');
+  return 'за період з ${format.format(startDate)} по ${format.format(endDate)} року';
 }
 
 @riverpod

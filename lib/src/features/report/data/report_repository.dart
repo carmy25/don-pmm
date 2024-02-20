@@ -14,7 +14,7 @@ class ReportRepository extends _$ReportRepository {
   }
 
   Future<void> createReport(
-      {required String unitName, DateTimeRange? dtRange}) async {
+      {required String unitName, required DateTimeRange dtRange}) async {
     state = AsyncData(Report(unitName: unitName, dtRange: dtRange));
   }
 }

@@ -45,6 +45,10 @@ dependencies:
       sdk: flutter
   file_picker: ^6.1.1
   flutter_editable_table: ^1.1.2
+  path_provider: ^2.1.2
+  spreadsheet_decoder: ^2.2.0
+  syncfusion_flutter_xlsio: ^24.2.7
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +79,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
       - assets/template.xlsx
+      - assets/new_template.xlsx
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
