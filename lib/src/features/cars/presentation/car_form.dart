@@ -1,3 +1,4 @@
+import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -68,11 +69,7 @@ class CarFormState extends ConsumerState<CarForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Padding(
-                  padding: EdgeInsets.only(top: 14, bottom: 14),
-                  child: Text('Шляхові листи',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18))),
+              const SubheaderText('Шляхові листи'),
               IconButton(
                 icon: const Icon(Icons.add_box_rounded),
                 tooltip: 'Додати шляховий лист',

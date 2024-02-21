@@ -171,18 +171,18 @@ class FillingsListWidgetState extends ConsumerState {
       addRowIconContainerBackgroundColor: Colors.blueAccent,
       formFieldAutoValidateMode: AutovalidateMode.always,
       onRowRemoved: (row) {
-        print('row removed: ${row.toString()}');
+        debugPrint('row removed: ${row.toString()}');
       },
       onRowAdded: () {
-        print('row added');
+        debugPrint('row added');
       },
       onFilling: (FillingArea area, dynamic value) {
-        print(_editableTableKey.currentState?.currentData);
+        debugPrint(_editableTableKey.currentState?.currentData as String?);
 
-        print('filling: ${area.toString()}, value: ${value.toString()}');
+        debugPrint('filling: ${area.toString()}, value: ${value.toString()}');
       },
       onSubmitted: (FillingArea area, dynamic value) {
-        print('submitted: ${area.toString()}, value: ${value.toString()}');
+        debugPrint('submitted: ${area.toString()}, value: ${value.toString()}');
       },
     );
   }

@@ -1,4 +1,6 @@
+import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/waybills_repository.dart';
@@ -45,15 +47,9 @@ class WaybillScreenState extends ConsumerState {
             ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                    padding: EdgeInsets.only(top: 14, bottom: 2),
-                    child: Text('Заправки',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18))),
-              ],
+              children: [SubheaderText('Заправки')],
             ),
-            const Flexible(
+            const Expanded(
                 child: SingleChildScrollView(child: FillingsListWidget())),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
