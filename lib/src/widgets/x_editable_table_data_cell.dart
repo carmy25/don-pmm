@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 class XEditableTableDataCell extends StatefulWidget {
   const XEditableTableDataCell({
-    super.key,
+    Key? key,
     required this.cellEntity,
     required this.cellWidth,
     this.cellContentPadding,
@@ -19,7 +19,7 @@ class XEditableTableDataCell extends StatefulWidget {
     this.readOnly = false,
     this.onFilling,
     this.onSubmitted,
-  });
+  }) : super(key: key);
 
   final CellEntity cellEntity;
   final double cellWidth;

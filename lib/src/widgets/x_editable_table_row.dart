@@ -6,7 +6,7 @@ import 'package:flutter_editable_table/widget/operation_cell.dart';
 
 class XEditableTableRow extends StatefulWidget {
   const XEditableTableRow({
-    super.key,
+    Key? key,
     required this.rowEntity,
     this.removable = false,
     required this.rowWidth,
@@ -26,7 +26,7 @@ class XEditableTableRow extends StatefulWidget {
     this.onRowRemoved,
     this.onFilling,
     this.onSubmitted,
-  });
+  }) : super(key: key);
 
   final RowEntity rowEntity;
   final bool removable;

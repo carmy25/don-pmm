@@ -16,8 +16,8 @@ class OutcomeWidget extends ConsumerStatefulWidget {
 class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   final _editableTableKey = GlobalKey<EditableTableState>();
   final data = {
-    "column_count": 0,
-    "row_count": 0,
+    "column_count": null,
+    "row_count": null,
     "addable": true,
     "columns": [
       {
@@ -76,7 +76,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   };
   @override
   Widget build(BuildContext context) {
-    return XEditableTable(
+    return EditableTable(
       key: _editableTableKey,
       entity: TableEntity.fromJson(data),
       readOnly: false,

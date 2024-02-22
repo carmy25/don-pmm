@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/row_entity.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
-import 'package:flutter_editable_table/flutter_editable_table.dart';
+import 'package:flutter_editable_table/widget/body.dart';
 import 'package:flutter_editable_table/widget/caption.dart';
 import 'package:flutter_editable_table/widget/footer.dart';
 import 'package:flutter_editable_table/widget/header.dart';
@@ -10,9 +10,9 @@ import 'package:flutter_editable_table/widget/operation_row.dart';
 
 import 'x_editable_table_body.dart';
 
-class XEditableTable extends EditableTable {
+class XEditableTable extends StatefulWidget {
   const XEditableTable({
-    super.key,
+    Key? key,
     this.data,
     this.entity,
     this.tablePadding,
@@ -56,8 +56,9 @@ class XEditableTable extends EditableTable {
     this.onRowAdded,
     this.onFilling,
     this.onSubmitted,
-  }) : assert(data != null || entity != null,
-            'data and entity cannot both be null');
+  })  : assert(data != null || entity != null,
+            'data and entity cannot both be null'),
+        super(key: key);
 
   /// Data Source
   final Map<String, dynamic>? data;
@@ -123,15 +124,40 @@ class XEditableTable extends EditableTable {
   XEditableTableState createState() => XEditableTableState();
 }
 
-class XEditableTableState extends EditableTableState {
+class XEditableTableState extends State<XEditableTable> {
   late final TableEntity _tableEntity;
   late bool _readOnly;
+
+  TableEntity get currentData => _tableEntity;
+
+  set readOnly(bool value) {
+    setState(() {
+      _readOnly = value;
+    });
+  }
+
+  bool get isFilled => _tableEntity.isFilled;
 
   double get _tablePadding =>
       widget.tablePadding != null && widget.tablePadding is EdgeInsets
           ? ((widget.tablePadding as EdgeInsets).left +
               (widget.tablePadding as EdgeInsets).right)
           : 0.0;
+
+  @override
+  void initState() {
+    _readOnly = widget.readOnly;
+    _tableEntity = widget.entity ?? TableEntity.fromJson(widget.data!);
+    super.initState();
+  }
+
+  void addRow() {
+    setState(() {
+      _tableEntity.rows.add(RowEntity(columns: _tableEntity.columns));
+      _tableEntity.updateAutoIncreaseColumn();
+    });
+    if (widget.onRowAdded != null) widget.onRowAdded!();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +207,7 @@ class XEditableTableState extends EditableTableState {
                 headerBackgroundColor: widget.headerBackgroundColor,
               ),
             if (_tableEntity.rows.isNotEmpty)
-              XEditableTableBody(
+              EditableTableBody(
                 bodyEntity: _tableEntity.rows,
                 removable: _tableEntity.removable,
                 rowWidth: tableWidth + (_readOnly ? 32.0 : 0.0),
