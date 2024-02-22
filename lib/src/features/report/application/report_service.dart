@@ -90,8 +90,13 @@ class ReportService {
   _formatReportingTableOutcome(excel.Sheet sheet) {
     final outcomes = ref.read(outcomesRepositoryProvider).value;
     for (final (index, outcome) in outcomes!.indexed) {
-      final cell = sheet.cell(excel.CellIndex.indexByString('B${index + 13}'));
-      cell.value = excel.TextCellValue(outcome.name);
+      final cidx = index + 13;
+      final nameCell = sheet.cell(excel.CellIndex.indexByString('B$cidx'));
+      nameCell.value = excel.TextCellValue(outcome.falType.name);
+
+      final amountCell = sheet.cell(excel.CellIndex.indexByString('I$cidx'));
+      amountCell.value = excel.TextCellValue(
+          '${outcome.amountLtrs.round()}/${outcome.weightKgs.round()}');
     }
   }
 

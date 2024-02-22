@@ -1,8 +1,8 @@
+import 'package:donpmm/src/widgets/x_editable_table.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
-import 'package:flutter_editable_table/flutter_editable_table.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,7 +14,7 @@ class FillingsListWidget extends ConsumerStatefulWidget {
 }
 
 class FillingsListWidgetState extends ConsumerState {
-  final _editableTableKey = GlobalKey<EditableTableState>();
+  final _editableTableKey = GlobalKey<XEditableTableState>();
   final data = {
     "column_count": null,
     "row_count": null,
@@ -169,7 +169,7 @@ class FillingsListWidgetState extends ConsumerState {
 
   @override
   Widget build(BuildContext context) {
-    return EditableTable(
+    return XEditableTable(
       key: _editableTableKey,
       entity: TableEntity.fromJson(data),
       readOnly: false,

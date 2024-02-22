@@ -1,3 +1,4 @@
+import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/widgets/x_editable_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
@@ -18,16 +19,17 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
     "column_count": null,
     "row_count": null,
     "addable": true,
+    "removable": true,
     "columns": [
       {
         "name": "comodity",
         "title": "Назва ПММ",
         "type": "choice",
-        'format': 'ДП-л-Євро5 В0,A-80,М10г2к',
+        'format': FALType.values.map((e) => e.name).join(','),
         "description": "Назва палива чи оливи",
         "display": true,
         "editable": true,
-        "width_factor": 0.75,
+        "width_factor": 0.73,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,

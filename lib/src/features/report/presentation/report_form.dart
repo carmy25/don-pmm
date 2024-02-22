@@ -1,3 +1,4 @@
+import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
@@ -69,12 +70,13 @@ class ReportFormState extends ConsumerState<ReportForm> {
     if (outputFile != null) {
       final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
 
-      for (final o in _outcomeData) {
-        if (o['availableLtrs'] == null) continue;
+      for (final o in _outcomeData.where((e) => e['availableLtrs'] != null)) {
         await outcomesRepo.addOutcome(
-            uuid: const Uuid().v4(),
-            name: o['comodity'],
-            amount: o['availableLtrs']);
+            fal: FAL(
+                falType:
+                    FALType.values.firstWhere((e) => e.name == o['comodity']),
+                uuid: const Uuid().v4(),
+                amountLtrs: o['availableLtrs']));
       }
       await ref.read(reportRepositoryProvider.notifier).createReport(
           unitName: _unitName ?? '',
