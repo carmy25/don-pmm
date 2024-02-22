@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:excel/excel.dart' as excel;
 import 'package:flutter/material.dart';
@@ -82,6 +83,16 @@ class ReportService {
     final endText =
         'наявність станом на (${format.format(report.value!.dtRange.end)})';
     cell.value = excel.TextCellValue(endText);
+
+    _formatReportingTableOutcome(reportSheet);
+  }
+
+  _formatReportingTableOutcome(excel.Sheet sheet) {
+    final outcomes = ref.read(outcomesRepositoryProvider).value;
+    for (final (index, outcome) in outcomes!.indexed) {
+      final cell = sheet.cell(excel.CellIndex.indexByString('B${index + 13}'));
+      cell.value = excel.TextCellValue(outcome.name);
+    }
   }
 
   Future<excel.Excel> _readExcel(String name) async {

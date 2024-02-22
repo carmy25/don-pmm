@@ -1,3 +1,4 @@
+import 'package:donpmm/src/widgets/x_editable_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
@@ -5,7 +6,8 @@ import 'package:flutter_editable_table/flutter_editable_table.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OutcomeWidget extends ConsumerStatefulWidget {
-  const OutcomeWidget({super.key});
+  const OutcomeWidget({super.key, required this.data});
+  final List<Map<String, dynamic>> data;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _OutcomeWidgetState();
@@ -14,10 +16,9 @@ class OutcomeWidget extends ConsumerStatefulWidget {
 class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   final _editableTableKey = GlobalKey<EditableTableState>();
   final data = {
-    "column_count": null,
-    "row_count": null,
+    "column_count": 0,
+    "row_count": 0,
     "addable": true,
-    "removable": true,
     "columns": [
       {
         "name": "comodity",
@@ -34,7 +35,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
           "max_length": 128,
           "hint_text": "Паливо/Мастило"
         },
-        "constrains": {"required": true},
+        "constrains": {"required": false},
         "style": {
           "font_weight": "bold",
           "font_size": 12.0,
@@ -49,16 +50,16 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
         "name": "availableLtrs",
         "title": "Кількість(л)",
         "type": "string",
-        "constrains": {"required": true},
+        "constrains": {"required": false},
         "format": null,
         "description": "Кількість(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.2,
+        "width_factor": 0.20,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
-          "max_length": 5,
+          "max_length": 10,
           "hint_text": "Кількість(л)"
         },
         "style": {
@@ -75,7 +76,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   };
   @override
   Widget build(BuildContext context) {
-    return EditableTable(
+    return XEditableTable(
       key: _editableTableKey,
       entity: TableEntity.fromJson(data),
       readOnly: false,
@@ -97,15 +98,13 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
       onRowRemoved: (row) {
         debugPrint('row removed: ${row.toString()}');
       },
-      onRowAdded: () {
-        debugPrint('row added');
-      },
+      onRowAdded: () {},
       onFilling: (FillingArea area, dynamic value) {
-        debugPrint('filling: ${area.toString()}, value: ${value.toString()}');
+        widget.data.clear();
+        widget.data.addAll(_editableTableKey.currentState!.currentData.rows
+            .map((e) => e.toJson()));
       },
-      onSubmitted: (FillingArea area, dynamic value) {
-        debugPrint('submitted: ${area.toString()}, value: ${value.toString()}');
-      },
+      onSubmitted: (FillingArea area, dynamic value) {},
     );
   }
 }

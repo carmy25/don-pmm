@@ -22,6 +22,24 @@ class FillingsListWidgetState extends ConsumerState {
     "removable": true,
     "columns": [
       {
+        "primary_key": true,
+        "name": "id",
+        "type": "int",
+        "format": null,
+        "description": null,
+        "display": false,
+        "editable": false,
+        "style": {
+          "font_weight": "bold",
+          "font_size": 14.0,
+          "font_color": "#333333",
+          "background_color": "#b5cfd2",
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
+          "text_align": "center"
+        }
+      },
+      {
         "name": "date",
         "title": "Дата",
         "type": "string",
@@ -177,8 +195,6 @@ class FillingsListWidgetState extends ConsumerState {
         debugPrint('row added');
       },
       onFilling: (FillingArea area, dynamic value) {
-        debugPrint(_editableTableKey.currentState?.currentData as String?);
-
         debugPrint('filling: ${area.toString()}, value: ${value.toString()}');
       },
       onSubmitted: (FillingArea area, dynamic value) {

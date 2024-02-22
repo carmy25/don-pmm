@@ -49,6 +49,7 @@ dependencies:
   spreadsheet_decoder: ^2.2.0
   syncfusion_flutter_xlsio: ^24.2.7
   intl: ^0.18.1
+  flutter_datetime_picker_bdaya: ^3.0.2
 
 dev_dependencies:
   flutter_test:

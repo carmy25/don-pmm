@@ -1,3 +1,4 @@
+import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -46,6 +47,7 @@ class ReportForm extends ConsumerStatefulWidget {
 class ReportFormState extends ConsumerState<ReportForm> {
   late DateTimeRange? _dtRange;
   final _formKey = GlobalKey<FormState>();
+  final List<Map<String, dynamic>> _outcomeData = [];
   String? _unitName;
   String? _chiefPosition;
   final TextEditingController _chiefNameInput = TextEditingController();
@@ -57,11 +59,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
     return DateFormat('dd.MM.yyyy').format(date);
   }
 
-  void _saveReport(BuildContext context) async {
-    await ref
-        .read(reportRepositoryProvider.notifier)
-        .createReport(unitName: _unitName ?? '', dtRange: _dtRange!);
-    final repo = ref.read(reportServiceProvider);
+  Future<bool> _saveReport() async {
     String? outputFile = Platform.isAndroid
         ? (await getApplicationDocumentsDirectory()).path
         : (await FilePicker.platform.saveFile(
@@ -69,8 +67,26 @@ class ReportFormState extends ConsumerState<ReportForm> {
             fileName: 'Донесення.xlsx',
           ));
     if (outputFile != null) {
-      repo.saveToFile(outputFile);
+      final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
+
+      for (final o in _outcomeData) {
+        if (o['availableLtrs'] == null) continue;
+        await outcomesRepo.addOutcome(
+            uuid: const Uuid().v4(),
+            name: o['comodity'],
+            amount: double.parse(o['availableLtrs'].toString()));
+      }
+      await ref.read(reportRepositoryProvider.notifier).createReport(
+          unitName: _unitName ?? '',
+          dtRange: _dtRange!,
+          chiefPosition: _chiefPosition!,
+          chiefRank: _rankInput.text,
+          chiefName: _chiefNameInput.text);
+      final reportService = ref.read(reportServiceProvider);
+      await reportService.saveToFile(outputFile);
+      return true;
     }
+    return false;
   }
 
   @override
@@ -178,8 +194,9 @@ class ReportFormState extends ConsumerState<ReportForm> {
                 SubheaderText('ПММ передано в інші в/ч'),
               ],
             ),
-            const Expanded(
-                child: SingleChildScrollView(child: OutcomeWidget())),
+            Expanded(
+                child: SingleChildScrollView(
+                    child: OutcomeWidget(data: _outcomeData))),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -209,7 +226,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      _saveReport(context);
+                      final saved = await _saveReport();
+                      if (saved && context.mounted) {
+                        Navigator.pop(context);
+                      }
                     }
                   },
                   child: const Text('Зберегти'),

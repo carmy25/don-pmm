@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'report_repository.dart';
+part of 'outcomes_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$reportRepositoryHash() => r'1c47bf400415abbe695306d31638aff6a52d4b22';
+String _$outcomesRepositoryHash() =>
+    r'8ddd84ef0dfe6fe028c8a61c06e6321cd89c2349';
 
-/// See also [ReportRepository].
-@ProviderFor(ReportRepository)
-final reportRepositoryProvider =
-    AsyncNotifierProvider<ReportRepository, Report?>.internal(
-  ReportRepository.new,
-  name: r'reportRepositoryProvider',
+/// See also [OutcomesRepository].
+@ProviderFor(OutcomesRepository)
+final outcomesRepositoryProvider =
+    AsyncNotifierProvider<OutcomesRepository, List<Outcome>>.internal(
+  OutcomesRepository.new,
+  name: r'outcomesRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$reportRepositoryHash,
+      : _$outcomesRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$ReportRepository = AsyncNotifier<Report?>;
+typedef _$OutcomesRepository = AsyncNotifier<List<Outcome>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

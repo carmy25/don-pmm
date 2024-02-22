@@ -295,7 +295,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_datetime_picker_bdaya:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_datetime_picker_bdaya
       sha256: "6cb42a7d659cb9a10afa0a390b81677e15fd2f7e340e7eaffabf770e6b6709c0"
