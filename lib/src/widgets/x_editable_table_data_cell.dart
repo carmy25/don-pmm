@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 class XEditableTableDataCell extends StatefulWidget {
   const XEditableTableDataCell({
-    Key? key,
+    super.key,
     required this.cellEntity,
     required this.cellWidth,
     this.cellContentPadding,
@@ -19,7 +19,7 @@ class XEditableTableDataCell extends StatefulWidget {
     this.readOnly = false,
     this.onFilling,
     this.onSubmitted,
-  }) : super(key: key);
+  });
 
   final CellEntity cellEntity;
   final double cellWidth;
@@ -41,6 +41,7 @@ class XEditableTableDataCell extends StatefulWidget {
 
 class XEditableTableDataCellState extends State<XEditableTableDataCell> {
   late final TextEditingController _textEditingController;
+  String? _dropdownValue;
 
   @override
   void initState() {
@@ -56,12 +57,15 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
 
   @override
   Widget build(BuildContext context) {
-    _textEditingController.text = widget.cellEntity.value != null
-        ? widget.cellEntity.value.toString()
-        : '';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _textEditingController.text = widget.cellEntity.value != null
+          ? widget.cellEntity.value.toString()
+          : '';
+    });
+
     return Container(
       width: widget.cellWidth,
-      padding: widget.cellContentPadding ?? EdgeInsets.all(4.0),
+      padding: widget.cellContentPadding ?? const EdgeInsets.all(4.0),
       alignment: widget.cellEntity.columnInfo.style?.horizontalAlignment,
       child: !widget.readOnly &&
               !widget.cellEntity.columnInfo.autoIncrease &&
@@ -93,6 +97,8 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
         return _buildDatePicker(context);
       case 'datetime':
         return _buildDateTimePicker(context);
+      case 'choice':
+        return _buildDropdown(context);
       case 'integer':
       case 'int':
       case 'float':
@@ -112,21 +118,21 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       maxLength: widget.cellEntity.columnInfo.inputDecoration?.maxLength,
       decoration: InputDecoration(
         isDense: true,
-        contentPadding:
-            widget.cellInputDecorationContentPadding ?? EdgeInsets.all(8.0),
+        contentPadding: widget.cellInputDecorationContentPadding ??
+            const EdgeInsets.all(8.0),
         hintText: widget.cellEntity.columnInfo.inputDecoration?.hintText,
         hintStyle: widget.cellHintTextStyle,
         hintMaxLines: widget.cellEntity.columnInfo.inputDecoration?.maxLines,
         counterText: '',
         errorMaxLines: 1,
-        errorStyle: TextStyle(fontSize: 0.0, height: 0.0),
+        errorStyle: const TextStyle(fontSize: 0.0, height: 0.0),
         border: widget.cellInputDecorationBorder ??
             OutlineInputBorder(
               borderSide: BorderSide(
                 color: Theme.of(context).disabledColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         enabledBorder: widget.cellInputDecorationBorder ??
             OutlineInputBorder(
@@ -134,7 +140,7 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
                 color: Theme.of(context).disabledColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         focusedBorder: widget.cellInputDecorationFocusBorder ??
             OutlineInputBorder(
@@ -142,7 +148,7 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
                 color: Theme.of(context).primaryColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         filled: widget.cellEntity.columnInfo.inputDecoration?.fillColor != null,
         fillColor: widget.cellEntity.columnInfo.inputDecoration?.fillColor,
@@ -210,21 +216,21 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       maxLength: widget.cellEntity.columnInfo.inputDecoration?.maxLength,
       decoration: InputDecoration(
         isDense: true,
-        contentPadding:
-            widget.cellInputDecorationContentPadding ?? EdgeInsets.all(8.0),
+        contentPadding: widget.cellInputDecorationContentPadding ??
+            const EdgeInsets.all(8.0),
         hintText: widget.cellEntity.columnInfo.inputDecoration?.hintText,
         hintStyle: widget.cellHintTextStyle,
         hintMaxLines: widget.cellEntity.columnInfo.inputDecoration?.maxLines,
         counterText: '',
         errorMaxLines: 1,
-        errorStyle: TextStyle(fontSize: 0.0, height: 0.0),
+        errorStyle: const TextStyle(fontSize: 0.0, height: 0.0),
         border: widget.cellInputDecorationBorder ??
             OutlineInputBorder(
               borderSide: BorderSide(
                 color: Theme.of(context).disabledColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         enabledBorder: widget.cellInputDecorationBorder ??
             OutlineInputBorder(
@@ -232,7 +238,7 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
                 color: Theme.of(context).disabledColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         focusedBorder: widget.cellInputDecorationFocusBorder ??
             OutlineInputBorder(
@@ -240,7 +246,7 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
                 color: Theme.of(context).primaryColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         filled: widget.cellEntity.columnInfo.inputDecoration?.fillColor != null,
         fillColor: widget.cellEntity.columnInfo.inputDecoration?.fillColor,
@@ -321,6 +327,34 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
     );
   }
 
+  String? _validateNotEmpty(value) {
+    if (value == null || value.isEmpty) {
+      return "Обов'язкове поле";
+    }
+    return null;
+  }
+
+  Widget _buildDropdown(BuildContext context) {
+    final values = widget.cellEntity.columnInfo.format?.split(',');
+    final items = values?.map<DropdownMenuItem<String>>((String item) {
+      return DropdownMenuItem<String>(
+        value: item,
+        child: Text(item),
+      );
+    }).toList();
+    return DropdownButtonFormField<String>(
+        validator: _validateNotEmpty,
+        value: _dropdownValue,
+        onChanged: (String? newValue) {
+          widget.cellEntity.value = newValue;
+          setState(() {
+            _dropdownValue = newValue!;
+          });
+        },
+        hint: Text(widget.cellEntity.columnInfo.description),
+        items: items);
+  }
+
   Widget _buildTextFormField(BuildContext context) {
     TextInputType? textInputType;
     switch (widget.cellEntity.columnInfo.type.toLowerCase()) {
@@ -352,21 +386,21 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       maxLength: widget.cellEntity.columnInfo.inputDecoration?.maxLength,
       decoration: InputDecoration(
         isDense: true,
-        contentPadding:
-            widget.cellInputDecorationContentPadding ?? EdgeInsets.all(8.0),
+        contentPadding: widget.cellInputDecorationContentPadding ??
+            const EdgeInsets.all(8.0),
         hintText: widget.cellEntity.columnInfo.inputDecoration?.hintText,
         hintStyle: widget.cellHintTextStyle,
         hintMaxLines: widget.cellEntity.columnInfo.inputDecoration?.maxLines,
         counterText: '',
         errorMaxLines: 1,
-        errorStyle: TextStyle(fontSize: 0.0, height: 0.0),
+        errorStyle: const TextStyle(fontSize: 0.0, height: 0.0),
         border: widget.cellInputDecorationBorder ??
             OutlineInputBorder(
               borderSide: BorderSide(
                 color: Theme.of(context).disabledColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         enabledBorder: widget.cellInputDecorationBorder ??
             OutlineInputBorder(
@@ -374,7 +408,7 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
                 color: Theme.of(context).disabledColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         focusedBorder: widget.cellInputDecorationFocusBorder ??
             OutlineInputBorder(
@@ -382,7 +416,7 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
                 color: Theme.of(context).primaryColor,
                 width: 1.0,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
             ),
         filled: widget.cellEntity.columnInfo.inputDecoration?.fillColor != null,
         fillColor: widget.cellEntity.columnInfo.inputDecoration?.fillColor,
@@ -439,8 +473,12 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
               widget.cellEntity.value = finalValue;
             }
           } else {
-            widget.cellEntity.value = 0.0;
-            _textEditingController.text = (0.0).toString();
+            Future.delayed(Duration.zero, () async {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                widget.cellEntity.value = 0.0;
+                _textEditingController.text = (0.0).toString();
+              });
+            });
           }
         } else {
           widget.cellEntity.value = value;

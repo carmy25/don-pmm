@@ -74,7 +74,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
         await outcomesRepo.addOutcome(
             uuid: const Uuid().v4(),
             name: o['comodity'],
-            amount: double.parse(o['availableLtrs'].toString()));
+            amount: o['availableLtrs']);
       }
       await ref.read(reportRepositoryProvider.notifier).createReport(
           unitName: _unitName ?? '',

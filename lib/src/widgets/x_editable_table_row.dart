@@ -6,7 +6,7 @@ import 'package:flutter_editable_table/widget/operation_cell.dart';
 
 class XEditableTableRow extends StatefulWidget {
   const XEditableTableRow({
-    Key? key,
+    super.key,
     required this.rowEntity,
     this.removable = false,
     required this.rowWidth,
@@ -26,7 +26,7 @@ class XEditableTableRow extends StatefulWidget {
     this.onRowRemoved,
     this.onFilling,
     this.onSubmitted,
-  }) : super(key: key);
+  });
 
   final RowEntity rowEntity;
   final bool removable;
@@ -66,7 +66,7 @@ class XEditableTableRowState extends State<XEditableTableRow> {
             .map((cell) => cell.columnInfo.widthFactor)
             .reduce((value, element) => value + element);
     return widget.removable
-        ? Container(
+        ? SizedBox(
             width: widget.rowWidth,
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -80,8 +80,9 @@ class XEditableTableRowState extends State<XEditableTableRow> {
                     removeRowIconContainerBackgroundColor:
                         widget.removeRowIconContainerBackgroundColor,
                     onRowRemoved: () {
-                      if (widget.onRowRemoved != null)
+                      if (widget.onRowRemoved != null) {
                         widget.onRowRemoved!(widget.rowEntity);
+                      }
                     },
                   ),
               ],

@@ -6,7 +6,7 @@ import 'x_editable_table_row.dart';
 
 class XEditableTableBody extends StatefulWidget {
   const XEditableTableBody({
-    Key? key,
+    super.key,
     required this.bodyEntity,
     this.removable = false,
     required this.rowWidth,
@@ -26,7 +26,7 @@ class XEditableTableBody extends StatefulWidget {
     this.onRowRemoved,
     this.onFilling,
     this.onSubmitted,
-  }) : super(key: key);
+  });
 
   final List<RowEntity> bodyEntity;
   final bool removable;

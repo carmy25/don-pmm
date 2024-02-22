@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/row_entity.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
-import 'package:flutter_editable_table/widget/body.dart';
 import 'package:flutter_editable_table/widget/caption.dart';
 import 'package:flutter_editable_table/widget/footer.dart';
 import 'package:flutter_editable_table/widget/header.dart';
@@ -12,7 +11,7 @@ import 'x_editable_table_body.dart';
 
 class XEditableTable extends StatefulWidget {
   const XEditableTable({
-    Key? key,
+    super.key,
     this.data,
     this.entity,
     this.tablePadding,
@@ -56,9 +55,8 @@ class XEditableTable extends StatefulWidget {
     this.onRowAdded,
     this.onFilling,
     this.onSubmitted,
-  })  : assert(data != null || entity != null,
-            'data and entity cannot both be null'),
-        super(key: key);
+  }) : assert(data != null || entity != null,
+            'data and entity cannot both be null');
 
   /// Data Source
   final Map<String, dynamic>? data;
@@ -120,6 +118,7 @@ class XEditableTable extends StatefulWidget {
   /// Main Control
   final bool readOnly;
   final AutovalidateMode? formFieldAutoValidateMode;
+
   @override
   XEditableTableState createState() => XEditableTableState();
 }
@@ -131,8 +130,10 @@ class XEditableTableState extends State<XEditableTable> {
   TableEntity get currentData => _tableEntity;
 
   set readOnly(bool value) {
-    setState(() {
-      _readOnly = value;
+    Future.delayed(Duration.zero, () async {
+      setState(() {
+        _readOnly = value;
+      });
     });
   }
 
@@ -149,14 +150,6 @@ class XEditableTableState extends State<XEditableTable> {
     _readOnly = widget.readOnly;
     _tableEntity = widget.entity ?? TableEntity.fromJson(widget.data!);
     super.initState();
-  }
-
-  void addRow() {
-    setState(() {
-      _tableEntity.rows.add(RowEntity(columns: _tableEntity.columns));
-      _tableEntity.updateAutoIncreaseColumn();
-    });
-    if (widget.onRowAdded != null) widget.onRowAdded!();
   }
 
   @override
@@ -207,7 +200,7 @@ class XEditableTableState extends State<XEditableTable> {
                 headerBackgroundColor: widget.headerBackgroundColor,
               ),
             if (_tableEntity.rows.isNotEmpty)
-              EditableTableBody(
+              XEditableTableBody(
                 bodyEntity: _tableEntity.rows,
                 removable: _tableEntity.removable,
                 rowWidth: tableWidth + (_readOnly ? 32.0 : 0.0),
@@ -276,5 +269,15 @@ class XEditableTableState extends State<XEditableTable> {
         ),
       ),
     );
+  }
+
+  void addRow() {
+    Future.delayed(Duration.zero, () async {
+      setState(() {
+        _tableEntity.rows.add(RowEntity(columns: _tableEntity.columns));
+        _tableEntity.updateAutoIncreaseColumn();
+      });
+    });
+    if (widget.onRowAdded != null) widget.onRowAdded!();
   }
 }

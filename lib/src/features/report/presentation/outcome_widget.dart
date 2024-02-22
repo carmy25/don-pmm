@@ -2,7 +2,6 @@ import 'package:donpmm/src/widgets/x_editable_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
-import 'package:flutter_editable_table/flutter_editable_table.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OutcomeWidget extends ConsumerStatefulWidget {
@@ -14,7 +13,7 @@ class OutcomeWidget extends ConsumerStatefulWidget {
 }
 
 class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
-  final _editableTableKey = GlobalKey<EditableTableState>();
+  final _editableTableKey = GlobalKey<XEditableTableState>();
   final data = {
     "column_count": null,
     "row_count": null,
@@ -23,8 +22,8 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
       {
         "name": "comodity",
         "title": "Назва ПММ",
-        "type": "string",
-        "format": null,
+        "type": "choice",
+        'format': 'ДП-л-Євро5 В0,A-80,М10г2к',
         "description": "Назва палива чи оливи",
         "display": true,
         "editable": true,
@@ -49,7 +48,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
       {
         "name": "availableLtrs",
         "title": "Кількість(л)",
-        "type": "string",
+        "type": "float",
         "constrains": {"required": false},
         "format": null,
         "description": "Кількість(л)",
@@ -76,7 +75,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   };
   @override
   Widget build(BuildContext context) {
-    return EditableTable(
+    return XEditableTable(
       key: _editableTableKey,
       entity: TableEntity.fromJson(data),
       readOnly: false,
