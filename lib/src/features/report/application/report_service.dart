@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
+import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:excel/excel.dart' as excel;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -84,19 +85,43 @@ class ReportService {
         'наявність станом на (${format.format(report.value!.dtRange.end)})';
     cell.value = excel.TextCellValue(endText);
 
-    _formatReportingTableOutcome(reportSheet);
-  }
+    final outcomeTypes =
+        ref.read(outcomesRepositoryProvider).value!.map((e) => e.falType);
+    final fillupTypes = ref.read(fillupFalTypesProvider);
 
-  _formatReportingTableOutcome(excel.Sheet sheet) {
-    final outcomes = ref.read(outcomesRepositoryProvider).value;
-    for (final (index, outcome) in outcomes!.indexed) {
+    final falTypes = {
+      ...outcomeTypes,
+      ...fillupTypes,
+    };
+
+    // build types index
+    final falTypesByIndex = {for (final (i, v) in falTypes.indexed) i: v};
+    for (final f in falTypesByIndex.entries) {
+      final (index, falType) = (f.key, f.value);
       final cidx = index + 13;
-      final nameCell = sheet.cell(excel.CellIndex.indexByString('B$cidx'));
-      nameCell.value = excel.TextCellValue(outcome.falType.name);
 
-      final amountCell = sheet.cell(excel.CellIndex.indexByString('I$cidx'));
-      amountCell.value = excel.TextCellValue(
-          '${outcome.amountLtrs.round()}/${outcome.weightKgs.round()}');
+      // FAL name
+      final nameCell =
+          reportSheet.cell(excel.CellIndex.indexByString('B$cidx'));
+      nameCell.value = excel.TextCellValue(falType.name);
+
+      // FAL outcome
+      final amountCell =
+          reportSheet.cell(excel.CellIndex.indexByString('I$cidx'));
+      final outcome = ref.read(outcomeByFalTypeProvider(falType));
+      if (outcome != null) {
+        amountCell.value = excel.TextCellValue(
+            '${outcome.amountLtrs.round()}/${outcome.weightKgs.round()}');
+      }
+
+      // FAL before report
+      final beforeCell =
+          reportSheet.cell(excel.CellIndex.indexByString('D$cidx'));
+      final fillup = ref.read(fillupByFalTypeProvider(falType));
+      if (fillup != null) {
+        beforeCell.value = excel.TextCellValue(
+            '${fillup.beforeLtrs.round()}/${(fillup.beforeLtrs * fillup.falType.density).round()}');
+      }
     }
   }
 

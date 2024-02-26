@@ -1,3 +1,6 @@
+import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
+import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:donpmm/src/widgets/x_editable_table.dart';
 import 'package:flutter/material.dart';
 
@@ -5,15 +8,25 @@ import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
+import '../domain/fillup.dart';
 
 class FillingsListWidget extends ConsumerStatefulWidget {
-  const FillingsListWidget({super.key});
+  const FillingsListWidget(
+      {super.key, required this.data, required this.waybill});
+  final List<Map<String, dynamic>> data;
+  final Waybill waybill;
 
   @override
-  FillingsListWidgetState createState() => FillingsListWidgetState();
+  FillingsListWidgetState createState() =>
+      // ignore: no_logic_in_create_state
+      FillingsListWidgetState(waybill: waybill);
 }
 
-class FillingsListWidgetState extends ConsumerState {
+class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
+  FillingsListWidgetState({required this.waybill});
+  final Waybill waybill;
   final _editableTableKey = GlobalKey<XEditableTableState>();
   final data = {
     "column_count": null,
@@ -23,8 +36,8 @@ class FillingsListWidgetState extends ConsumerState {
     "columns": [
       {
         "primary_key": true,
-        "name": "id",
-        "type": "int",
+        "name": "uuid",
+        "type": "string",
         "format": null,
         "description": null,
         "display": false,
@@ -42,7 +55,7 @@ class FillingsListWidgetState extends ConsumerState {
       {
         "name": "date",
         "title": "Дата",
-        "type": "string",
+        "type": "date",
         "format": null,
         "description": "Дата заправки",
         "display": true,
@@ -57,7 +70,7 @@ class FillingsListWidgetState extends ConsumerState {
         "constrains": {"required": true},
         "style": {
           "font_weight": "bold",
-          "font_size": 14.0,
+          "font_size": 12.0,
           "font_color": "#333333",
           "background_color": "#b5cfd2",
           "horizontal_alignment": "center",
@@ -68,22 +81,16 @@ class FillingsListWidgetState extends ConsumerState {
       {
         "name": "comodity",
         "title": "Паливо/Олива",
-        "type": "string",
-        "format": null,
+        "type": "choice",
+        'format': FALType.values.map((e) => e.name).join(','),
         "description": "Назва палива чи оливи",
         "display": true,
         "editable": true,
         "width_factor": 0.33,
-        "input_decoration": {
-          "min_lines": 1,
-          "max_lines": 1,
-          "max_length": 128,
-          "hint_text": "Паливо/Мастило"
-        },
         "constrains": {"required": true},
         "style": {
           "font_weight": "bold",
-          "font_size": 14.0,
+          "font_size": 12.0,
           "font_color": "#333333",
           "background_color": "#b5cfd2",
           "horizontal_alignment": "center",
@@ -94,7 +101,7 @@ class FillingsListWidgetState extends ConsumerState {
       {
         "name": "availableLtrs",
         "title": "Наявність перед виїздом",
-        "type": "integer",
+        "type": "float",
         "format": null,
         "description": "Наявність перед виїздом(л)",
         "display": true,
@@ -103,13 +110,13 @@ class FillingsListWidgetState extends ConsumerState {
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
-          "max_length": 3,
+          "max_length": 4,
           "hint_text": "Наявність перед виїздом(л)"
         },
-        "constrains": {"required": true, "minimum": 1, "maximum": 120},
+        "constrains": {"minimum": 0},
         "style": {
           "font_weight": "bold",
-          "font_size": 14.0,
+          "font_size": 12.0,
           "font_color": "#333333",
           "background_color": "#b5cfd2",
           "horizontal_alignment": "center",
@@ -129,13 +136,13 @@ class FillingsListWidgetState extends ConsumerState {
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
-          "max_length": 128,
+          "max_length": 12,
           "hint_text": "Отримано(л)"
         },
-        "constrains": {"required": true, "minimum": -100, "maximum": 10000},
+        "constrains": {"required": true, "minimum": 0},
         "style": {
           "font_weight": "bold",
-          "font_size": 14.0,
+          "font_size": 12.0,
           "font_color": "#333333",
           "background_color": "#b5cfd2",
           "horizontal_alignment": "center",
@@ -148,6 +155,7 @@ class FillingsListWidgetState extends ConsumerState {
         "title": "Витрачено",
         "type": "float",
         "format": null,
+        "constrains": {"required": true, "minimum": 0},
         "description": "Витрачено(л)",
         "display": true,
         "editable": true,
@@ -155,7 +163,7 @@ class FillingsListWidgetState extends ConsumerState {
         "input_decoration": {"hint_text": "Витрачено(л)"},
         "style": {
           "font_weight": "bold",
-          "font_size": 14.0,
+          "font_size": 12.0,
           "font_color": "#333333",
           "background_color": "#b5cfd2",
           "horizontal_alignment": "center",
@@ -164,14 +172,35 @@ class FillingsListWidgetState extends ConsumerState {
         }
       },
     ],
-    "rows": []
   };
 
   @override
   Widget build(BuildContext context) {
+    final fillups = ref.watch(fillupsByWaybillProvider(waybill));
+    return _xEditableTable(fillups);
+    /*
+    return switch (fillups) {
+      AsyncData(:final value) => _xEditableTable(value),
+      AsyncError(:final error) => Text('error: $error'),
+      _ => const Text('loading'),
+    };*/
+  }
+
+  XEditableTable _xEditableTable(List<Fillup> rowsData) {
+    data['rows'] = rowsData
+        .map((e) => {
+              'uuid': e.uuid,
+              'comodity': e.falType.name,
+              'date': DateFormat('yyyy-MM-dd').format(e.date),
+              'availableLtrs': e.beforeLtrs,
+              'gainedLtrs': e.fillupLtrs,
+              'spentLtrs': e.burnedLtrs
+            })
+        .toList();
+    final jsonData = TableEntity.fromJson(data);
     return XEditableTable(
       key: _editableTableKey,
-      entity: TableEntity.fromJson(data),
+      entity: jsonData,
       readOnly: false,
       headerBorder: Border.all(color: const Color(0xFF999999)),
       rowBorder: Border.all(color: const Color(0xFF999999)),
@@ -196,6 +225,10 @@ class FillingsListWidgetState extends ConsumerState {
       },
       onFilling: (FillingArea area, dynamic value) {
         debugPrint('filling: ${area.toString()}, value: ${value.toString()}');
+        print(_editableTableKey.currentState!.currentData.rows);
+        widget.data.clear();
+        widget.data.addAll(_editableTableKey.currentState!.currentData.rows
+            .map((e) => e.toJson()));
       },
       onSubmitted: (FillingArea area, dynamic value) {
         debugPrint('submitted: ${area.toString()}, value: ${value.toString()}');

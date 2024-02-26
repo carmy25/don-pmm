@@ -56,6 +56,7 @@ class XEditableTableBody extends StatefulWidget {
 class XEditableTableBodyState extends State<XEditableTableBody> {
   @override
   Widget build(BuildContext context) {
+    print('be ${widget.bodyEntity}');
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: widget.bodyEntity

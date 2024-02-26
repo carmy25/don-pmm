@@ -272,11 +272,9 @@ class XEditableTableState extends State<XEditableTable> {
   }
 
   void addRow() {
-    Future.delayed(Duration.zero, () async {
-      setState(() {
-        _tableEntity.rows.add(RowEntity(columns: _tableEntity.columns));
-        _tableEntity.updateAutoIncreaseColumn();
-      });
+    setState(() {
+      _tableEntity.rows.add(RowEntity(columns: _tableEntity.columns));
+      _tableEntity.updateAutoIncreaseColumn();
     });
     if (widget.onRowAdded != null) widget.onRowAdded!();
   }

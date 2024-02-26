@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_bdaya/flutter_datetime_picker_bdaya.dart';
 import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/cell_entity.dart';
-import 'package:flutter_datetime_picker_bdaya/flutter_datetime_picker_bdaya.dart';
 import 'package:intl/intl.dart';
 
 class XEditableTableDataCell extends StatefulWidget {
@@ -57,11 +57,11 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _textEditingController.text = widget.cellEntity.value != null
-          ? widget.cellEntity.value.toString()
-          : '';
+    final val = widget.cellEntity.value?.toString();
+    Future.delayed(Duration.zero, () async {
+      _textEditingController.text = val ?? '';
     });
+    _dropdownValue = val;
 
     return Container(
       width: widget.cellWidth,
@@ -106,7 +106,11 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       case 'decimal':
       case 'string':
       default:
-        return _buildTextFormField(context);
+        return FutureBuilder(
+            future: Future.delayed(Duration.zero),
+            builder: (c, s) => s.connectionState == ConnectionState.done
+                ? _buildTextFormField(context)
+                : const Text('loading...'));
     }
   }
 
@@ -166,44 +170,33 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       },
       autovalidateMode: widget.formFieldAutoValidateMode,
       readOnly: true,
-      onTap: () {
-        DatePickerBdaya.showDatePicker(
-          context,
-          showTitleActions: true,
-          onConfirm: (date) {
-            final dateString = DateFormat('yyyy-MM-dd').format(date);
-            widget.cellEntity.value = dateString;
-            _textEditingController.text = dateString;
-            if (widget.onFilling != null) {
-              widget.onFilling!(FillingArea.body, dateString);
-            }
-            if (widget.onSubmitted != null) {
-              widget.onSubmitted!(FillingArea.body, dateString);
-            }
-          },
-          onCancel: () {
-            widget.cellEntity.value = null;
-            _textEditingController.clear();
-            if (widget.onFilling != null) {
-              widget.onFilling!(FillingArea.body, null);
-            }
-            if (widget.onSubmitted != null) {
-              widget.onSubmitted!(FillingArea.body, null);
-            }
-          },
-          currentTime: widget.cellEntity.value != null
-              ? (DateTime.tryParse(widget.cellEntity.value.toString()) ??
-                  DateTime.now())
-              : DateTime.now(),
-          locale:
-              WidgetsBinding.instance.platformDispatcher.locale.countryCode ==
-                          'CN' &&
-                      WidgetsBinding.instance.platformDispatcher.locale
-                              .languageCode ==
-                          'zh'
-                  ? LocaleType.zh
-                  : LocaleType.en,
-        );
+      onTap: () async {
+        DateTime? date = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(), //get today's date
+            firstDate: DateTime(
+                2000), //DateTime.now() - not to allow to choose before today.
+            lastDate: DateTime(2101));
+        if (date != null) {
+          final dateString = DateFormat('yyyy-MM-dd').format(date);
+          widget.cellEntity.value = dateString;
+          _textEditingController.text = dateString;
+          if (widget.onFilling != null) {
+            widget.onFilling!(FillingArea.body, dateString);
+          }
+          if (widget.onSubmitted != null) {
+            widget.onSubmitted!(FillingArea.body, dateString);
+          }
+          return;
+        }
+        widget.cellEntity.value = null;
+        _textEditingController.clear();
+        if (widget.onFilling != null) {
+          widget.onFilling!(FillingArea.body, null);
+        }
+        if (widget.onSubmitted != null) {
+          widget.onSubmitted!(FillingArea.body, null);
+        }
       },
     );
   }
@@ -343,6 +336,8 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       );
     }).toList();
     return DropdownButtonFormField<String>(
+        style: const TextStyle(fontSize: 12, color: Colors.black),
+        isDense: true,
         validator: _validateNotEmpty,
         value: _dropdownValue,
         onChanged: (String? newValue) {

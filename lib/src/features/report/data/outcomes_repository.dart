@@ -17,3 +17,10 @@ class OutcomesRepository extends _$OutcomesRepository {
     state = AsyncData([...previousState, fal]);
   }
 }
+
+@riverpod
+FAL? outcomeByFalType(OutcomeByFalTypeRef ref, FALType falType) {
+  final outcomes = ref.watch(outcomesRepositoryProvider).value!;
+  final outcomeFiltered = outcomes.where((f) => f.falType == falType);
+  return outcomeFiltered.isEmpty ? null : outcomeFiltered.first;
+}
