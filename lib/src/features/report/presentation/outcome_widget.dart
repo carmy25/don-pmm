@@ -101,6 +101,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
       },
       onRowAdded: () {},
       onFilling: (FillingArea area, dynamic value) {
+        print('onFilling $value');
         widget.data.clear();
         widget.data.addAll(_editableTableKey.currentState!.currentData.rows
             .map((e) => e.toJson()));

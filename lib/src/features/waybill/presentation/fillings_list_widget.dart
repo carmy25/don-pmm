@@ -86,7 +86,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Назва палива чи оливи",
         "display": true,
         "editable": true,
-        "width_factor": 0.33,
+        "width_factor": 0.23,
         "constrains": {"required": true},
         "style": {
           "font_weight": "bold",
@@ -106,7 +106,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Наявність перед виїздом(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.13,
+        "width_factor": 0.1,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
@@ -132,7 +132,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Отримано(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.13,
+        "width_factor": 0.1,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
@@ -159,11 +159,33 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Витрачено(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.13,
+        "width_factor": 0.1,
         "input_decoration": {"hint_text": "Витрачено(л)"},
         "style": {
           "font_weight": "bold",
           "font_size": 12.0,
+          "font_color": "#333333",
+          "background_color": "#b5cfd2",
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
+          "text_align": "center"
+        },
+      },
+      {
+        "primary_key": false,
+        "auto_increase": false,
+        "name": "otherMilBase",
+        "title": "Видано в іншій в/ч?",
+        "type": "bool",
+        "format": null,
+        "description": "Видано в іншій в/ч?",
+        "display": true,
+        "editable": true,
+        "width_factor": 0.1,
+        "constrains": {"minimum": 1, "maximum": 100},
+        "style": {
+          "font_weight": "bold",
+          "font_size": 14.0,
           "font_color": "#333333",
           "background_color": "#b5cfd2",
           "horizontal_alignment": "center",
@@ -225,7 +247,6 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
       },
       onFilling: (FillingArea area, dynamic value) {
         debugPrint('filling: ${area.toString()}, value: ${value.toString()}');
-        print(_editableTableKey.currentState!.currentData.rows);
         widget.data.clear();
         widget.data.addAll(_editableTableKey.currentState!.currentData.rows
             .map((e) => e.toJson()));

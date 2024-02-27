@@ -71,7 +71,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
       final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
 
       for (final o in _outcomeData.where((e) => e['availableLtrs'] != null)) {
-        await outcomesRepo.addOutcome(
+        outcomesRepo.addOutcome(
             fal: FAL(
                 falType:
                     FALType.values.firstWhere((e) => e.name == o['comodity']),

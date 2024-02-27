@@ -6,7 +6,7 @@ part of 'waybills_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$waybillsByCarHash() => r'13748d238263fd0467733a9ed46c64f497e009a4';
+String _$waybillsByCarHash() => r'e094ba0eafe5bdb5c3a45284f2e35de64c4a5e2f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const waybillsByCarProvider = WaybillsByCarFamily();
 
 /// See also [waybillsByCar].
-class WaybillsByCarFamily extends Family<AsyncValue<List<Waybill>>> {
+class WaybillsByCarFamily extends Family<List<Waybill>> {
   /// See also [waybillsByCar].
   const WaybillsByCarFamily();
 
@@ -72,7 +72,7 @@ class WaybillsByCarFamily extends Family<AsyncValue<List<Waybill>>> {
 }
 
 /// See also [waybillsByCar].
-class WaybillsByCarProvider extends AutoDisposeFutureProvider<List<Waybill>> {
+class WaybillsByCarProvider extends AutoDisposeProvider<List<Waybill>> {
   /// See also [waybillsByCar].
   WaybillsByCarProvider(
     Car car,
@@ -107,7 +107,7 @@ class WaybillsByCarProvider extends AutoDisposeFutureProvider<List<Waybill>> {
 
   @override
   Override overrideWith(
-    FutureOr<List<Waybill>> Function(WaybillsByCarRef provider) create,
+    List<Waybill> Function(WaybillsByCarRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -124,7 +124,7 @@ class WaybillsByCarProvider extends AutoDisposeFutureProvider<List<Waybill>> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<Waybill>> createElement() {
+  AutoDisposeProviderElement<List<Waybill>> createElement() {
     return _WaybillsByCarProviderElement(this);
   }
 
@@ -142,21 +142,20 @@ class WaybillsByCarProvider extends AutoDisposeFutureProvider<List<Waybill>> {
   }
 }
 
-mixin WaybillsByCarRef on AutoDisposeFutureProviderRef<List<Waybill>> {
+mixin WaybillsByCarRef on AutoDisposeProviderRef<List<Waybill>> {
   /// The parameter `car` of this provider.
   Car get car;
 }
 
 class _WaybillsByCarProviderElement
-    extends AutoDisposeFutureProviderElement<List<Waybill>>
-    with WaybillsByCarRef {
+    extends AutoDisposeProviderElement<List<Waybill>> with WaybillsByCarRef {
   _WaybillsByCarProviderElement(super.provider);
 
   @override
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillListHash() => r'e53c7e0eab90d327c3b5350888d64df32e91d3a9';
+String _$waybillListHash() => r'2efcf48fb55d2c2ebb77e2f7531698985d1bff92';
 
 /// See also [WaybillList].
 @ProviderFor(WaybillList)

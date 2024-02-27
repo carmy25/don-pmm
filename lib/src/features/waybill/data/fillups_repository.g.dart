@@ -155,29 +155,29 @@ class _FillupsByWaybillProviderElement
   Waybill get waybill => (origin as FillupsByWaybillProvider).waybill;
 }
 
-String _$fillupByFalTypeHash() => r'3ac344de7a339f4b1e7e4afe19de848722e3eafa';
+String _$fillupsByFalTypeHash() => r'3a81876e7bac933a8ceedd003f9394ccd34f597e';
 
-/// See also [fillupByFalType].
-@ProviderFor(fillupByFalType)
-const fillupByFalTypeProvider = FillupByFalTypeFamily();
+/// See also [fillupsByFalType].
+@ProviderFor(fillupsByFalType)
+const fillupsByFalTypeProvider = FillupsByFalTypeFamily();
 
-/// See also [fillupByFalType].
-class FillupByFalTypeFamily extends Family<Fillup?> {
-  /// See also [fillupByFalType].
-  const FillupByFalTypeFamily();
+/// See also [fillupsByFalType].
+class FillupsByFalTypeFamily extends Family<List<Fillup>> {
+  /// See also [fillupsByFalType].
+  const FillupsByFalTypeFamily();
 
-  /// See also [fillupByFalType].
-  FillupByFalTypeProvider call(
+  /// See also [fillupsByFalType].
+  FillupsByFalTypeProvider call(
     FALType falType,
   ) {
-    return FillupByFalTypeProvider(
+    return FillupsByFalTypeProvider(
       falType,
     );
   }
 
   @override
-  FillupByFalTypeProvider getProviderOverride(
-    covariant FillupByFalTypeProvider provider,
+  FillupsByFalTypeProvider getProviderOverride(
+    covariant FillupsByFalTypeProvider provider,
   ) {
     return call(
       provider.falType,
@@ -196,32 +196,32 @@ class FillupByFalTypeFamily extends Family<Fillup?> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'fillupByFalTypeProvider';
+  String? get name => r'fillupsByFalTypeProvider';
 }
 
-/// See also [fillupByFalType].
-class FillupByFalTypeProvider extends AutoDisposeProvider<Fillup?> {
-  /// See also [fillupByFalType].
-  FillupByFalTypeProvider(
+/// See also [fillupsByFalType].
+class FillupsByFalTypeProvider extends AutoDisposeProvider<List<Fillup>> {
+  /// See also [fillupsByFalType].
+  FillupsByFalTypeProvider(
     FALType falType,
   ) : this._internal(
-          (ref) => fillupByFalType(
-            ref as FillupByFalTypeRef,
+          (ref) => fillupsByFalType(
+            ref as FillupsByFalTypeRef,
             falType,
           ),
-          from: fillupByFalTypeProvider,
-          name: r'fillupByFalTypeProvider',
+          from: fillupsByFalTypeProvider,
+          name: r'fillupsByFalTypeProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$fillupByFalTypeHash,
-          dependencies: FillupByFalTypeFamily._dependencies,
+                  : _$fillupsByFalTypeHash,
+          dependencies: FillupsByFalTypeFamily._dependencies,
           allTransitiveDependencies:
-              FillupByFalTypeFamily._allTransitiveDependencies,
+              FillupsByFalTypeFamily._allTransitiveDependencies,
           falType: falType,
         );
 
-  FillupByFalTypeProvider._internal(
+  FillupsByFalTypeProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -235,12 +235,12 @@ class FillupByFalTypeProvider extends AutoDisposeProvider<Fillup?> {
 
   @override
   Override overrideWith(
-    Fillup? Function(FillupByFalTypeRef provider) create,
+    List<Fillup> Function(FillupsByFalTypeRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: FillupByFalTypeProvider._internal(
-        (ref) => create(ref as FillupByFalTypeRef),
+      override: FillupsByFalTypeProvider._internal(
+        (ref) => create(ref as FillupsByFalTypeRef),
         from: from,
         name: null,
         dependencies: null,
@@ -252,13 +252,13 @@ class FillupByFalTypeProvider extends AutoDisposeProvider<Fillup?> {
   }
 
   @override
-  AutoDisposeProviderElement<Fillup?> createElement() {
-    return _FillupByFalTypeProviderElement(this);
+  AutoDisposeProviderElement<List<Fillup>> createElement() {
+    return _FillupsByFalTypeProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is FillupByFalTypeProvider && other.falType == falType;
+    return other is FillupsByFalTypeProvider && other.falType == falType;
   }
 
   @override
@@ -270,17 +270,17 @@ class FillupByFalTypeProvider extends AutoDisposeProvider<Fillup?> {
   }
 }
 
-mixin FillupByFalTypeRef on AutoDisposeProviderRef<Fillup?> {
+mixin FillupsByFalTypeRef on AutoDisposeProviderRef<List<Fillup>> {
   /// The parameter `falType` of this provider.
   FALType get falType;
 }
 
-class _FillupByFalTypeProviderElement
-    extends AutoDisposeProviderElement<Fillup?> with FillupByFalTypeRef {
-  _FillupByFalTypeProviderElement(super.provider);
+class _FillupsByFalTypeProviderElement
+    extends AutoDisposeProviderElement<List<Fillup>> with FillupsByFalTypeRef {
+  _FillupsByFalTypeProviderElement(super.provider);
 
   @override
-  FALType get falType => (origin as FillupByFalTypeProvider).falType;
+  FALType get falType => (origin as FillupsByFalTypeProvider).falType;
 }
 
 String _$fillupFalTypesHash() => r'76469f83b7526060f38e835f98e1259df160fdcf';

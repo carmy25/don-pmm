@@ -10,7 +10,9 @@ class Fillup {
       required this.beforeLtrs,
       required this.fillupLtrs,
       required this.burnedLtrs,
-      required this.waybill});
+      required this.waybill,
+      required this.otherMilBase});
+  final bool otherMilBase;
   final FALType falType;
   final DateTime date;
   final String uuid;

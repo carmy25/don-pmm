@@ -1,5 +1,4 @@
 import 'package:donpmm/src/common/fal.dart';
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'outcomes_repository.g.dart';
@@ -7,20 +6,18 @@ part 'outcomes_repository.g.dart';
 @Riverpod()
 class OutcomesRepository extends _$OutcomesRepository {
   @override
-  FutureOr<List<FAL>> build() {
-    debugPrint('OutcomesRepos init');
+  List<FAL> build() {
     return [];
   }
 
-  Future<void> addOutcome({required FAL fal}) async {
-    final previousState = await future;
-    state = AsyncData([...previousState, fal]);
+  void addOutcome({required FAL fal}) {
+    state = [...state, fal];
   }
 }
 
 @riverpod
 FAL? outcomeByFalType(OutcomeByFalTypeRef ref, FALType falType) {
-  final outcomes = ref.watch(outcomesRepositoryProvider).value!;
+  final outcomes = ref.watch(outcomesRepositoryProvider);
   final outcomeFiltered = outcomes.where((f) => f.falType == falType);
   return outcomeFiltered.isEmpty ? null : outcomeFiltered.first;
 }

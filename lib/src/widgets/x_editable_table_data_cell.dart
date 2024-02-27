@@ -309,13 +309,13 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
           : (value) {
               setState(() {
                 widget.cellEntity.value = value;
+                if (widget.onFilling != null) {
+                  widget.onFilling!(FillingArea.body, value);
+                }
+                if (widget.onSubmitted != null) {
+                  widget.onSubmitted!(FillingArea.body, value);
+                }
               });
-              if (widget.onFilling != null) {
-                widget.onFilling!(FillingArea.body, value);
-              }
-              if (widget.onSubmitted != null) {
-                widget.onSubmitted!(FillingArea.body, value);
-              }
             },
     );
   }
@@ -430,9 +430,6 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
       },
       autovalidateMode: widget.formFieldAutoValidateMode,
       onChanged: (String value) {
-        if (widget.onFilling != null) {
-          widget.onFilling!(FillingArea.body, value);
-        }
         if (value.isEmpty) {
           widget.cellEntity.value = null;
           return;
@@ -477,6 +474,9 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
           }
         } else {
           widget.cellEntity.value = value;
+        }
+        if (widget.onFilling != null) {
+          widget.onFilling!(FillingArea.body, value);
         }
       },
       onFieldSubmitted: (value) {

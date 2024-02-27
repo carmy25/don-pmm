@@ -5,7 +5,6 @@ import '../domain/waybill.dart';
 
 part 'waybills_repository.g.dart';
 
-//XXX: if car not saved, waybill anyway leaves in memory
 @Riverpod(keepAlive: true)
 class WaybillList extends _$WaybillList {
   @override
@@ -13,15 +12,14 @@ class WaybillList extends _$WaybillList {
     return [];
   }
 
-  Future<void> addWaybill(Waybill waybill) async {
-    final previousState = await future;
-    final newState = {waybill, ...previousState}.toList();
+  void addWaybill(Waybill waybill) {
+    final newState = {waybill, ...state.value!}.toList();
     state = AsyncData(newState);
   }
 }
 
 @riverpod
-Future<List<Waybill>> waybillsByCar(WaybillsByCarRef ref, Car car) async {
-  final waybills = await ref.watch(waybillListProvider.future);
-  return waybills.where((wb) => wb.car == car).toList();
+List<Waybill> waybillsByCar(WaybillsByCarRef ref, Car car) {
+  final waybills = ref.watch(waybillListProvider).value!;
+  return waybills.where((wb) => wb.carUuid == car.uuid).toList();
 }

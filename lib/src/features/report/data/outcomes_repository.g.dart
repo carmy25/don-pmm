@@ -6,7 +6,7 @@ part of 'outcomes_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$outcomeByFalTypeHash() => r'aa265f606f198f2bb481aa5e4954077f74de91ae';
+String _$outcomeByFalTypeHash() => r'eeabd0a72d213ee527ee811eb9f100400e34561c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -156,12 +156,12 @@ class _OutcomeByFalTypeProviderElement extends AutoDisposeProviderElement<FAL?>
 }
 
 String _$outcomesRepositoryHash() =>
-    r'075170503bfa13c3016242d1a7120c02548cb5ad';
+    r'326f09484607757ea5e1385477c2ba938d9dc6c9';
 
 /// See also [OutcomesRepository].
 @ProviderFor(OutcomesRepository)
 final outcomesRepositoryProvider =
-    AutoDisposeAsyncNotifierProvider<OutcomesRepository, List<FAL>>.internal(
+    AutoDisposeNotifierProvider<OutcomesRepository, List<FAL>>.internal(
   OutcomesRepository.new,
   name: r'outcomesRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -171,6 +171,6 @@ final outcomesRepositoryProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$OutcomesRepository = AutoDisposeAsyncNotifier<List<FAL>>;
+typedef _$OutcomesRepository = AutoDisposeNotifier<List<FAL>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

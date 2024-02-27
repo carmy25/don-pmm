@@ -19,3 +19,9 @@ class CarList extends _$CarList {
     state = AsyncData(newState);
   }
 }
+
+@riverpod
+Car carByUuid(CarByUuidRef ref, String uuid) {
+  final cars = ref.watch(carListProvider).value!;
+  return cars.where((c) => c.uuid == uuid).first;
+}

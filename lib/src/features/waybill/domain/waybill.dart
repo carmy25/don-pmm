@@ -1,9 +1,12 @@
-import '../../cars/domain/car.dart';
-
 class Waybill {
-  const Waybill({required this.uuid, required this.number, required this.car});
+  const Waybill(
+      {required this.uuid,
+      required this.issueDate,
+      required this.number,
+      required this.carUuid});
   final String number, uuid;
-  final Car car;
+  final DateTime issueDate;
+  final String carUuid;
 
   @override
   bool operator ==(Object other) =>

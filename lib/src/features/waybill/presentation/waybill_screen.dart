@@ -21,7 +21,8 @@ class WaybillScreen extends ConsumerStatefulWidget {
 }
 
 class WaybillScreenState extends ConsumerState {
-  final TextEditingController numberInput = TextEditingController();
+  final TextEditingController _numberInput = TextEditingController();
+  final TextEditingController _dateInput = TextEditingController();
   final Waybill waybill;
   final _formKey = GlobalKey<FormState>();
   final List<Map<String, dynamic>> _fillupsData = [];
@@ -37,7 +38,7 @@ class WaybillScreenState extends ConsumerState {
 
   @override
   Widget build(BuildContext context) {
-    numberInput.text = waybill.number;
+    _numberInput.text = waybill.number;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Шляховий лист'),
@@ -52,13 +53,34 @@ class WaybillScreenState extends ConsumerState {
                 children: [
                   Flexible(
                       child: TextFormField(
-                    controller: numberInput,
+                    controller: _numberInput,
                     validator: _validateNotEmpty,
                     decoration: const InputDecoration(
                         icon: Icon(Icons.numbers), //icon of text field
                         labelText: 'Номер листа' //label text of field
                         ),
-                  ))
+                  )),
+                  Flexible(
+                      child: TextFormField(
+                          validator: _validateNotEmpty,
+                          controller: _dateInput,
+                          decoration: const InputDecoration(
+                              icon: Icon(
+                                  Icons.calendar_today), //icon of text field
+                              labelText: 'Дата видачі' //label text of field
+                              ),
+                          readOnly: true,
+                          onTap: () async {
+                            DateTime? date = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime(2024, 2),
+                                lastDate: DateTime(2100));
+                            if (date == null) {
+                              return;
+                            }
+                            _dateInput.text =
+                                DateFormat.yMMMMd('uk').format(date);
+                          }))
                 ],
               ),
               const Row(
@@ -92,11 +114,13 @@ class WaybillScreenState extends ConsumerState {
 
   Future<void> _saveWaybill(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      await ref.read(waybillListProvider.notifier).addWaybill(Waybill(
-          uuid: waybill.uuid, car: waybill.car, number: numberInput.text));
+      ref.read(waybillListProvider.notifier).addWaybill(Waybill(
+          uuid: waybill.uuid,
+          carUuid: waybill.carUuid,
+          issueDate: DateFormat.yMMMMd('uk').parse(_dateInput.text),
+          number: _numberInput.text));
       for (final o in _fillupsData
           .where((e) => e['comodity'] != null && e['date'] != null)) {
-        print('loop ${o["spentLtrs"]}');
         await ref.read(fillupListProvider.notifier).addFillup(Fillup(
             uuid: o['uuid'] ?? const Uuid().v4(),
             falType: FALType.values.firstWhere((e) => e.name == o['comodity']),
@@ -104,6 +128,7 @@ class WaybillScreenState extends ConsumerState {
             beforeLtrs: o['availableLtrs'] ?? 0,
             fillupLtrs: o['gainedLtrs'] ?? 0,
             burnedLtrs: o['spentLtrs'] ?? 0,
+            otherMilBase: o['otherMilBase'] ?? false,
             waybill: waybill));
       }
       if (context.mounted) {

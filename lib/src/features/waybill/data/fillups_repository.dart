@@ -26,10 +26,10 @@ List<Fillup> fillupsByWaybill(FillupsByWaybillRef ref, Waybill waybill) {
 }
 
 @riverpod
-Fillup? fillupByFalType(FillupByFalTypeRef ref, FALType falType) {
+List<Fillup> fillupsByFalType(FillupsByFalTypeRef ref, FALType falType) {
   final fillups = ref.watch(fillupListProvider).value!;
   final fillupsFiltered = fillups.where((f) => f.falType == falType);
-  return fillupsFiltered.isEmpty ? null : fillupsFiltered.first;
+  return fillupsFiltered.toList();
 }
 
 @riverpod
