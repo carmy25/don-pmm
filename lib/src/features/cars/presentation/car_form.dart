@@ -84,6 +84,8 @@ class CarFormState extends ConsumerState<CarForm> {
                       MaterialPageRoute(
                           builder: (context) => WaybillScreen(
                               waybill: Waybill(
+                                  kmsStart: 0,
+                                  kmsEnd: 0,
                                   issueDate: DateTime.now(),
                                   uuid: const Uuid().v4(),
                                   number: '',

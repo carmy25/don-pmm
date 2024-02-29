@@ -1,10 +1,15 @@
-enum FALType {
-  dpleuro5v0('ДП-л-Євро5 В0', 0.84),
-  dpzeuro5v0('ДП-з-Євро5 В0', 0.85),
-  a80('А-80', 0.75);
+enum FALCategory { diesel, petrol, oil, poison }
 
-  const FALType(this.name, this.density);
+enum FALType {
+  dpleuro5v0('ДП-л-Євро5 В0', 0.84, FALCategory.diesel),
+  dpzeuro5v0('ДП-з-Євро5 В0', 0.85, FALCategory.diesel),
+  a80('А-80', 0.75, FALCategory.petrol),
+  adblue('AdBlue', 1.05, FALCategory.poison),
+  m10g2k('М10г2к', 0.9, FALCategory.oil);
+
+  const FALType(this.name, this.density, this.category);
   final String name;
+  final FALCategory category;
   final double density;
 }
 

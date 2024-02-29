@@ -3,6 +3,7 @@ import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -22,6 +23,8 @@ class WaybillScreen extends ConsumerStatefulWidget {
 
 class WaybillScreenState extends ConsumerState {
   final TextEditingController _numberInput = TextEditingController();
+  final TextEditingController _kmsStartInput = TextEditingController();
+  final TextEditingController _kmsEndInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
   final Waybill waybill;
   final _formKey = GlobalKey<FormState>();
@@ -39,6 +42,8 @@ class WaybillScreenState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
     _numberInput.text = waybill.number;
+    _kmsStartInput.text = waybill.kmsStart.toString();
+    _kmsEndInput.text = waybill.kmsEnd.toString();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Шляховий лист'),
@@ -85,6 +90,40 @@ class WaybillScreenState extends ConsumerState {
               ),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [SubheaderText('Показання спідометра(одометра)')],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                      child: TextFormField(
+                    controller: _kmsStartInput,
+                    validator: _validateNotEmpty,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9\.]'))
+                    ], // Only numbers can be entered
+                    decoration: const InputDecoration(
+                        icon: Icon(Icons.start), //icon of text field
+                        labelText:
+                            'перед початком(км або год)' //label text of field
+                        ),
+                  )),
+                  Flexible(
+                      child: TextFormField(
+                    controller: _kmsEndInput,
+                    validator: _validateNotEmpty,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9\.]'))
+                    ], // Only numbers can be entered
+                    decoration: const InputDecoration(
+                        icon: Icon(
+                            Icons.stop_circle_outlined), //icon of text field
+                        labelText: 'в кінці(км або год)' //label text of field
+                        ),
+                  )),
+                ],
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [SubheaderText('Заправки')],
               ),
               Expanded(
@@ -115,6 +154,8 @@ class WaybillScreenState extends ConsumerState {
   Future<void> _saveWaybill(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       ref.read(waybillListProvider.notifier).addWaybill(Waybill(
+          kmsStart: double.parse(_kmsStartInput.text),
+          kmsEnd: double.parse(_kmsEndInput.text),
           uuid: waybill.uuid,
           carUuid: waybill.carUuid,
           issueDate: DateFormat.yMMMMd('uk').parse(_dateInput.text),

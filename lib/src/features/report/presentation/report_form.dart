@@ -54,6 +54,8 @@ class ReportFormState extends ConsumerState<ReportForm> {
   final TextEditingController _chiefNameInput = TextEditingController();
   final TextEditingController _rankInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
+  final TextEditingController _checkerNameInput = TextEditingController();
+  final TextEditingController _checkerRankInput = TextEditingController();
   String _formatDateToString(DateTime? date) {
     if (date == null) return '-';
 
@@ -83,7 +85,9 @@ class ReportFormState extends ConsumerState<ReportForm> {
           dtRange: _dtRange!,
           chiefPosition: _chiefPosition!,
           chiefRank: _rankInput.text,
-          chiefName: _chiefNameInput.text);
+          chiefName: _chiefNameInput.text,
+          checkerName: _checkerNameInput.text,
+          checkerRank: _checkerRankInput.text);
       final reportService = ref.read(reportServiceProvider);
       await reportService.saveToFile(outputFile);
       return true;
@@ -107,6 +111,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
         child: Text(item.name),
       );
     }).toList();
+    final report = ref.watch(reportRepositoryProvider).value;
+    _checkerNameInput.text = report?.checkerName ?? '';
+    _checkerRankInput.text = report?.checkerRank ?? '';
+    _chiefNameInput.text = report?.chiefName ?? '';
+    _rankInput.text = report?.chiefName ?? '';
     return Form(
       key: _formKey,
       child: Container(
@@ -158,6 +167,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
                 )),
               ],
             ),
+            const Row(
+              children: [
+                SubheaderText('Відповідальна особа'),
+              ],
+            ),
             Row(
               children: [
                 Flexible(
@@ -184,6 +198,33 @@ class ReportFormState extends ConsumerState<ReportForm> {
                     child: TextFormField(
                   validator: _validateNotEmpty,
                   controller: _chiefNameInput,
+                  decoration: const InputDecoration(
+                      icon: Icon(Icons.person), //icon of text field
+                      labelText: 'Прізвище, ініціали' //label text of field
+                      ),
+                )),
+              ],
+            ),
+            const Row(
+              children: [
+                SubheaderText('Особа, що перевіряє шляхові листи'),
+              ],
+            ),
+            Row(
+              children: [
+                Flexible(
+                    child: TextFormField(
+                  validator: _validateNotEmpty,
+                  controller: _checkerRankInput,
+                  decoration: const InputDecoration(
+                      icon: Icon(Icons.security), //icon of text field
+                      labelText: 'Звання' //label text of field
+                      ),
+                )),
+                Flexible(
+                    child: TextFormField(
+                  validator: _validateNotEmpty,
+                  controller: _checkerNameInput,
                   decoration: const InputDecoration(
                       icon: Icon(Icons.person), //icon of text field
                       labelText: 'Прізвище, ініціали' //label text of field

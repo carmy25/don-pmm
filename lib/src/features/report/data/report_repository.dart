@@ -18,12 +18,16 @@ class ReportRepository extends _$ReportRepository {
       required DateTimeRange dtRange,
       required String chiefPosition,
       required String chiefRank,
-      required String chiefName}) async {
+      required String chiefName,
+      required String checkerName,
+      required String checkerRank}) async {
     state = AsyncData(Report(
         unitName: unitName,
         dtRange: dtRange,
         chiefPosition: chiefPosition,
         chiefRank: chiefRank,
-        chiefName: chiefName));
+        chiefName: chiefName,
+        checkerName: checkerName,
+        checkerRank: checkerRank));
   }
 }
