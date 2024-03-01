@@ -1,6 +1,5 @@
-import 'dart:ffi';
 import 'dart:io';
-
+import 'package:collection/collection.dart';
 import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
@@ -51,13 +50,199 @@ class ReportService {
     _generateRegistrySheet(workbook.worksheets.addWithName('Реєстр'));
     _generateReportingSheet(workbook.worksheets.addWithName('Донесення'));
     _generateTranscriptSheet(workbook.worksheets.addWithName('Розшифровка'));
+    _generateInfoSheet(
+        workbook.worksheets.addWithName('Відомість АБ'), FALCategory.petrol);
+    _generateInfoSheet(
+        workbook.worksheets.addWithName('Відомість ДП'), FALCategory.diesel);
 
     List<int> bytes = workbook.saveSync();
     await File(path).writeAsBytes(bytes);
     workbook.dispose();
   }
 
+  void _generateInfoSheet(Worksheet sheet, FALCategory category) {
+    final report = ref.read(reportRepositoryProvider).value!;
+    sheet.enableSheetCalculations();
+
+    var c = sheet.getRangeByName('g1:h1');
+    c.merge();
+    c.text = 'Додаток 85';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('a2:i2');
+    c.merge();
+    c.text = 'ВІДОМІСТЬ';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('a3:i3');
+    c.merge();
+    c.text =
+        'заміру палього                    ${category == FALCategory.diesel ? "ДП" : "АБ"}                   у баках машин';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('a4:i4');
+    c.merge();
+    c.text = '(найменування пального)';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('b5:c5');
+    c.merge();
+    c.text = report.unitName;
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('b6:c6');
+    c.merge();
+    c.text = '(підрозділ)';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('f5:g5');
+    c.merge();
+    c.text = 'А4548';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('f6:g6');
+    c.merge();
+    c.text = '(в/ч)';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    c = sheet.getRangeByName('A7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Марка машини';
+
+    c = sheet.getRangeByName('b7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Номер машини';
+
+    c = sheet.getRangeByName('c7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Номер останнього дорожнього листа';
+
+    c = sheet.getRangeByName('d7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Одиниця виміру';
+
+    c = sheet.getRangeByName('e7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Обліковується у дорожньому листі';
+
+    c = sheet.getRangeByName('f7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Фактично виявилось';
+
+    c = sheet.getRangeByName('g7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Показання спідометра(одометра)';
+
+    c = sheet.getRangeByName('h7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Залишки';
+
+    c = sheet.getRangeByName('i7');
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Нестача';
+
+    _updateDataCell(sheet, 'a8', '1');
+    _updateDataCell(sheet, 'b8', '2');
+    _updateDataCell(sheet, 'c8', '3');
+    _updateDataCell(sheet, 'd8', '4');
+    _updateDataCell(sheet, 'e8', '5');
+    _updateDataCell(sheet, 'f8', '6');
+    _updateDataCell(sheet, 'g8', '7');
+    _updateDataCell(sheet, 'h8', '8');
+    _updateDataCell(sheet, 'i8', '9');
+
+    sheet.getRangeByName('a5').columnWidth = 20;
+    sheet.getRangeByName('b5').columnWidth = 20;
+    sheet.getRangeByName('g5').columnWidth = 18;
+
+    var cidx = _infoAddTableCells(sheet, category);
+    cidx += 2;
+    c = sheet.getRangeByName('A$cidx:I$cidx');
+    c.text =
+        '${report.chiefPosition} ${report.unitName} ${report.checkerRank}                          ${report.chiefName}';
+    c.cellStyle.hAlign = HAlignType.left;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;
+    c.cellStyle.fontSize = 10;
+    c.merge();
+
+    ++cidx;
+    c = sheet.getRangeByName('c$cidx:g$cidx');
+    c.text = '(військове звання, підпис, прізвище, ініціали)';
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;
+    c.cellStyle.fontSize = 10;
+    c.merge();
+  }
+
+  int _infoAddTableCells(Worksheet sheet, FALCategory category) {
+    var cidx = 8;
+    final cars = ref.watch(carListProvider).value!;
+    for (final car in cars) {
+      final waybills = ref.read(waybillsByCarProvider(car));
+      ++cidx;
+      _updateDataCell(sheet, 'A$cidx', car.name);
+      _updateDataCell(sheet, 'b$cidx', car.number);
+      if (waybills.isEmpty) continue;
+
+      final wb = waybills.last;
+      _updateDataCell(sheet, 'c$cidx', wb.number);
+      _updateDataCell(sheet, 'd$cidx', 'л');
+
+      final remnant = ref
+          .read(fillupsByWaybillProvider(wb))
+          .where((fu) => fu.falType.category == category)
+          .map(
+            (e) => e.beforeLtrs + e.fillupLtrs - e.burnedLtrs,
+          )
+          .sum
+          .round();
+
+      _updateDataCell(sheet, 'e$cidx', remnant.toString());
+      _updateDataCell(sheet, 'f$cidx', remnant.toString());
+      _updateDataCell(sheet, 'g$cidx', wb.kmsEnd.round().toString());
+      _updateDataCell(sheet, 'H$cidx', '');
+      _updateDataCell(sheet, 'I$cidx', '');
+    }
+
+    ++cidx;
+    _updateDataCell(sheet, 'A$cidx:D$cidx', 'Усього').merge();
+    _updateDataCellFormula(sheet, 'E$cidx', '=SUM(E8:E${cidx - 1})');
+    _updateDataCellFormula(sheet, 'F$cidx', '=SUM(F8:F${cidx - 1})');
+    _updateDataCell(sheet, 'G$cidx', '');
+    _updateDataCell(sheet, 'H$cidx', '');
+    _updateDataCell(sheet, 'I$cidx', '');
+
+    ++cidx;
+    final report = ref.read(reportRepositoryProvider).value!;
+    _updateDataCell(sheet, 'B$cidx:F$cidx',
+            'станом на ${DateFormat.yMMMMd("uk").format(report.dtRange.end)}')
+        .merge();
+
+    return cidx;
+  }
+
   void _generateTranscriptSheet(Worksheet sheet) {
+    sheet.enableSheetCalculations();
     final report = ref.read(reportRepositoryProvider).value!;
     var c = sheet.getRangeByName('A1:J1');
     c.merge();
@@ -137,6 +322,89 @@ class ReportService {
     }
     _updateDataCell(sheet, 'j5:j6', 'Примітки').merge();
     _updateDataCell(sheet, 'j7', '10');
+
+    var cidx = _transcriptAddTableCells(sheet, oilIndex: oilsByIndex);
+    cidx += 2;
+    c = sheet.getRangeByName('A$cidx:J$cidx');
+    c.merge();
+    c.text =
+        'Підставою для заповнення расшифровки являється книга обліку работи машин і витрати ПММ';
+    c.cellStyle.hAlign = HAlignType.left;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    ++cidx;
+    c = sheet.getRangeByName('A$cidx:J$cidx');
+    c.merge();
+    c.text =
+        '${report.chiefRank}                                 ${report.chiefName}';
+    c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;
+    c.cellStyle.hAlign = HAlignType.left;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 10;
+
+    ++cidx;
+    c = sheet.getRangeByName('C$cidx:F$cidx');
+    c.merge();
+    c.text = '(військове звання, підпис, прізвище, ініціали)';
+    c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;
+    c.cellStyle.hAlign = HAlignType.center;
+    c.cellStyle.vAlign = VAlignType.center;
+    c.cellStyle.fontSize = 8;
+  }
+
+  int _transcriptAddTableCells(Worksheet sheet,
+      {required Map<String, int> oilIndex}) {
+    final cars = ref.watch(carListProvider).value!;
+
+    var cidx = 7;
+    for (final (idx, car) in cars.indexed) {
+      ++cidx;
+      _updateDataCell(sheet, 'A$cidx', '${idx + 1}');
+      _updateDataCell(sheet, 'B$cidx', car.name);
+      _updateDataCell(sheet, 'C$cidx', car.number);
+
+      final waybills = ref.read(waybillsByCarProvider(car));
+      if (waybills.isEmpty) {
+        continue;
+      }
+      _updateDataCell(
+          sheet, 'D$cidx', '${waybills.last.kmsEnd - waybills.first.kmsStart}');
+
+      final Map<String, int> burned = {'df': 0, 'pf': 0};
+      for (final wb in waybills) {
+        final fillups = ref.read(fillupsByWaybillProvider(wb));
+        for (final fu in fillups) {
+          if (fu.falType.category == FALCategory.diesel) {
+            burned['df'] = burned['df']! + fu.burnedLtrs.round();
+          } else if (fu.falType.category == FALCategory.petrol) {
+            burned['pf'] = burned['pf']! + fu.burnedLtrs.round();
+          } else if (fu.falType.category == FALCategory.oil) {
+            if (burned.containsKey(fu.falType.name)) {
+              burned[fu.falType.name] =
+                  burned[fu.falType.name]! + fu.burnedLtrs.round();
+            } else {
+              burned[fu.falType.name] = fu.burnedLtrs.round();
+            }
+          }
+        }
+      }
+      _updateDataCell(sheet, 'E$cidx', burned['df'].toString());
+      _updateDataCell(sheet, 'F$cidx', burned['pf'].toString());
+      for (final b in burned.entries) {
+        if (['df', 'pf'].contains(b.key)) {
+          continue;
+        }
+        final cellCol = String.fromCharCode(oilIndex[b.key]! + 71);
+        _updateDataCell(sheet, '$cellCol$cidx', b.value.toString());
+      }
+    }
+    ++cidx;
+    _updateDataCell(sheet, 'B$cidx', 'Разом');
+    _updateDataCellFormula(sheet, 'D$cidx', '=SUM(D8:D${cidx - 1})');
+    _updateDataCellFormula(sheet, 'E$cidx', '=SUM(E8:E${cidx - 1})');
+    _updateDataCellFormula(sheet, 'F$cidx', '=SUM(F8:F${cidx - 1})');
+    return cidx;
   }
 
   Map<String, int> _transcriptAddOilTypes(Worksheet sheet) {
@@ -388,7 +656,8 @@ class ReportService {
     cidx += 2;
     c = sheet.getRangeByName('E$cidx:G$cidx');
     c.merge();
-    c.text = '${report.chiefRank} ______________________ ${report.chiefName}';
+    c.text =
+        '${report.chiefRank}                                                    ${report.chiefName}';
     c.cellStyle.fontSize = 12;
 
     c = sheet.getRangeByName('A$cidx:C$cidx');
@@ -407,6 +676,13 @@ class ReportService {
     final cell = sheet.getRangeByName(address);
     cell.cellStyle = _tableStyle;
     cell.text = text;
+    return cell;
+  }
+
+  Range _updateDataCellFormula(Worksheet sheet, String address, String text) {
+    final cell = sheet.getRangeByName(address);
+    cell.cellStyle = _tableStyle;
+    cell.setFormula(text);
     return cell;
   }
 
