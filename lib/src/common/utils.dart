@@ -1,8 +1,6 @@
 import 'dart:math';
 
 class NumericToWords {
-  // TODO: когда исправят баг в дарте, использовать данное регулярное выражение
-  //final _triadesRegExp = RegExp(r'(?<=\d)(?=(\d{3})+(?!\d))');
   final _digitWords = {
     0: {'male': 'нуль'},
     1: {'male': 'один', 'female': 'одна'},
@@ -63,17 +61,8 @@ class NumericToWords {
       i -= 3;
     } while (i > 0);
     return List.from(triades.reversed);
-// TODO: когда исправят баг в дарте, использовать данный код с регулярным выражением
-//    var triades = number
-//        .toStringAsPrecision(18)
-//        .replaceAllMapped(_triadesRegExp, (match) {
-//      return ' ';
-    //});
-
-    // return triades.split('.')[0]?.split(' ')?.toList();
   }
 
-  /// Извлекает дробную часть числа
   int extractFraction(num number) {
     return int.parse(number.toStringAsFixed(2).split('.')[1]);
   }

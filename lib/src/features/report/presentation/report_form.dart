@@ -255,7 +255,8 @@ class ReportFormState extends ConsumerState<ReportForm> {
                                 car: Car(
                                     uuid: const Uuid().v4(),
                                     name: '',
-                                    number: ''),
+                                    number: '',
+                                    consumptionRate: 0),
                               )),
                     );
                   },

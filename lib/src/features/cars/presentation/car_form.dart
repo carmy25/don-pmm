@@ -26,6 +26,7 @@ class CarForm extends ConsumerStatefulWidget {
 class CarFormState extends ConsumerState<CarForm> {
   final TextEditingController nameInput = TextEditingController();
   final TextEditingController numberInput = TextEditingController();
+  final TextEditingController _consumptionRateInput = TextEditingController();
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
@@ -67,6 +68,21 @@ class CarFormState extends ConsumerState<CarForm> {
             ],
           ),
           Row(
+            children: [
+              Flexible(
+                  child: TextFormField(
+                // The validator receives the text that the user has entered.
+                validator: _validateNotEmpty,
+                controller: _consumptionRateInput,
+                decoration: const InputDecoration(
+                    icon: Icon(
+                        Icons.production_quantity_limits), //icon of text field
+                    labelText: 'Норма витрати(на 100км)' //label text of field
+                    ),
+              )),
+            ],
+          ),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SubheaderText('Шляхові листи'),
@@ -78,7 +94,9 @@ class CarFormState extends ConsumerState<CarForm> {
                     ref.read(carListProvider.notifier).addCar(Car(
                         uuid: car.uuid,
                         name: nameInput.text,
-                        number: numberInput.text));
+                        number: numberInput.text,
+                        consumptionRate:
+                            double.parse(_consumptionRateInput.text)));
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -109,7 +127,9 @@ class CarFormState extends ConsumerState<CarForm> {
                       ref.read(carListProvider.notifier).addCar(Car(
                           uuid: car.uuid,
                           name: nameInput.text,
-                          number: numberInput.text));
+                          number: numberInput.text,
+                          consumptionRate:
+                              double.parse(_consumptionRateInput.text)));
                       Navigator.pop(context);
                     }
                   },

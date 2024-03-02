@@ -134,7 +134,75 @@ class ReportService {
   }
 
   int _waybillsRegistryAddTableCells(Worksheet sheet) {
+    final waybills = ref.read(waybillListProvider).value!;
     var cidx = 4;
+    for (final waybill in waybills) {
+      ++cidx;
+      final car = ref.read(carByUuidProvider(waybill.carUuid));
+      _updateDataCell(sheet, 'A$cidx', waybill.number);
+      _updateDataCell(
+          sheet, 'B$cidx', DateFormat("dd.MM.yyyy").format(waybill.issueDate));
+      _updateDataCell(sheet, 'C$cidx', waybill.kmsStart.toString());
+      _updateDataCell(sheet, 'D$cidx', waybill.kmsEnd.toString());
+      _updateDataCell(
+          sheet, 'E$cidx', (waybill.kmsEnd - waybill.kmsStart).toString());
+      _updateDataCell(sheet, 'G$cidx', car.consumptionRate.toString());
+
+      final fillups = ref.read(fillupsByWaybillProvider(waybill));
+      var bsum = fillups
+          .where(
+            (f) => f.falType.category == FALCategory.diesel,
+          )
+          .map((f) => f.beforeLtrs)
+          .sum;
+      if (bsum == 0) {
+        bsum = fillups
+            .where(
+              (f) => f.falType.category == FALCategory.petrol,
+            )
+            .map((f) => f.beforeLtrs)
+            .sum;
+      }
+
+      _updateDataCell(sheet, 'I$cidx', bsum.toString());
+
+      var fsum = fillups
+          .where(
+            (f) => f.falType.category == FALCategory.diesel,
+          )
+          .map((f) => f.fillupLtrs)
+          .sum;
+      if (fsum == 0) {
+        fsum = fillups
+            .where(
+              (f) => f.falType.category == FALCategory.petrol,
+            )
+            .map((f) => f.fillupLtrs)
+            .sum;
+      }
+
+      _updateDataCell(sheet, 'j$cidx', fsum.toString());
+
+      var ssum = fillups
+          .where(
+            (f) => f.falType.category == FALCategory.diesel,
+          )
+          .map((f) => f.burnedLtrs)
+          .sum;
+      if (ssum == 0) {
+        ssum = fillups
+            .where(
+              (f) => f.falType.category == FALCategory.petrol,
+            )
+            .map((f) => f.burnedLtrs)
+            .sum;
+      }
+
+      _updateDataCell(sheet, 'k$cidx', ssum.toString());
+      _updateDataCell(sheet, 'l$cidx', (fsum + bsum - ssum).toString());
+      _updateDataCell(sheet, 'm$cidx', '');
+      _updateDataCell(sheet, 'n$cidx', '');
+    }
     return cidx;
   }
 
