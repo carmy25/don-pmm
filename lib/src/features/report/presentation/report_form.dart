@@ -272,7 +272,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
                     if (_formKey.currentState!.validate()) {
                       final saved = await _saveReport();
                       if (saved && context.mounted) {
-                        Navigator.pop(context);
+                        const snackBar = SnackBar(
+                          content: Text('Збережено!'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                     }
                   },

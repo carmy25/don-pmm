@@ -1,5 +1,6 @@
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,6 +41,8 @@ class CarFormState extends ConsumerState<CarForm> {
   Widget build(BuildContext context) {
     nameInput.text = car.name;
     numberInput.text = car.number;
+    _consumptionRateInput.text =
+        car.consumptionRate > 0 ? car.consumptionRate.toString() : '';
     return Form(
       key: _formKey,
       child: Column(
@@ -72,8 +75,11 @@ class CarFormState extends ConsumerState<CarForm> {
               Flexible(
                   child: TextFormField(
                 // The validator receives the text that the user has entered.
-                validator: _validateNotEmpty,
+                validator: _validateNotEmptyNumber,
                 controller: _consumptionRateInput,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9\.]'))
+                ], // Only numbers can be entered
                 decoration: const InputDecoration(
                     icon: Icon(
                         Icons.production_quantity_limits), //icon of text field
@@ -148,5 +154,18 @@ class CarFormState extends ConsumerState<CarForm> {
       return "Обов'язкове поле";
     }
     return null;
+  }
+
+  String? _validateNotEmptyNumber(value) {
+    final res = _validateNotEmpty(value);
+    if (res == null) {
+      if (double.parse(value) > 0) {
+        return null;
+      } else {
+        return 'Значення має бути більшим 0';
+      }
+    }
+    ;
+    return res;
   }
 }
