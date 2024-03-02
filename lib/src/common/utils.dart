@@ -41,15 +41,9 @@ class NumericToWords {
     900: {'male': 'девятсот'},
     1000: {'one': 'тисяча', 'few': 'тисячі', 'many': 'тисяч'},
     1000000: {'one': 'мільйон', 'few': 'мільйона', 'many': 'мільйонов'},
-    1000000000: {'one': 'миллиард', 'few': 'миллиарда', 'many': 'миллиардов'},
-    1000000000000: {
-      'one': 'триллион',
-      'few': 'триллиона',
-      'many': 'триллионов'
-    },
+    1000000000: {'one': 'міліард', 'few': 'міліарда', 'many': 'міліардів'},
   };
 
-  /// Разбивает число на триады согласно разрядам
   List<String> splitToTriades(int number) {
     var strNumber = number.toString();
     var numberLength = strNumber.length;
@@ -67,16 +61,11 @@ class NumericToWords {
     return int.parse(number.toStringAsFixed(2).split('.')[1]);
   }
 
-  /// Преобразует число в строку прописью
-  /// [number] - число для преобразования в строку прописью. Максимальное - 999 триллионов
-  /// [lowNumberInFemenineGender] - если число заканчивается на 1,2, то оно будет преобразовано в строку в женском роде (одна, две)
-  ///
   String? toWords(int number, {bool lowNumberInFemenineGender = false}) {
     if (number == 0) return _digitWords[number]?['male'];
 
     var words = [];
     var triades = splitToTriades(number);
-    // Триады разрядов будем перебирать от меньших к большим (сотни, тысячи, миллионы, миллиарды)
     triades.reversed.toList().asMap().forEach((index, triade) {
       final intTriade = int.parse(triade);
       var triadeWords = [];
@@ -90,51 +79,53 @@ class NumericToWords {
       final countableIdx =
           lowNumber == 1 ? 'one' : (lowNumber < 5 ? 'few' : 'many');
 
-      // Добавим в строку содержащую слова по текущей триаде сотни (сто, двести, ..., девятьсот)
       if (hundred > 0) triadeWords.add(_digitWords[hundred]!['male']);
 
-      // Добавим в строку содержащую слова по текущей триаде десятки (десять, двадцать, ... девяносто)
       if (decimal > 0) triadeWords.add(_digitWords[decimal]!['male']);
 
-      // Добавим в строку содержащую слова по текущей триаде числа (один, два, ... девятнадцать)
       if (lowNumber > 0) {
         triadeWords.add(_digitWords[lowNumber]![lowNumberKindIdx] ??
             _digitWords[lowNumber]!['male']);
       }
 
-      // Добавим в строку содержащую слова по текущей триаде разряды (тысяча, миллион, ... миллиард)
       if (index > 0) {
         triadeWords.add(_digitWords[pow(10, 3 * index)]![countableIdx]);
       }
 
-      // Поскольку перебираем триады от меньших разрядов к большим,
-      // то получившиеся слова будем вставлять в начало строки, содержащей слова
       words = triadeWords + words;
     });
     return words.join(' ');
   }
 
-  /// Извлекает сотни из триады(числа XXX)
-  /// Например триада = 999, тогда результат будет: 9
-  ///
   int _hundredFromTriade(int triade) {
     return ((triade ~/ 100).truncate() * 100).toInt();
   }
 
-  /// Извлекает десятки из триады(числа XXX)
-  /// Например триада = 999, тогда результат будет: 90
-  /// Например триада = 911, тогда результат будет: 0
-  ///
   int _decimalFromTriade(int triade) {
     final decimal = triade - _hundredFromTriade(triade);
     return decimal < 20 ? 0 : ((decimal ~/ 10).truncate() * 10).toInt();
   }
 
-  /// Извлекает самый первый разряд из триады из триады(числа XXX)
-  /// Например триада = 999, тогда результат будет: 9
-  /// Например триада = 911, тогда результат будет: 11
-  ///
   int _lowNumberFromTriade(int triade) {
     return triade - (_hundredFromTriade(triade) + _decimalFromTriade(triade));
   }
+}
+
+String? validateNotEmpty(value) {
+  if (value == null || value.isEmpty) {
+    return "Обов'язкове поле";
+  }
+  return null;
+}
+
+String? validateNotEmptyNumber(value) {
+  final res = validateNotEmpty(value);
+  if (res == null) {
+    if (double.parse(value) > 0) {
+      return null;
+    } else {
+      return 'Значення має бути більшим 0';
+    }
+  }
+  return res;
 }

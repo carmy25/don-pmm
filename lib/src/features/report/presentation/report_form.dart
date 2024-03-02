@@ -1,5 +1,7 @@
 import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
+import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -127,7 +129,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
               children: [
                 Flexible(
                     child: DropdownButtonFormField<String>(
-                        validator: _validateNotEmpty,
+                        validator: validateNotEmpty,
                         value: _unitName,
                         onChanged: (String? newValue) {
                           setState(() {
@@ -138,7 +140,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
                         items: unitItems)),
                 Flexible(
                     child: TextFormField(
-                  validator: _validateNotEmpty,
+                  validator: validateNotEmpty,
                   controller: _dateInput, //editing controller of this TextField
                   decoration: const InputDecoration(
                       icon: Icon(Icons.calendar_today), //icon of text field
@@ -176,7 +178,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
               children: [
                 Flexible(
                     child: DropdownButtonFormField<String>(
-                        validator: _validateNotEmpty,
+                        validator: validateNotEmpty,
                         value: _chiefPosition,
                         onChanged: (String? newValue) {
                           setState(() {
@@ -187,7 +189,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
                         items: chiefItems)),
                 Flexible(
                     child: TextFormField(
-                  validator: _validateNotEmpty,
+                  validator: validateNotEmpty,
                   controller: _rankInput,
                   decoration: const InputDecoration(
                       icon: Icon(Icons.security), //icon of text field
@@ -195,14 +197,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
                       ),
                 )),
                 Flexible(
-                    child: TextFormField(
-                  validator: _validateNotEmpty,
-                  controller: _chiefNameInput,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.person), //icon of text field
-                      labelText: 'Прізвище, ініціали' //label text of field
-                      ),
-                )),
+                    child: InputFormField(
+                        controller: _chiefNameInput,
+                        icon: const Icon(Icons.person), //icon of text field
+                        text: 'Прізвище, ініціали' //label text of field
+                        )),
               ],
             ),
             const Row(
@@ -214,7 +213,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
               children: [
                 Flexible(
                     child: TextFormField(
-                  validator: _validateNotEmpty,
+                  validator: validateNotEmpty,
                   controller: _checkerRankInput,
                   decoration: const InputDecoration(
                       icon: Icon(Icons.security), //icon of text field
@@ -223,7 +222,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
                 )),
                 Flexible(
                     child: TextFormField(
-                  validator: _validateNotEmpty,
+                  validator: validateNotEmpty,
                   controller: _checkerNameInput,
                   decoration: const InputDecoration(
                       icon: Icon(Icons.person), //icon of text field

@@ -1,6 +1,6 @@
+import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -50,42 +50,29 @@ class CarFormState extends ConsumerState<CarForm> {
           Row(
             children: [
               Flexible(
-                  child: TextFormField(
-                // The validator receives the text that the user has entered.
-                validator: _validateNotEmpty,
-                controller: nameInput,
-                decoration: const InputDecoration(
-                    icon: Icon(Icons.car_rental), //icon of text field
-                    labelText: 'Марка машини' //label text of field
-                    ),
-              )),
+                  child: InputFormField(
+                      controller: nameInput,
+                      icon: const Icon(Icons.car_rental), //icon of text field
+                      text: 'Марка машини' //label text of field
+                      )),
               Flexible(
-                  child: TextFormField(
-                validator: _validateNotEmpty,
-                controller: numberInput,
-                decoration: const InputDecoration(
-                    icon: Icon(Icons.numbers), //icon of text field
-                    labelText: 'Номер машини' //label text of field
-                    ),
-              ))
+                  child: InputFormField(
+                      controller: numberInput,
+                      icon: const Icon(Icons.numbers), //icon of text field
+                      text: 'Номер машини' //label text of field
+                      ))
             ],
           ),
           Row(
             children: [
               Flexible(
-                  child: TextFormField(
-                // The validator receives the text that the user has entered.
-                validator: _validateNotEmptyNumber,
-                controller: _consumptionRateInput,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9\.]'))
-                ], // Only numbers can be entered
-                decoration: const InputDecoration(
-                    icon: Icon(
-                        Icons.production_quantity_limits), //icon of text field
-                    labelText: 'Норма витрати(на 100км)' //label text of field
-                    ),
-              )),
+                  child: InputFormField(
+                      isNumeric: true,
+                      controller: _consumptionRateInput,
+                      icon: const Icon(Icons
+                          .production_quantity_limits), //icon of text field
+                      text: 'Норма витрати(на 100км)' //label text of field
+                      )),
             ],
           ),
           Row(
@@ -147,25 +134,5 @@ class CarFormState extends ConsumerState<CarForm> {
         ],
       ),
     );
-  }
-
-  String? _validateNotEmpty(value) {
-    if (value == null || value.isEmpty) {
-      return "Обов'язкове поле";
-    }
-    return null;
-  }
-
-  String? _validateNotEmptyNumber(value) {
-    final res = _validateNotEmpty(value);
-    if (res == null) {
-      if (double.parse(value) > 0) {
-        return null;
-      } else {
-        return 'Значення має бути більшим 0';
-      }
-    }
-    ;
-    return res;
   }
 }

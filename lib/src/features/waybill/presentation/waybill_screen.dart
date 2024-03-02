@@ -1,9 +1,10 @@
 import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
+import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -32,18 +33,12 @@ class WaybillScreenState extends ConsumerState {
 
   WaybillScreenState({required this.waybill});
 
-  String? _validateNotEmpty(value) {
-    if (value == null || value.isEmpty) {
-      return "Обов'язкове поле";
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     _numberInput.text = waybill.number;
-    _kmsStartInput.text = waybill.kmsStart.toString();
-    _kmsEndInput.text = waybill.kmsEnd.toString();
+    _kmsStartInput.text =
+        waybill.kmsStart > 0 ? waybill.kmsStart.toString() : '';
+    _kmsEndInput.text = waybill.kmsEnd > 0 ? waybill.kmsEnd.toString() : '';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Шляховий лист'),
@@ -59,7 +54,7 @@ class WaybillScreenState extends ConsumerState {
                   Flexible(
                       child: TextFormField(
                     controller: _numberInput,
-                    validator: _validateNotEmpty,
+                    validator: validateNotEmpty,
                     decoration: const InputDecoration(
                         icon: Icon(Icons.numbers), //icon of text field
                         labelText: 'Номер листа' //label text of field
@@ -67,7 +62,7 @@ class WaybillScreenState extends ConsumerState {
                   )),
                   Flexible(
                       child: TextFormField(
-                          validator: _validateNotEmpty,
+                          validator: validateNotEmpty,
                           controller: _dateInput,
                           decoration: const InputDecoration(
                               icon: Icon(
@@ -95,31 +90,18 @@ class WaybillScreenState extends ConsumerState {
               Row(
                 children: [
                   Flexible(
-                      child: TextFormField(
-                    controller: _kmsStartInput,
-                    validator: _validateNotEmpty,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9\.]'))
-                    ], // Only numbers can be entered
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.start), //icon of text field
-                        labelText:
-                            'перед початком(км або год)' //label text of field
-                        ),
-                  )),
+                      child: InputFormField(
+                          isNumeric: true,
+                          controller: _kmsStartInput,
+                          icon: const Icon(Icons.start), //icon of text field
+                          text: 'перед початком(км або год)')),
                   Flexible(
-                      child: TextFormField(
-                    controller: _kmsEndInput,
-                    validator: _validateNotEmpty,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9\.]'))
-                    ], // Only numbers can be entered
-                    decoration: const InputDecoration(
-                        icon: Icon(
-                            Icons.stop_circle_outlined), //icon of text field
-                        labelText: 'в кінці(км або год)' //label text of field
-                        ),
-                  )),
+                      child: InputFormField(
+                          isNumeric: true,
+                          controller: _kmsEndInput,
+                          icon: const Icon(
+                              Icons.stop_circle_outlined), //icon of text field
+                          text: 'в кінці(км або год)')),
                 ],
               ),
               const Row(
