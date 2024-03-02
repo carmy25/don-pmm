@@ -54,10 +54,88 @@ class ReportService {
         workbook.worksheets.addWithName('Відомість АБ'), FALCategory.petrol);
     _generateInfoSheet(
         workbook.worksheets.addWithName('Відомість ДП'), FALCategory.diesel);
+    _generateWaybillsRegistrySheet(
+        workbook.worksheets.addWithName('Реєстр шляхових листів'));
 
     List<int> bytes = workbook.saveSync();
     await File(path).writeAsBytes(bytes);
     workbook.dispose();
+  }
+
+  void _generateWaybillsRegistrySheet(Worksheet sheet) {
+    final report = ref.read(reportRepositoryProvider).value!;
+    _updateDataCell(sheet, 'a1:n1', 'Реєстр шляхових листів').merge();
+    _updateDataCell(sheet, 'a2:b2', 'Шляховий лист').merge();
+    _updateDataCell(sheet, 'c2:d2', 'Показання').merge();
+
+    var c = sheet.getRangeByName('E2:E3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Пройдено (км)';
+
+    c = sheet.getRangeByName('f2:f3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Відпрацьованно (м/г)';
+
+    _updateDataCell(sheet, 'g2:h2', 'Норма витрати').merge();
+
+    c = sheet.getRangeByName('i2:i3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Залишок';
+
+    c = sheet.getRangeByName('j2:j3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Видано по р/в';
+
+    c = sheet.getRangeByName('k2:k3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Списано за шл./л.';
+
+    c = sheet.getRangeByName('l2:l3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Залишок';
+
+    c = sheet.getRangeByName('m2:m3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = 'Перенесенно, л';
+
+    c = sheet.getRangeByName('m2:m3');
+    c.merge();
+    c.cellStyle = _reportHeaderStyle;
+    c.text = '№';
+
+    _updateDataCell(sheet, 'a3', '№').rowHeight = 25;
+    _updateDataCell(sheet, 'b3', 'Дата');
+    _updateDataCell(sheet, 'c3', 'Перед виїздом');
+    _updateDataCell(sheet, 'd3', 'Після виїзду');
+    _updateDataCell(sheet, 'g3', 'На 100 км');
+    _updateDataCell(sheet, 'h3', 'На 1 м/г');
+
+    _updateDataCell(sheet, 'a4:n4', '').merge();
+
+    var cidx = _waybillsRegistryAddTableCells(sheet);
+    cidx += 2;
+    c = sheet.getRangeByName('b$cidx:e$cidx');
+    c.merge();
+    c.cellStyle.fontSize = 10;
+    c.text = 'Донесення №________________';
+
+    c = sheet.getRangeByName('g$cidx:n$cidx');
+    c.merge();
+    c.cellStyle.fontSize = 10;
+    c.text =
+        '${report.chiefPosition} ${report.unitName} ${report.chiefRank}              ${report.chiefName}';
+  }
+
+  int _waybillsRegistryAddTableCells(Worksheet sheet) {
+    var cidx = 4;
+    return cidx;
   }
 
   void _generateInfoSheet(Worksheet sheet, FALCategory category) {
@@ -306,12 +384,10 @@ class ReportService {
     _updateDataCell(sheet, 'e6', 'ДП');
     _updateDataCell(sheet, 'f6', 'АБ');
 
-    _updateDataCell(sheet, 'a7', '1');
-    _updateDataCell(sheet, 'b7', '2');
-    _updateDataCell(sheet, 'c7', '3');
-    _updateDataCell(sheet, 'd7', '4');
-    _updateDataCell(sheet, 'e7', '5');
-    _updateDataCell(sheet, 'f7', '6');
+    List.generate(
+        6,
+        (index) => _updateDataCell(sheet, '${String.fromCharCode(index + 65)}7',
+            (index + 1).toString()));
 
     final oilsByIndex = _transcriptAddOilTypes(sheet);
     for (final o in oilsByIndex.entries) {
