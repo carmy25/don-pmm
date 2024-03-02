@@ -39,6 +39,7 @@ class WaybillScreenState extends ConsumerState {
     _kmsStartInput.text =
         waybill.kmsStart > 0 ? waybill.kmsStart.toString() : '';
     _kmsEndInput.text = waybill.kmsEnd > 0 ? waybill.kmsEnd.toString() : '';
+    _dateInput.text = formatDateText(waybill.issueDate);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Шляховий лист'),

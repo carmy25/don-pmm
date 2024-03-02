@@ -287,11 +287,4 @@ class ReportFormState extends ConsumerState<ReportForm> {
       ),
     );
   }
-
-  String? _validateNotEmpty(value) {
-    if (value == null || value.isEmpty) {
-      return "Обов'язкове поле";
-    }
-    return null;
-  }
 }

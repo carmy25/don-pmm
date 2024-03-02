@@ -20,6 +20,11 @@ class FillupList extends _$FillupList {
     );
     state = AsyncData(newState);
   }
+
+  removeFillupByUuid(String uuid) {
+    final newState = state.value!.where((fu) => fu.uuid != uuid).toList();
+    state = AsyncData(newState);
+  }
 }
 
 @riverpod

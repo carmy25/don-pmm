@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:intl/intl.dart';
+
 class NumericToWords {
   final _digitWords = {
     0: {'male': 'нуль'},
@@ -128,4 +130,8 @@ String? validateNotEmptyNumber(value) {
     }
   }
   return res;
+}
+
+String formatDateText(DateTime dt) {
+  return DateFormat.yMMMMd('uk').format(dt);
 }

@@ -1,7 +1,7 @@
 import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
-import 'package:donpmm/src/widgets/x_editable_table.dart';
+import 'package:donpmm/src/widgets/xeditabletable/x_editable_table.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_editable_table/constants.dart';
@@ -175,10 +175,10 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "primary_key": false,
         "auto_increase": false,
         "name": "otherMilBase",
-        "title": "Видано в іншій в/ч?",
+        "title": "Заправлено в іншому підрозділі?",
         "type": "bool",
         "format": null,
-        "description": "Видано в іншій в/ч?",
+        "description": "Заправлено в іншому підрозділі",
         "display": true,
         "editable": true,
         "width_factor": 0.1,
@@ -216,7 +216,8 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
               'date': DateFormat('yyyy-MM-dd').format(e.date),
               'availableLtrs': e.beforeLtrs,
               'gainedLtrs': e.fillupLtrs,
-              'spentLtrs': e.burnedLtrs
+              'spentLtrs': e.burnedLtrs,
+              'otherMilBase': e.otherMilBase,
             })
         .toList();
     final jsonData = TableEntity.fromJson(data);
@@ -240,7 +241,11 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
       addRowIconContainerBackgroundColor: Colors.blueAccent,
       formFieldAutoValidateMode: AutovalidateMode.always,
       onRowRemoved: (row) {
-        debugPrint('row removed: ${row.toString()}');
+        final uuid = row.toJson()['uuid'];
+        if (uuid == null) {
+          return;
+        }
+        ref.watch(fillupListProvider.notifier).removeFillupByUuid(uuid);
       },
       onRowAdded: () {
         debugPrint('row added');
