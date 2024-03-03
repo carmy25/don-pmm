@@ -13,6 +13,11 @@ class OutcomesRepository extends _$OutcomesRepository {
   void addOutcome({required FAL fal}) {
     state = [...state, fal];
   }
+
+  removeOutcomeByUuid(String uuid) {
+    final newState = state..where((fu) => fu.uuid != uuid).toList();
+    state = newState;
+  }
 }
 
 @riverpod

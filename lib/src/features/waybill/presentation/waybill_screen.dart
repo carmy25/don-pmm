@@ -39,7 +39,8 @@ class WaybillScreenState extends ConsumerState {
     _kmsStartInput.text =
         waybill.kmsStart > 0 ? waybill.kmsStart.toString() : '';
     _kmsEndInput.text = waybill.kmsEnd > 0 ? waybill.kmsEnd.toString() : '';
-    _dateInput.text = formatDateText(waybill.issueDate);
+    final wbIssueDate = waybill.issueDate;
+    _dateInput.text = wbIssueDate == null ? '' : formatDateText(wbIssueDate);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Шляховий лист'),
@@ -136,12 +137,13 @@ class WaybillScreenState extends ConsumerState {
 
   Future<void> _saveWaybill(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
+      final dtString = _dateInput.text;
       ref.read(waybillListProvider.notifier).addWaybill(Waybill(
           kmsStart: double.parse(_kmsStartInput.text),
           kmsEnd: double.parse(_kmsEndInput.text),
           uuid: waybill.uuid,
           carUuid: waybill.carUuid,
-          issueDate: DateFormat.yMMMMd('uk').parse(_dateInput.text),
+          issueDate: DateFormat.yMMMMd('uk').parse(dtString),
           number: _numberInput.text));
       for (final o in _fillupsData
           .where((e) => e['comodity'] != null && e['date'] != null)) {

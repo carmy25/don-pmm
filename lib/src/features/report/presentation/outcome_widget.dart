@@ -1,4 +1,5 @@
 import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/xeditabletable/x_editable_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
@@ -87,7 +88,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
       removeRowIcon: const Icon(
         Icons.remove_circle_outline,
         size: 18.0,
-        color: Colors.redAccent,
+        color: Color.fromARGB(255, 65, 53, 53),
       ),
       addRowIcon: const Icon(
         Icons.add_circle_outline,
@@ -97,6 +98,16 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
       addRowIconContainerBackgroundColor: Colors.blueAccent,
       formFieldAutoValidateMode: AutovalidateMode.always,
       onRowRemoved: (row) {
+        widget.data.clear();
+        widget.data.addAll(_editableTableKey.currentState!.currentData.rows
+            .map((e) => e.toJson()));
+        final uuid = row.toJson()['uuid'];
+        if (uuid == null) {
+          return;
+        }
+        ref
+            .watch(outcomesRepositoryProvider.notifier)
+            .removeOutcomeByUuid(uuid);
         debugPrint('row removed: ${row.toString()}');
       },
       onRowAdded: () {},

@@ -141,7 +141,7 @@ class ReportService {
       final car = ref.read(carByUuidProvider(waybill.carUuid));
       _updateDataCell(sheet, 'A$cidx', waybill.number);
       _updateDataCell(
-          sheet, 'B$cidx', DateFormat("dd.MM.yyyy").format(waybill.issueDate));
+          sheet, 'B$cidx', DateFormat("dd.MM.yyyy").format(waybill.issueDate!));
       _updateDataCell(sheet, 'C$cidx', waybill.kmsStart.toString());
       _updateDataCell(sheet, 'D$cidx', waybill.kmsEnd.toString());
       _updateDataCell(
@@ -559,7 +559,7 @@ class ReportService {
   }
 
   void _generateReportingSheet(Worksheet sheet) {
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.watch(reportRepositoryProvider).value!;
     var c = sheet.getRangeByName('A1:K1');
     c.merge();
     c.text = 'Додаток 17';
@@ -891,7 +891,7 @@ class ReportService {
 
       // waybill issue date
       _updateDataCell(
-          sheet, 'C$cidx', DateFormat('dd.MM.yyyy').format(wb.issueDate));
+          sheet, 'C$cidx', DateFormat('dd.MM.yyyy').format(wb.issueDate!));
 
       final car = ref.read(carByUuidProvider(wb.carUuid));
       // car brand

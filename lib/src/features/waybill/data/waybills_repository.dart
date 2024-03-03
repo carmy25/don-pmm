@@ -15,7 +15,14 @@ class WaybillList extends _$WaybillList {
   void addWaybill(Waybill waybill) {
     final newState = {waybill, ...state.value!}.toList();
     newState.sort(
-      (a, b) => a.issueDate.compareTo(b.issueDate),
+      (a, b) {
+        final aIssueDate = a.issueDate;
+        final bIssueDate = b.issueDate;
+        if (aIssueDate == null || bIssueDate == null) {
+          return 1;
+        }
+        return aIssueDate.compareTo(bIssueDate);
+      },
     );
     state = AsyncData(newState);
   }

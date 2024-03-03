@@ -69,8 +69,8 @@ class ReportFormState extends ConsumerState<ReportForm> {
         ? (await getApplicationDocumentsDirectory()).path
         : (await FilePicker.platform.saveFile(
             dialogTitle: 'Вкажіть назву файлу:',
-            fileName: 'Донесення.xlsx',
-          ));
+            fileName: 'Донесення.xslx',
+            allowedExtensions: ['xslx']));
     if (outputFile != null) {
       final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
 
