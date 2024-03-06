@@ -1,4 +1,5 @@
 import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/common/rank.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
@@ -24,7 +25,9 @@ enum UnitName {
   sadn1vu('1САДн ВУ'),
   sadn1sabatr1('1САДн 1САБатр'),
   sadn1sabatr2('1САДн 2САБатр'),
-  sadn1sabatr3('1САДн 3САБатр');
+  sadn1sabatr3('1САДн 3САБатр'),
+
+  rhbz('РХБЗ');
 
   const UnitName(this.name);
   final String name;
@@ -32,7 +35,8 @@ enum UnitName {
 
 enum ChiefPosition {
   chief('Kомандир'),
-  tvo('ТВО командира');
+  tvo('ТВО командира'),
+  tvovz('ТВО командира взводу');
 
   const ChiefPosition(this.name);
   final String name;
@@ -53,11 +57,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
   final List<Map<String, dynamic>> _outcomeData = [];
   String? _unitName;
   String? _chiefPosition;
+  String? _chiefRank;
+  String? _checkerRank;
   final TextEditingController _chiefNameInput = TextEditingController();
-  final TextEditingController _rankInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
   final TextEditingController _checkerNameInput = TextEditingController();
-  final TextEditingController _checkerRankInput = TextEditingController();
   String _formatDateToString(DateTime? date) {
     if (date == null) return '-';
 
@@ -69,8 +73,8 @@ class ReportFormState extends ConsumerState<ReportForm> {
         ? (await getApplicationDocumentsDirectory()).path
         : (await FilePicker.platform.saveFile(
             dialogTitle: 'Вкажіть назву файлу:',
-            fileName: 'Донесення.xslx',
-            allowedExtensions: ['xslx']));
+            fileName: 'Донесення.xlsx',
+            allowedExtensions: ['xlsx']));
     if (outputFile != null) {
       final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
 
@@ -86,10 +90,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
           unitName: _unitName ?? '',
           dtRange: _dtRange!,
           chiefPosition: _chiefPosition!,
-          chiefRank: _rankInput.text,
+          chiefRank: _chiefRank ?? '',
           chiefName: _chiefNameInput.text,
           checkerName: _checkerNameInput.text,
-          checkerRank: _checkerRankInput.text);
+          checkerRank: _checkerRank ?? '');
       final reportService = ref.read(reportServiceProvider);
       await reportService.saveToFile(outputFile);
       return true;
@@ -113,11 +117,16 @@ class ReportFormState extends ConsumerState<ReportForm> {
         child: Text(item.name),
       );
     }).toList();
+
+    final rankItems = Rank.values.map<DropdownMenuItem<String>>((Rank item) {
+      return DropdownMenuItem<String>(
+        value: item.name,
+        child: Text(item.name),
+      );
+    }).toList();
     final report = ref.watch(reportRepositoryProvider).value;
     _checkerNameInput.text = report?.checkerName ?? '';
-    _checkerRankInput.text = report?.checkerRank ?? '';
     _chiefNameInput.text = report?.chiefName ?? '';
-    _rankInput.text = report?.chiefName ?? '';
     return Form(
       key: _formKey,
       child: Container(
@@ -152,10 +161,8 @@ class ReportFormState extends ConsumerState<ReportForm> {
                     final result = await showDateRangePicker(
                       locale: const Locale("uk", "UA"),
                       context: context,
-                      firstDate: DateTime(
-                          2024), // tanggal awal yang diperbolehkan di pilih
-                      lastDate: DateTime(
-                          2025), // tanggal akhir yang diperbolehkan di pilih
+                      firstDate: DateTime(2022),
+                      lastDate: DateTime(2028),
                     );
                     setState(() {
                       _dtRange = result;
@@ -188,14 +195,18 @@ class ReportFormState extends ConsumerState<ReportForm> {
                         hint: const Text('Посада'),
                         items: chiefItems)),
                 Flexible(
-                    child: TextFormField(
-                  validator: validateNotEmpty,
-                  controller: _rankInput,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.security), //icon of text field
-                      labelText: 'Звання' //label text of field
-                      ),
-                )),
+                    child: DropdownButtonFormField<String>(
+                        validator: validateNotEmpty,
+                        value: _chiefRank,
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.security)),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _chiefRank = newValue!;
+                          });
+                        },
+                        hint: const Text('Звання'),
+                        items: rankItems)),
                 Flexible(
                     child: InputFormField(
                         controller: _chiefNameInput,
@@ -212,14 +223,18 @@ class ReportFormState extends ConsumerState<ReportForm> {
             Row(
               children: [
                 Flexible(
-                    child: TextFormField(
-                  validator: validateNotEmpty,
-                  controller: _checkerRankInput,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.security), //icon of text field
-                      labelText: 'Звання' //label text of field
-                      ),
-                )),
+                    child: DropdownButtonFormField<String>(
+                        validator: validateNotEmpty,
+                        value: _checkerRank,
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.security)),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _checkerRank = newValue!;
+                          });
+                        },
+                        hint: const Text('Звання'),
+                        items: rankItems)),
                 Flexible(
                     child: TextFormField(
                   validator: validateNotEmpty,
@@ -242,10 +257,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SubheaderText('Машини'),
+                const SubheaderText('Машини/агрегати'),
                 IconButton(
                   icon: const Icon(Icons.add_box_rounded),
-                  tooltip: 'Додати нову машину',
+                  tooltip: 'Додати нову машину/агрегат',
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -255,7 +270,9 @@ class ReportFormState extends ConsumerState<ReportForm> {
                                     uuid: const Uuid().v4(),
                                     name: '',
                                     number: '',
-                                    consumptionRate: 0),
+                                    note: '',
+                                    consumptionRate: 0,
+                                    type: CarType.vehicle),
                               )),
                     );
                   },

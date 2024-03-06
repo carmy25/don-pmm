@@ -9,18 +9,29 @@ class InputFormField extends ConsumerWidget {
       this.controller,
       this.icon,
       this.text,
+      this.allowEmpty = false,
       this.isNumeric = false});
 
   final TextEditingController? controller;
   final Widget? icon;
   final String? text;
   final bool isNumeric;
+  final bool allowEmpty;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    String? Function(String?)? validator;
+    if (isNumeric && !allowEmpty) {
+      validator = validateNotEmptyNumber;
+    } else if (!allowEmpty) {
+      validator = validateNotEmpty;
+    }
+    if (isNumeric && allowEmpty) {
+      validator = validateNotEmpty;
+    }
     return TextFormField(
       // The validator receives the text that the user has entered.
-      validator: isNumeric ? validateNotEmptyNumber : validateNotEmpty,
+      validator: validator,
       controller: controller,
       inputFormatters: isNumeric
           ? <TextInputFormatter>[

@@ -43,7 +43,7 @@ class WaybillScreenState extends ConsumerState {
     _dateInput.text = wbIssueDate == null ? '' : formatDateText(wbIssueDate);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Шляховий лист'),
+        title: const Text('Шляховий/робочий лист'),
       ),
       body: Container(
         padding: const EdgeInsets.all(8.0),
@@ -75,7 +75,7 @@ class WaybillScreenState extends ConsumerState {
                           onTap: () async {
                             DateTime? date = await showDatePicker(
                                 context: context,
-                                firstDate: DateTime(2024, 2),
+                                firstDate: DateTime(2023, 2),
                                 lastDate: DateTime(2100));
                             if (date == null) {
                               return;
@@ -95,11 +95,13 @@ class WaybillScreenState extends ConsumerState {
                       child: InputFormField(
                           isNumeric: true,
                           controller: _kmsStartInput,
+                          allowEmpty: true,
                           icon: const Icon(Icons.start), //icon of text field
                           text: 'перед початком(км або год)')),
                   Flexible(
                       child: InputFormField(
                           isNumeric: true,
+                          allowEmpty: true,
                           controller: _kmsEndInput,
                           icon: const Icon(
                               Icons.stop_circle_outlined), //icon of text field

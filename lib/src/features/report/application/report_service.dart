@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
+import 'package:donpmm/src/features/cars/domain/car.dart';
 import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
@@ -144,9 +145,12 @@ class ReportService {
           sheet, 'B$cidx', DateFormat("dd.MM.yyyy").format(waybill.issueDate!));
       _updateDataCell(sheet, 'C$cidx', waybill.kmsStart.toString());
       _updateDataCell(sheet, 'D$cidx', waybill.kmsEnd.toString());
-      _updateDataCell(
-          sheet, 'E$cidx', (waybill.kmsEnd - waybill.kmsStart).toString());
-      _updateDataCell(sheet, 'G$cidx', car.consumptionRate.toString());
+      _updateDataCell(sheet, '${car.type == CarType.vehicle ? "E" : "F"}$cidx',
+          (waybill.kmsEnd - waybill.kmsStart).toString(),
+          isNumber: true);
+      _updateDataCell(sheet, '${car.type == CarType.vehicle ? "G" : "H"}$cidx',
+          car.consumptionRate.toString(),
+          isNumber: true);
 
       final fillups = ref.read(fillupsByWaybillProvider(waybill));
       var bsum = fillups
@@ -164,7 +168,7 @@ class ReportService {
             .sum;
       }
 
-      _updateDataCell(sheet, 'I$cidx', bsum.toString());
+      _updateDataCell(sheet, 'I$cidx', bsum.toString(), isNumber: true);
 
       var fsum = fillups
           .where(
@@ -181,7 +185,7 @@ class ReportService {
             .sum;
       }
 
-      _updateDataCell(sheet, 'j$cidx', fsum.toString());
+      _updateDataCell(sheet, 'j$cidx', fsum.toString(), isNumber: true);
 
       var ssum = fillups
           .where(
@@ -198,11 +202,18 @@ class ReportService {
             .sum;
       }
 
-      _updateDataCell(sheet, 'k$cidx', ssum.toString());
-      _updateDataCell(sheet, 'l$cidx', (fsum + bsum - ssum).toString());
+      _updateDataCell(sheet, 'k$cidx', ssum.toString(), isNumber: true);
+      _updateDataCell(sheet, 'l$cidx', (fsum + bsum - ssum).toString(),
+          isNumber: true);
       _updateDataCell(sheet, 'm$cidx', '');
       _updateDataCell(sheet, 'n$cidx', '');
     }
+    ++cidx;
+    _updateDataCell(sheet, 'a$cidx:d$cidx', 'РАЗОМ').merge();
+    _updateDataCellFormula(sheet, 'e$cidx', '=sum(e5:e${cidx - 1})');
+    _updateDataCellFormula(sheet, 'f$cidx', '=sum(f5:f${cidx - 1})');
+    _updateDataCellFormula(sheet, 'j$cidx', '=sum(j5:j${cidx - 1})');
+    _updateDataCellFormula(sheet, 'k$cidx', '=sum(k5:k${cidx - 1})');
     return cidx;
   }
 
@@ -363,9 +374,10 @@ class ReportService {
           .sum
           .round();
 
-      _updateDataCell(sheet, 'e$cidx', remnant.toString());
-      _updateDataCell(sheet, 'f$cidx', remnant.toString());
-      _updateDataCell(sheet, 'g$cidx', wb.kmsEnd.round().toString());
+      _updateDataCell(sheet, 'e$cidx', remnant.toString(), isNumber: true);
+      _updateDataCell(sheet, 'f$cidx', remnant.toString(), isNumber: true);
+      _updateDataCell(sheet, 'g$cidx', wb.kmsEnd.round().toString(),
+          isNumber: true);
       _updateDataCell(sheet, 'H$cidx', '');
       _updateDataCell(sheet, 'I$cidx', '');
     }
@@ -507,13 +519,15 @@ class ReportService {
       _updateDataCell(sheet, 'A$cidx', '${idx + 1}');
       _updateDataCell(sheet, 'B$cidx', car.name);
       _updateDataCell(sheet, 'C$cidx', car.number);
+      _updateDataCell(sheet, 'J$cidx', car.note);
 
       final waybills = ref.read(waybillsByCarProvider(car));
       if (waybills.isEmpty) {
         continue;
       }
       _updateDataCell(
-          sheet, 'D$cidx', '${waybills.last.kmsEnd - waybills.first.kmsStart}');
+          sheet, 'D$cidx', '${waybills.last.kmsEnd - waybills.first.kmsStart}',
+          isNumber: true);
 
       final Map<String, int> burned = {'df': 0, 'pf': 0};
       for (final wb in waybills) {
@@ -816,10 +830,15 @@ class ReportService {
     c.cellStyle.fontSize = 10;
   }
 
-  Range _updateDataCell(Worksheet sheet, String address, String text) {
+  Range _updateDataCell(Worksheet sheet, String address, String value,
+      {isNumber = false}) {
     final cell = sheet.getRangeByName(address);
     cell.cellStyle = _tableStyle;
-    cell.text = text;
+    if (isNumber) {
+      cell.setNumber(double.parse(value));
+    } else {
+      cell.text = value;
+    }
     return cell;
   }
 
@@ -901,7 +920,7 @@ class ReportService {
       _updateDataCell(sheet, 'E$cidx', car.number);
 
       // Remark
-      _updateDataCell(sheet, 'F$cidx', '');
+      _updateDataCell(sheet, 'F$cidx', car.note);
     }
 
     cidx += 2;

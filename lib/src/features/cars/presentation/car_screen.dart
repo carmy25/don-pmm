@@ -22,7 +22,7 @@ class CarScreenState extends ConsumerState {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Машина'),
+          title: const Text('Машина/Робочий агрегат'),
         ),
         body: Container(
             padding: const EdgeInsets.all(8.0), child: CarForm(car: car)));
