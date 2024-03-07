@@ -121,6 +121,8 @@ class ReportService {
     _updateDataCell(sheet, 'a4:n4', '').merge();
 
     var cidx = _waybillsRegistryAddTableCells(sheet);
+    c = sheet.getRangeByName('a5:j$cidx');
+    c.cellStyle.borders.all.lineStyle = LineStyle.thin;
     cidx += 2;
     c = sheet.getRangeByName('b$cidx:e$cidx');
     c.merge();
@@ -480,6 +482,8 @@ class ReportService {
     _updateDataCell(sheet, 'j7', '10');
 
     var cidx = _transcriptAddTableCells(sheet, oilIndex: oilsByIndex);
+    c = sheet.getRangeByName('a8:j$cidx');
+    c.cellStyle.borders.all.lineStyle = LineStyle.thin;
     cidx += 2;
     c = sheet.getRangeByName('A$cidx:J$cidx');
     c.merge();
