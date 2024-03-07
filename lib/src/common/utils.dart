@@ -132,7 +132,19 @@ String? validateNotEmptyNumber(value) {
   return res;
 }
 
-
 String formatDateText(DateTime dt) {
   return DateFormat.yMMMMd('uk').format(dt);
+}
+
+String unitCorrectEnding(int num) {
+  if (num > 20 || num < 5) {
+    final rem = num > 20 ? num % 10 : num;
+    if ([2, 3, 4].contains(rem)) {
+      return 'штуки';
+    }
+    if (rem == 1) {
+      return 'штука';
+    }
+  }
+  return 'штук';
 }

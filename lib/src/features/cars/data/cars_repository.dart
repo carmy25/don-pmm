@@ -1,3 +1,4 @@
+import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,6 +17,13 @@ class CarList extends _$CarList {
   Future<void> addCar(Car car) async {
     final previousState = await future;
     final newState = {car, ...previousState}.toList();
+    state = AsyncData(newState);
+  }
+
+  Future<void> removeCar(Car car) async {
+    final previousState = await future;
+    ref.read(waybillListProvider.notifier).removeWaybillsByCar(car);
+    final newState = previousState.where((c) => c != car).toList();
     state = AsyncData(newState);
   }
 }

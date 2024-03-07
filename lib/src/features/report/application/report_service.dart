@@ -795,10 +795,11 @@ class ReportService {
     // List of waybills
     final waybills = ref.watch(waybillListProvider).value!;
     final waybillsListString = waybills.map((w) => w.number).join(', ');
+
     c = sheet.getRangeByName('A$cidx:K$cidx');
     c.merge();
     c.text =
-        '$waybillsListString (${NumericToWords().toWords(waybills.length)}) ${waybills.length} штук';
+        '$waybillsListString (${NumericToWords().toWords(waybills.length, lowNumberInFemenineGender: true)}) ${waybills.length} ${unitCorrectEnding(waybills.length)}';
     c.cellStyle.hAlign = HAlignType.center;
     c.cellStyle.vAlign = VAlignType.center;
     c.cellStyle.fontSize = 13;

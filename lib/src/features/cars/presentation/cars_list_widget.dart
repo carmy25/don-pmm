@@ -16,7 +16,16 @@ class CarsListWidget extends ConsumerWidget {
           itemBuilder: (_, i) {
             final car = value[i];
             return ListTile(
+              leading: const Icon(Icons.car_rental),
               title: Text(car.name),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: 'Видалити машину',
+                onPressed: () {
+                  debugPrint('delete car: ${car.uuid}');
+                  ref.read(carListProvider.notifier).removeCar(car);
+                },
+              ),
               subtitle: Text(car.number),
               onTap: () {
                 Navigator.push(

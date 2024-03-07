@@ -1,3 +1,4 @@
+import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../cars/domain/car.dart';
@@ -24,6 +25,16 @@ class WaybillList extends _$WaybillList {
         return aIssueDate.compareTo(bIssueDate);
       },
     );
+    state = AsyncData(newState);
+  }
+
+  void removeWaybillsByCar(Car car) {
+    final newState =
+        state.value!.where((wb) => wb.carUuid != car.uuid).toList();
+    for (final wb
+        in state.value!.where((wb) => wb.carUuid == car.uuid).toList()) {
+      ref.read(fillupListProvider.notifier).removeFillupsByWaybill(wb);
+    }
     state = AsyncData(newState);
   }
 }

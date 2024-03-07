@@ -25,6 +25,11 @@ class FillupList extends _$FillupList {
     final newState = state.value!.where((fu) => fu.uuid != uuid).toList();
     state = AsyncData(newState);
   }
+
+  removeFillupsByWaybill(Waybill waybill) {
+    final newState = state.value!.where((fu) => fu.waybill != waybill).toList();
+    state = AsyncData(newState);
+  }
 }
 
 @riverpod
