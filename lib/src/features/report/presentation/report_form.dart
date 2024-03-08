@@ -324,12 +324,13 @@ class ReportFormState extends ConsumerState<ReportForm> {
                       MaterialPageRoute(
                           builder: (context) => CarScreen(
                                 car: Car(
-                                    uuid: const Uuid().v4(),
-                                    name: '',
-                                    number: '',
-                                    note: '',
-                                    consumptionRate: 0,
-                                    type: CarType.vehicle),
+                                  uuid: const Uuid().v4(),
+                                  name: '',
+                                  number: '',
+                                  note: '',
+                                  consumptionRate: 0,
+                                  consumptionRateMH: 0,
+                                ),
                               )),
                     );
                   },

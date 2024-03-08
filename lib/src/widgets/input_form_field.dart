@@ -26,9 +26,6 @@ class InputFormField extends ConsumerWidget {
     } else if (!allowEmpty) {
       validator = validateNotEmpty;
     }
-    if (isNumeric && allowEmpty) {
-      validator = validateNotEmpty;
-    }
     return TextFormField(
       // The validator receives the text that the user has entered.
       validator: validator,

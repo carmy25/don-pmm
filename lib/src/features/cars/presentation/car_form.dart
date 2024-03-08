@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +27,9 @@ class CarForm extends ConsumerStatefulWidget {
 class CarFormState extends ConsumerState<CarForm> {
   final TextEditingController nameInput = TextEditingController();
   final TextEditingController numberInput = TextEditingController();
-  String? _carType;
   final TextEditingController _remarkInput = TextEditingController();
   final TextEditingController _consumptionRateInput = TextEditingController();
+  final TextEditingController _consumptionRateMHInput = TextEditingController();
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
@@ -44,8 +42,6 @@ class CarFormState extends ConsumerState<CarForm> {
   @override
   void initState() {
     super.initState();
-    _carType = CarType.values.firstWhereOrNull((e) => car.type == e)?.name;
-    debugPrint('initState: _carType: $_carType');
   }
 
   @override
@@ -55,32 +51,14 @@ class CarFormState extends ConsumerState<CarForm> {
     nameInput.text = car.name;
     numberInput.text = car.number;
     _remarkInput.text = car.note;
-    _consumptionRateInput.text =
-        car.consumptionRate > 0 ? car.consumptionRate.toString() : '';
-    final carTypeItems =
-        CarType.values.map<DropdownMenuItem<String>>((CarType item) {
-      return DropdownMenuItem<String>(
-        value: item.name,
-        child: Text(item.name),
-      );
-    }).toList();
+    _consumptionRateInput.text = car.consumptionRate.toString();
+    _consumptionRateMHInput.text = car.consumptionRateMH.toString();
     return Form(
       key: _formKey,
       child: Column(
         children: [
           Row(
             children: [
-              Flexible(
-                  child: DropdownButtonFormField<String>(
-                      validator: validateNotEmpty,
-                      value: _carType,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _carType = newValue!;
-                        });
-                      },
-                      hint: const Text('Вид'),
-                      items: carTypeItems)),
               Flexible(
                   child: InputFormField(
                       controller: nameInput,
@@ -100,11 +78,25 @@ class CarFormState extends ConsumerState<CarForm> {
               Flexible(
                   child: InputFormField(
                       isNumeric: true,
+                      allowEmpty: true,
                       controller: _consumptionRateInput,
                       icon: const Icon(Icons
                           .production_quantity_limits), //icon of text field
-                      text: 'Норма витрати(на 100км/1мг)' //label text of field
+                      text: 'Норма витрати(на 100км)' //label text of field
                       )),
+              Flexible(
+                  child: InputFormField(
+                      isNumeric: true,
+                      allowEmpty: true,
+                      controller: _consumptionRateMHInput,
+                      icon: const Icon(Icons
+                          .production_quantity_limits), //icon of text field
+                      text: 'Норма витрати(на 1мг)' //label text of field
+                      )),
+            ],
+          ),
+          Row(
+            children: [
               Flexible(
                   child: InputFormField(
                       allowEmpty: true,
@@ -124,14 +116,14 @@ class CarFormState extends ConsumerState<CarForm> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     ref.read(carListProvider.notifier).addCar(Car(
-                        type: CarType.values
-                            .firstWhere((element) => element.name == _carType),
                         uuid: car.uuid,
                         name: nameInput.text,
                         number: numberInput.text,
                         note: _remarkInput.text,
                         consumptionRate:
-                            double.parse(_consumptionRateInput.text)));
+                            double.parse(_consumptionRateInput.text),
+                        consumptionRateMH:
+                            double.parse(_consumptionRateMHInput.text)));
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -139,6 +131,8 @@ class CarFormState extends ConsumerState<CarForm> {
                               waybill: Waybill(
                                   kmsStart: 0,
                                   kmsEnd: 0,
+                                  mhStart: 0,
+                                  mhEnd: 0,
                                   uuid: const Uuid().v4(),
                                   number: '',
                                   carUuid: car.uuid))),
@@ -159,12 +153,12 @@ class CarFormState extends ConsumerState<CarForm> {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
                       ref.read(carListProvider.notifier).addCar(Car(
-                          type: CarType.values
-                              .firstWhere((e) => _carType == e.name),
                           uuid: car.uuid,
                           name: nameInput.text,
                           note: _remarkInput.text,
                           number: numberInput.text,
+                          consumptionRateMH:
+                              double.parse(_consumptionRateMHInput.text),
                           consumptionRate:
                               double.parse(_consumptionRateInput.text)));
                       Navigator.pop(context);

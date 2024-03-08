@@ -26,6 +26,8 @@ class WaybillScreenState extends ConsumerState {
   final TextEditingController _numberInput = TextEditingController();
   final TextEditingController _kmsStartInput = TextEditingController();
   final TextEditingController _kmsEndInput = TextEditingController();
+  final TextEditingController _mhStartInput = TextEditingController();
+  final TextEditingController _mhEndInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
   final Waybill waybill;
   final _formKey = GlobalKey<FormState>();
@@ -39,6 +41,8 @@ class WaybillScreenState extends ConsumerState {
     _kmsStartInput.text =
         waybill.kmsStart > 0 ? waybill.kmsStart.toString() : '';
     _kmsEndInput.text = waybill.kmsEnd > 0 ? waybill.kmsEnd.toString() : '';
+    _mhStartInput.text = waybill.mhStart > 0 ? waybill.mhStart.toString() : '';
+    _mhEndInput.text = waybill.mhEnd > 0 ? waybill.mhEnd.toString() : '';
     final wbIssueDate = waybill.issueDate;
     _dateInput.text = wbIssueDate == null ? '' : formatDateText(wbIssueDate);
     return Scaffold(
@@ -97,7 +101,7 @@ class WaybillScreenState extends ConsumerState {
                           controller: _kmsStartInput,
                           allowEmpty: true,
                           icon: const Icon(Icons.start), //icon of text field
-                          text: 'перед початком(км або год)')),
+                          text: 'перед початком (км)')),
                   Flexible(
                       child: InputFormField(
                           isNumeric: true,
@@ -105,7 +109,26 @@ class WaybillScreenState extends ConsumerState {
                           controller: _kmsEndInput,
                           icon: const Icon(
                               Icons.stop_circle_outlined), //icon of text field
-                          text: 'в кінці(км або год)')),
+                          text: 'в кінці(км)')),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                      child: InputFormField(
+                          isNumeric: true,
+                          controller: _mhStartInput,
+                          allowEmpty: true,
+                          icon: const Icon(Icons.start), //icon of text field
+                          text: 'перед початком (мотогодин)')),
+                  Flexible(
+                      child: InputFormField(
+                          isNumeric: true,
+                          allowEmpty: true,
+                          controller: _mhEndInput,
+                          icon: const Icon(
+                              Icons.stop_circle_outlined), //icon of text field
+                          text: 'в кінці(мотогодин)')),
                 ],
               ),
               const Row(
@@ -141,8 +164,10 @@ class WaybillScreenState extends ConsumerState {
     if (_formKey.currentState!.validate()) {
       final dtString = _dateInput.text;
       ref.read(waybillListProvider.notifier).addWaybill(Waybill(
-          kmsStart: double.parse(_kmsStartInput.text),
-          kmsEnd: double.parse(_kmsEndInput.text),
+          kmsStart: parseDouble(_kmsStartInput.text),
+          kmsEnd: parseDouble(_kmsEndInput.text),
+          mhStart: parseDouble(_mhStartInput.text),
+          mhEnd: parseDouble(_mhEndInput.text),
           uuid: waybill.uuid,
           carUuid: waybill.carUuid,
           issueDate: DateFormat.yMMMMd('uk').parse(dtString),

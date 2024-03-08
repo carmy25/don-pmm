@@ -148,3 +148,5 @@ String unitCorrectEnding(int num) {
   }
   return 'штук';
 }
+
+double parseDouble(String text) => text.isEmpty ? 0 : double.parse(text);

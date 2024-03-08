@@ -3,7 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
-import 'package:donpmm/src/features/cars/domain/car.dart';
 import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
@@ -147,12 +146,23 @@ class ReportService {
           sheet, 'B$cidx', DateFormat("dd.MM.yyyy").format(waybill.issueDate!));
       _updateDataCell(sheet, 'C$cidx', waybill.kmsStart.toString());
       _updateDataCell(sheet, 'D$cidx', waybill.kmsEnd.toString());
-      _updateDataCell(sheet, '${car.type == CarType.vehicle ? "E" : "F"}$cidx',
-          (waybill.kmsEnd - waybill.kmsStart).toString(),
+
+      final kms = waybill.kmsEnd - waybill.kmsStart;
+      if (kms > 0) {
+        _updateDataCell(sheet, 'E$cidx', kms.toString(), isNumber: true);
+      }
+
+      final mhs = waybill.mhEnd - waybill.mhStart;
+      if (mhs > 0) {
+        _updateDataCell(sheet, 'F$cidx', mhs.toString(), isNumber: true);
+      }
+      _updateDataCell(sheet, 'G$cidx', car.consumptionRate.toString(),
           isNumber: true);
-      _updateDataCell(sheet, '${car.type == CarType.vehicle ? "G" : "H"}$cidx',
-          car.consumptionRate.toString(),
-          isNumber: true);
+
+      if (car.consumptionRateMH > 0) {
+        _updateDataCell(sheet, 'H$cidx', car.consumptionRateMH.toString(),
+            isNumber: true);
+      }
 
       final fillups = ref.read(fillupsByWaybillProvider(waybill));
       var bsum = fillups
@@ -378,9 +388,21 @@ class ReportService {
 
       _updateDataCell(sheet, 'e$cidx', remnant.toString(), isNumber: true);
       _updateDataCell(sheet, 'f$cidx', remnant.toString(), isNumber: true);
-      _updateDataCell(sheet, 'g$cidx', wb.kmsEnd.round().toString(),
-          isNumber: true);
-      _updateDataCell(sheet, 'H$cidx', '');
+      if (wb.kmsEnd > 0 || wb.mhEnd > 0) {
+        var cellString = '';
+        if (wb.kmsEnd > 0) {
+          cellString = '${wb.kmsEnd.round()}';
+        }
+        if (wb.mhEnd > 0) {
+          if (cellString.isEmpty) {
+            cellString = '${wb.mhEnd.round()}';
+          } else {
+            cellString += '/${wb.mhEnd.round()}';
+          }
+        }
+        _updateDataCell(sheet, 'g$cidx', cellString);
+      }
+      _updateDataCell(sheet, 'H$cidx', car.note);
       _updateDataCell(sheet, 'I$cidx', '');
     }
 
