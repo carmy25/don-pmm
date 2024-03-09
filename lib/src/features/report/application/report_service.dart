@@ -136,7 +136,11 @@ class ReportService {
   }
 
   int _waybillsRegistryAddTableCells(Worksheet sheet) {
-    final waybills = ref.read(waybillListProvider).value!;
+    final report = ref.read(reportRepositoryProvider).value!;
+    final waybills = ref.read(waybillListProvider).value!.where((wb) => wb
+        .issueDate!
+        .isAfter(report.dtRange.start.subtract(const Duration(days: 1))));
+
     var cidx = 4;
     for (final waybill in waybills) {
       ++cidx;
@@ -366,12 +370,14 @@ class ReportService {
   int _infoAddTableCells(Worksheet sheet, FALCategory category) {
     var cidx = 8;
     final cars = ref.watch(carListProvider).value!;
+    final report = ref.read(reportRepositoryProvider).value!;
     for (final car in cars) {
-      final waybills = ref.read(waybillsByCarProvider(car));
+      final waybills =
+          ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
+      if (waybills.isEmpty) continue;
       ++cidx;
       _updateDataCell(sheet, 'A$cidx', car.name);
       _updateDataCell(sheet, 'b$cidx', car.number);
-      if (waybills.isEmpty) continue;
 
       final wb = waybills.last;
       _updateDataCell(sheet, 'c$cidx', wb.number);
@@ -402,7 +408,7 @@ class ReportService {
         }
         _updateDataCell(sheet, 'g$cidx', cellString);
       }
-      _updateDataCell(sheet, 'H$cidx', car.note);
+      _updateDataCell(sheet, 'H$cidx', '');
       _updateDataCell(sheet, 'I$cidx', '');
     }
 
@@ -415,7 +421,6 @@ class ReportService {
     _updateDataCell(sheet, 'I$cidx', '');
 
     ++cidx;
-    final report = ref.read(reportRepositoryProvider).value!;
     _updateDataCell(sheet, 'B$cidx:F$cidx',
             'станом на ${DateFormat.yMMMMd("uk").format(report.dtRange.end)}')
         .merge();
@@ -538,19 +543,20 @@ class ReportService {
   int _transcriptAddTableCells(Worksheet sheet,
       {required Map<String, int> oilIndex}) {
     final cars = ref.watch(carListProvider).value!;
+    final report = ref.read(reportRepositoryProvider).value!;
 
     var cidx = 7;
     for (final (idx, car) in cars.indexed) {
+      final waybills =
+          ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
+      if (waybills.isEmpty) {
+        continue;
+      }
       ++cidx;
       _updateDataCell(sheet, 'A$cidx', '${idx + 1}');
       _updateDataCell(sheet, 'B$cidx', car.name);
       _updateDataCell(sheet, 'C$cidx', car.number);
       _updateDataCell(sheet, 'J$cidx', car.note);
-
-      final waybills = ref.read(waybillsByCarProvider(car));
-      if (waybills.isEmpty) {
-        continue;
-      }
       _updateDataCell(
           sheet, 'D$cidx', '${waybills.last.kmsEnd - waybills.first.kmsStart}',
           isNumber: true);

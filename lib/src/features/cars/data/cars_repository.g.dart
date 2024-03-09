@@ -154,7 +154,7 @@ class _CarByUuidProviderElement extends AutoDisposeProviderElement<Car>
   String get uuid => (origin as CarByUuidProvider).uuid;
 }
 
-String _$carListHash() => r'5767d9e0dad6584f52026af38b397147b7239479';
+String _$carListHash() => r'9c1f23295356ab0bc93956753b3a44f96d5eb3c9';
 
 /// See also [CarList].
 @ProviderFor(CarList)

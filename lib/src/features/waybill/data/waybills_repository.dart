@@ -44,3 +44,13 @@ List<Waybill> waybillsByCar(WaybillsByCarRef ref, Car car) {
   final waybills = ref.watch(waybillListProvider).value!;
   return waybills.where((wb) => wb.carUuid == car.uuid).toList();
 }
+
+@riverpod
+List<Waybill> waybillsByCarAndDate(
+    WaybillsByCarAndDateRef ref, Car car, DateTime after) {
+  final waybills = ref.read(waybillsByCarProvider(car));
+  return waybills
+      .where((wb) =>
+          wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))))
+      .toList();
+}

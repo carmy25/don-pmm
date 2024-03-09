@@ -155,7 +155,154 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillListHash() => r'2efcf48fb55d2c2ebb77e2f7531698985d1bff92';
+String _$waybillsByCarAndDateHash() =>
+    r'ecfd63e922bc48d62ef0db9bd55e39c7bdd4099a';
+
+/// See also [waybillsByCarAndDate].
+@ProviderFor(waybillsByCarAndDate)
+const waybillsByCarAndDateProvider = WaybillsByCarAndDateFamily();
+
+/// See also [waybillsByCarAndDate].
+class WaybillsByCarAndDateFamily extends Family<List<Waybill>> {
+  /// See also [waybillsByCarAndDate].
+  const WaybillsByCarAndDateFamily();
+
+  /// See also [waybillsByCarAndDate].
+  WaybillsByCarAndDateProvider call(
+    Car car,
+    DateTime after,
+  ) {
+    return WaybillsByCarAndDateProvider(
+      car,
+      after,
+    );
+  }
+
+  @override
+  WaybillsByCarAndDateProvider getProviderOverride(
+    covariant WaybillsByCarAndDateProvider provider,
+  ) {
+    return call(
+      provider.car,
+      provider.after,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'waybillsByCarAndDateProvider';
+}
+
+/// See also [waybillsByCarAndDate].
+class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
+  /// See also [waybillsByCarAndDate].
+  WaybillsByCarAndDateProvider(
+    Car car,
+    DateTime after,
+  ) : this._internal(
+          (ref) => waybillsByCarAndDate(
+            ref as WaybillsByCarAndDateRef,
+            car,
+            after,
+          ),
+          from: waybillsByCarAndDateProvider,
+          name: r'waybillsByCarAndDateProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$waybillsByCarAndDateHash,
+          dependencies: WaybillsByCarAndDateFamily._dependencies,
+          allTransitiveDependencies:
+              WaybillsByCarAndDateFamily._allTransitiveDependencies,
+          car: car,
+          after: after,
+        );
+
+  WaybillsByCarAndDateProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.car,
+    required this.after,
+  }) : super.internal();
+
+  final Car car;
+  final DateTime after;
+
+  @override
+  Override overrideWith(
+    List<Waybill> Function(WaybillsByCarAndDateRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: WaybillsByCarAndDateProvider._internal(
+        (ref) => create(ref as WaybillsByCarAndDateRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        car: car,
+        after: after,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<List<Waybill>> createElement() {
+    return _WaybillsByCarAndDateProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WaybillsByCarAndDateProvider &&
+        other.car == car &&
+        other.after == after;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, car.hashCode);
+    hash = _SystemHash.combine(hash, after.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin WaybillsByCarAndDateRef on AutoDisposeProviderRef<List<Waybill>> {
+  /// The parameter `car` of this provider.
+  Car get car;
+
+  /// The parameter `after` of this provider.
+  DateTime get after;
+}
+
+class _WaybillsByCarAndDateProviderElement
+    extends AutoDisposeProviderElement<List<Waybill>>
+    with WaybillsByCarAndDateRef {
+  _WaybillsByCarAndDateProviderElement(super.provider);
+
+  @override
+  Car get car => (origin as WaybillsByCarAndDateProvider).car;
+  @override
+  DateTime get after => (origin as WaybillsByCarAndDateProvider).after;
+}
+
+String _$waybillListHash() => r'021a1c65ee80f4d3f227739239fe5ed26c4054e2';
 
 /// See also [WaybillList].
 @ProviderFor(WaybillList)
