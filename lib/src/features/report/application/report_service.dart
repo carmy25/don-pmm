@@ -226,10 +226,12 @@ class ReportService {
     }
     ++cidx;
     _updateDataCell(sheet, 'a$cidx:d$cidx', 'РАЗОМ').merge();
-    _updateDataCellFormula(sheet, 'e$cidx', '=sum(e5:e${cidx - 1})');
-    _updateDataCellFormula(sheet, 'f$cidx', '=sum(f5:f${cidx - 1})');
-    _updateDataCellFormula(sheet, 'j$cidx', '=sum(j5:j${cidx - 1})');
-    _updateDataCellFormula(sheet, 'k$cidx', '=sum(k5:k${cidx - 1})');
+    if (waybills.isNotEmpty) {
+      _updateDataCellFormula(sheet, 'e$cidx', '=sum(e5:e${cidx - 1})');
+      _updateDataCellFormula(sheet, 'f$cidx', '=sum(f5:f${cidx - 1})');
+      _updateDataCellFormula(sheet, 'j$cidx', '=sum(j5:j${cidx - 1})');
+      _updateDataCellFormula(sheet, 'k$cidx', '=sum(k5:k${cidx - 1})');
+    }
     return cidx;
   }
 
@@ -371,10 +373,12 @@ class ReportService {
     var cidx = 8;
     final cars = ref.watch(carListProvider).value!;
     final report = ref.read(reportRepositoryProvider).value!;
+    var waybillsAvailable = false;
     for (final car in cars) {
       final waybills =
           ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
       if (waybills.isEmpty) continue;
+      waybillsAvailable = true;
       ++cidx;
       _updateDataCell(sheet, 'A$cidx', car.name);
       _updateDataCell(sheet, 'b$cidx', car.number);
@@ -414,8 +418,10 @@ class ReportService {
 
     ++cidx;
     _updateDataCell(sheet, 'A$cidx:D$cidx', 'Усього').merge();
-    _updateDataCellFormula(sheet, 'E$cidx', '=SUM(E8:E${cidx - 1})');
-    _updateDataCellFormula(sheet, 'F$cidx', '=SUM(F8:F${cidx - 1})');
+    if (waybillsAvailable) {
+      _updateDataCellFormula(sheet, 'E$cidx', '=SUM(E8:E${cidx - 1})');
+      _updateDataCellFormula(sheet, 'F$cidx', '=SUM(F8:F${cidx - 1})');
+    }
     _updateDataCell(sheet, 'G$cidx', '');
     _updateDataCell(sheet, 'H$cidx', '');
     _updateDataCell(sheet, 'I$cidx', '');
@@ -546,12 +552,14 @@ class ReportService {
     final report = ref.read(reportRepositoryProvider).value!;
 
     var cidx = 7;
+    var waybillsAvailable = false;
     for (final (idx, car) in cars.indexed) {
       final waybills =
           ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
       if (waybills.isEmpty) {
         continue;
       }
+      waybillsAvailable = true;
       ++cidx;
       _updateDataCell(sheet, 'A$cidx', '${idx + 1}');
       _updateDataCell(sheet, 'B$cidx', car.name);
@@ -591,9 +599,11 @@ class ReportService {
     }
     ++cidx;
     _updateDataCell(sheet, 'B$cidx', 'Разом');
-    _updateDataCellFormula(sheet, 'D$cidx', '=SUM(D8:D${cidx - 1})');
-    _updateDataCellFormula(sheet, 'E$cidx', '=SUM(E8:E${cidx - 1})');
-    _updateDataCellFormula(sheet, 'F$cidx', '=SUM(F8:F${cidx - 1})');
+    if (waybillsAvailable) {
+      _updateDataCellFormula(sheet, 'D$cidx', '=SUM(D8:D${cidx - 1})');
+      _updateDataCellFormula(sheet, 'E$cidx', '=SUM(E8:E${cidx - 1})');
+      _updateDataCellFormula(sheet, 'F$cidx', '=SUM(F8:F${cidx - 1})');
+    }
     return cidx;
   }
 
