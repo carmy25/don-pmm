@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:donpmm/src/features/report/application/report_service.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:intl/intl.dart';
@@ -19,85 +20,6 @@ import '../../cars/domain/car.dart';
 import '../../cars/presentation/car_screen.dart';
 import '../../cars/presentation/cars_list_widget.dart';
 import 'outcome_widget.dart';
-
-enum UnitName {
-  p1('1САДн ВЗ'),
-  p2('1САДн ВУ'),
-  p3('1САДн 1САБатр'),
-  p4('1САДн 2САБатр'),
-  p5('1САДн 3САБатр'),
-  p6('2САДн 1САБАтр'),
-  p7('2САДн 2САБАтр'),
-  p8('2САДн 3САБАтр'),
-  p9('2САДн ВМЗ'),
-  p10('1БМП ВЗ'),
-  p11('1БМП МП'),
-  p12('1БМП РВП'),
-  p13('1БМП ДШР'),
-  p14('1БМП РВ'),
-  p15('1БМП МБ'),
-  p16('1БМП 2РМП'),
-  p17('1БМП 1РМП'),
-  p18('1БМП ВзЗв'),
-  p19('2БМП ВЗ'),
-  p20('2БМП 2РМП'),
-  p21('2БМП МП'),
-  p22('2БМП МБ'),
-  p23('2БМП РВП'),
-  p24('2БМП ВзЗв'),
-  p25('2БМП ДШР'),
-  p26('2БМП РВ'),
-  p27('2БМП 1РМП'),
-  p28('505 Бат'),
-  p29('УБАК'),
-  p30('ПВЗ РЗКП'),
-  p31('ПВЗ РЗ КТПУ'),
-  p32('РДЗ'),
-  p33('СОДТ'),
-  p34('Рота снайперів'),
-  p35('рПТРК'),
-  p36('ІСР'),
-  p37('БУАР'),
-  p38('РР'),
-  p39('МР'),
-  p40('Коменд. Взвод'),
-  p41('БМТЗ РМЗ'),
-  p42('БМТЗ РемРота'),
-  p43('РХБЗ вз'),
-  p44('РЕБ'),
-  p45('РеАБатр'),
-  p46('Пожежний взвод'),
-  p47('ЗРАБатр'),
-  p48('БЛ Управління'),
-  p49('БЛ РР БТ Техніки'),
-  p50('БЛ РР Авт. Техніки'),
-  p51('БЛ РР Арт. Озбр.'),
-  p52('БЛ Евак. Рота'),
-  p53('БЛ АРПБЛ'),
-  p54('БЛ АРППММ'),
-  p55('БЛ АРПМТЗ'),
-  p56('БЛ РМЗ'),
-  p57('БЛ Такелажний вз'),
-  p58('БЛ ЛВТ'),
-  p59('БЛ Рота Охорони'),
-  p60('БЛ Медичний пункт'),
-  p61('БЛ Взвод звязку'),
-  p62('БЛ Інженерний вз'),
-  p63('БЛ ВТР'),
-  p64('БЛ Пожежна обс.');
-
-  const UnitName(this.name);
-  final String name;
-}
-
-enum ChiefPosition {
-  chief('Kомандир'),
-  tvo('ТВО командира'),
-  tvovz('ТВО командира взводу');
-
-  const ChiefPosition(this.name);
-  final String name;
-}
 
 class ReportForm extends ConsumerStatefulWidget {
   const ReportForm({super.key});
@@ -112,10 +34,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
   late DateTimeRange? _dtRange;
   final _formKey = GlobalKey<FormState>();
   final List<Map<String, dynamic>> _outcomeData = [];
-  String? _unitName;
-  String? _chiefPosition;
   String? _chiefRank;
   String? _checkerRank;
+  final TextEditingController _milBaseInput = TextEditingController();
+  final TextEditingController _unitNameInput = TextEditingController();
+  final TextEditingController _chiefPositionInput = TextEditingController();
   final TextEditingController _chiefNameInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
   final TextEditingController _checkerNameInput = TextEditingController();
@@ -126,7 +49,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
   }
 
   Future<bool> _saveReport() async {
-    String? outputFile = Platform.isAndroid
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('unitName', _unitNameInput.text);
+    prefs.setString('milBase', _milBaseInput.text);
+    prefs.setString('chiefPosition', _chiefPositionInput.text);
+    String? outputFile = Platform.isAndroid || Platform.isIOS
         ? (await getApplicationDocumentsDirectory()).path
         : (await FilePicker.platform.saveFile(
             dialogTitle: 'Вкажіть назву файлу:',
@@ -144,9 +71,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
                 amountLtrs: o['availableLtrs']));
       }
       await ref.read(reportRepositoryProvider.notifier).createReport(
-          unitName: _unitName ?? '',
+          milBase: _milBaseInput.text,
+          unitName: _unitNameInput.text,
           dtRange: _dtRange!,
-          chiefPosition: _chiefPosition!,
+          chiefPosition: _chiefPositionInput.text,
           chiefRank: _chiefRank ?? '',
           chiefName: _chiefNameInput.text,
           checkerName: _checkerNameInput.text,
@@ -158,23 +86,21 @@ class ReportFormState extends ConsumerState<ReportForm> {
     return false;
   }
 
+  void _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    _unitNameInput.text = prefs.getString('unitName') ?? '';
+    _milBaseInput.text = prefs.getString('milBase') ?? '';
+    _chiefPositionInput.text = prefs.getString('chiefPosition') ?? '';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final unitItems =
-        UnitName.values.map<DropdownMenuItem<String>>((UnitName item) {
-      return DropdownMenuItem<String>(
-        value: item.name,
-        child: Text(item.name),
-      );
-    }).toList();
-    final chiefItems = ChiefPosition.values
-        .map<DropdownMenuItem<String>>((ChiefPosition item) {
-      return DropdownMenuItem<String>(
-        value: item.name,
-        child: Text(item.name),
-      );
-    }).toList();
-
     final rankItems = Rank.values.map<DropdownMenuItem<String>>((Rank item) {
       return DropdownMenuItem<String>(
         value: item.name,
@@ -200,45 +126,54 @@ class ReportFormState extends ConsumerState<ReportForm> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                    child: DropdownButtonFormField<String>(
-                        validator: validateNotEmpty,
-                        value: _unitName,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _unitName = newValue!;
-                          });
-                        },
-                        hint: const Text('Підрозділ'),
-                        items: unitItems)),
+                    flex: 1,
+                    child: InputFormField(
+                      controller: _milBaseInput,
+                      text: 'Військова частина', //label text of field
+                      icon: const Icon(Icons.home_filled),
+                    )),
+                const SizedBox(
+                  width: 20,
+                ),
                 Flexible(
-                    child: TextFormField(
-                  validator: validateNotEmpty,
-                  controller: _dateInput, //editing controller of this TextField
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.calendar_today), //icon of text field
-                      labelText: 'Період' //label text of field
-                      ),
-                  readOnly:
-                      true, //set it true, so that user will not able to edit text
-                  onTap: () async {
-                    final result = await showDateRangePicker(
-                      locale: const Locale("uk", "UA"),
-                      context: context,
-                      firstDate: DateTime(2022),
-                      lastDate: DateTime(2028),
-                    );
-                    setState(() {
-                      _dtRange = result;
-                    });
-
-                    if (result == null) return;
-
-                    _dateInput.text =
-                        'З ${_formatDateToString(result.start)} по ${_formatDateToString(result.end)}';
-                  },
-                )),
+                    flex: 2,
+                    child: InputFormField(
+                      controller: _unitNameInput,
+                      text: 'Назва підрозділ',
+                      icon: const Icon(Icons.group),
+                    )),
               ],
             ),
+            Row(children: [
+              Flexible(
+                  child: TextFormField(
+                textAlign: TextAlign.center,
+                validator: validateNotEmpty,
+                controller: _dateInput, //editing controller of this TextField
+                decoration: const InputDecoration(
+                    icon: Icon(Icons.calendar_today), //icon of text field
+                    labelText: 'Період' //label text of field
+                    ),
+                readOnly:
+                    true, //set it true, so that user will not able to edit text
+                onTap: () async {
+                  final result = await showDateRangePicker(
+                    locale: const Locale("uk", "UA"),
+                    context: context,
+                    firstDate: DateTime(2022),
+                    lastDate: DateTime(2028),
+                  );
+                  setState(() {
+                    _dtRange = result;
+                  });
+
+                  if (result == null) return;
+
+                  _dateInput.text =
+                      'З ${_formatDateToString(result.start)} по ${_formatDateToString(result.end)}';
+                },
+              )),
+            ]),
             const Row(
               children: [
                 SubheaderText('Відповідальна особа'),
@@ -247,16 +182,11 @@ class ReportFormState extends ConsumerState<ReportForm> {
             Row(
               children: [
                 Flexible(
-                    child: DropdownButtonFormField<String>(
-                        validator: validateNotEmpty,
-                        value: _chiefPosition,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _chiefPosition = newValue!;
-                          });
-                        },
-                        hint: const Text('Посада'),
-                        items: chiefItems)),
+                    child: InputFormField(
+                  controller: _chiefPositionInput,
+                  text: 'Посада',
+                  icon: const Icon(Icons.supervisor_account),
+                )),
                 Flexible(
                     child: DropdownButtonFormField<String>(
                         validator: validateNotEmpty,
@@ -270,6 +200,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
                         },
                         hint: const Text('Звання'),
                         items: rankItems)),
+              ],
+            ),
+            Row(
+              children: [
                 Flexible(
                     child: InputFormField(
                         controller: _chiefNameInput,

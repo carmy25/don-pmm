@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Report {
   const Report({
     required this.unitName,
+    required this.milBase,
     required this.dtRange,
     required this.chiefPosition,
     required this.chiefRank,
@@ -11,6 +12,7 @@ class Report {
     required this.checkerRank,
   });
   final String unitName;
+  final String milBase;
   final DateTimeRange dtRange;
   final String chiefPosition;
   final String chiefRank;

@@ -285,7 +285,7 @@ class ReportService {
 
     c = sheet.getRangeByName('f5:g5');
     c.merge();
-    c.text = 'А4548';
+    c.text = report.milBase;
     c.cellStyle.hAlign = HAlignType.center;
     c.cellStyle.vAlign = VAlignType.center;
     c.cellStyle.borders.bottom.lineStyle = LineStyle.thin;

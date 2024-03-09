@@ -20,9 +20,11 @@ class ReportRepository extends _$ReportRepository {
       required String chiefRank,
       required String chiefName,
       required String checkerName,
-      required String checkerRank}) async {
+      required String checkerRank,
+      required String milBase}) async {
     state = AsyncData(Report(
         unitName: unitName,
+        milBase: milBase,
         dtRange: dtRange,
         chiefPosition: chiefPosition,
         chiefRank: chiefRank,
