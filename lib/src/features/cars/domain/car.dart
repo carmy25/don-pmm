@@ -5,11 +5,13 @@ class Car {
       required this.consumptionRateMH,
       required this.name,
       required this.number,
-      required this.note});
+      this.note = '',
+      this.underRepair = false});
   final String name, number, uuid;
   final double consumptionRate;
   final double consumptionRateMH;
   final String note;
+  final bool underRepair;
 
   @override
   bool operator ==(Object other) =>

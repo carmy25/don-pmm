@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:desktop_window/desktop_window.dart';
@@ -19,6 +20,11 @@ void main() async {
     double width = size.width;
     double height = size.height;
     await DesktopWindow.setWindowSize(Size(width * 0.8, height * 0.8));
+  } else if (Platform.isAndroid || Platform.isIOS) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   runApp(const ProviderScope(

@@ -187,6 +187,12 @@ class ReportFormState extends ConsumerState<ReportForm> {
     return Form(
       key: _formKey,
       child: Container(
+        /* decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/bg2.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),*/
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [

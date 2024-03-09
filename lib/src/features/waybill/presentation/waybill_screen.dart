@@ -172,12 +172,11 @@ class WaybillScreenState extends ConsumerState {
           carUuid: waybill.carUuid,
           issueDate: DateFormat.yMMMMd('uk').parse(dtString),
           number: _numberInput.text));
-      for (final o in _fillupsData
-          .where((e) => e['comodity'] != null && e['date'] != null)) {
+      for (final o in _fillupsData.where((e) => e['comodity'] != null)) {
         await ref.read(fillupListProvider.notifier).addFillup(Fillup(
             uuid: o['uuid'] ?? const Uuid().v4(),
             falType: FALType.values.firstWhere((e) => e.name == o['comodity']),
-            date: DateFormat('yyyy-MM-dd').parse(o['date']),
+            date: waybill.issueDate!,
             beforeLtrs: o['availableLtrs'] ?? 0,
             fillupLtrs: o['gainedLtrs'] ?? 0,
             burnedLtrs: o['spentLtrs'] ?? 0,

@@ -30,12 +30,15 @@ class CarFormState extends ConsumerState<CarForm> {
   final TextEditingController _remarkInput = TextEditingController();
   final TextEditingController _consumptionRateInput = TextEditingController();
   final TextEditingController _consumptionRateMHInput = TextEditingController();
+
+  bool _underRepair = false;
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
+
   CarFormState({required this.car});
   Car car;
 
@@ -44,10 +47,19 @@ class CarFormState extends ConsumerState<CarForm> {
     super.initState();
   }
 
+  _addCar() {
+    ref.read(carListProvider.notifier).addCar(Car(
+        uuid: car.uuid,
+        name: nameInput.text,
+        number: numberInput.text,
+        note: _remarkInput.text,
+        underRepair: _underRepair,
+        consumptionRate: double.parse(_consumptionRateInput.text),
+        consumptionRateMH: double.parse(_consumptionRateMHInput.text)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    //setState(() {
-    //});
     nameInput.text = car.name;
     numberInput.text = car.number;
     _remarkInput.text = car.note;
@@ -106,6 +118,16 @@ class CarFormState extends ConsumerState<CarForm> {
                       )),
             ],
           ),
+          CheckboxListTile(
+            value: _underRepair,
+            onChanged: (bool? value) {
+              setState(() {
+                _underRepair = value!;
+              });
+            },
+            title: const Text('На ремонті/втрачено'),
+            subtitle: const Text('Вказати залишки в машині'),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -115,15 +137,7 @@ class CarFormState extends ConsumerState<CarForm> {
                 tooltip: 'Додати шляховий/робочий лист',
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    ref.read(carListProvider.notifier).addCar(Car(
-                        uuid: car.uuid,
-                        name: nameInput.text,
-                        number: numberInput.text,
-                        note: _remarkInput.text,
-                        consumptionRate:
-                            double.parse(_consumptionRateInput.text),
-                        consumptionRateMH:
-                            double.parse(_consumptionRateMHInput.text)));
+                    _addCar();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -152,15 +166,7 @@ class CarFormState extends ConsumerState<CarForm> {
                   onPressed: () {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
-                      ref.read(carListProvider.notifier).addCar(Car(
-                          uuid: car.uuid,
-                          name: nameInput.text,
-                          note: _remarkInput.text,
-                          number: numberInput.text,
-                          consumptionRateMH:
-                              double.parse(_consumptionRateMHInput.text),
-                          consumptionRate:
-                              double.parse(_consumptionRateInput.text)));
+                      _addCar();
                       Navigator.pop(context);
                     }
                   },

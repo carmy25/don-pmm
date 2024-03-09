@@ -8,7 +8,6 @@ import 'package:flutter_editable_table/constants.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../domain/fillup.dart';
 
@@ -53,32 +52,6 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         }
       },
       {
-        "name": "date",
-        "title": "Дата",
-        "type": "date",
-        "format": null,
-        "description": "Дата заправки",
-        "display": true,
-        "editable": true,
-        "width_factor": 0.2,
-        "input_decoration": {
-          "min_lines": 1,
-          "max_lines": 1,
-          "max_length": 128,
-          "hint_text": "Дата заправки"
-        },
-        "constrains": {"required": true},
-        "style": {
-          "font_weight": "bold",
-          "font_size": 12.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
-        }
-      },
-      {
         "name": "comodity",
         "title": "Паливо/Олива",
         "type": "choice",
@@ -86,7 +59,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Назва палива чи оливи",
         "display": true,
         "editable": true,
-        "width_factor": 0.23,
+        "width_factor": 0.33,
         "constrains": {"required": true},
         "style": {
           "font_weight": "bold",
@@ -106,7 +79,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Наявність перед виїздом(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.1,
+        "width_factor": 0.15,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
@@ -132,7 +105,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Отримано(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.1,
+        "width_factor": 0.15,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
@@ -159,7 +132,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Витрачено(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.1,
+        "width_factor": 0.15,
         "input_decoration": {"hint_text": "Витрачено(л)"},
         "style": {
           "font_weight": "bold",
@@ -181,7 +154,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Заправлено в іншому підрозділі",
         "display": true,
         "editable": true,
-        "width_factor": 0.1,
+        "width_factor": 0.13,
         "constrains": {"minimum": 1, "maximum": 100},
         "style": {
           "font_weight": "bold",
@@ -213,7 +186,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         .map((e) => {
               'uuid': e.uuid,
               'comodity': e.falType.name,
-              'date': DateFormat('yyyy-MM-dd').format(e.date),
+              'date': waybill.issueDate,
               'availableLtrs': e.beforeLtrs,
               'gainedLtrs': e.fillupLtrs,
               'spentLtrs': e.burnedLtrs,
@@ -241,6 +214,9 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
       addRowIconContainerBackgroundColor: Colors.blueAccent,
       formFieldAutoValidateMode: AutovalidateMode.always,
       onRowRemoved: (row) {
+        widget.data.clear();
+        widget.data.addAll(_editableTableKey.currentState!.currentData.rows
+            .map((e) => e.toJson()));
         final uuid = row.toJson()['uuid'];
         if (uuid == null) {
           return;
