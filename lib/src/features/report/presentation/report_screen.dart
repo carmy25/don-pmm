@@ -12,10 +12,12 @@ class ReportScreen extends ConsumerStatefulWidget {
 class ReportScreenState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
+    const reportForm = ReportForm();
     return Scaffold(
         appBar: AppBar(
           title: const Text('Нове Донесення'),
+          actions: const [],
         ),
-        body: const ReportForm());
+        body: reportForm);
   }
 }

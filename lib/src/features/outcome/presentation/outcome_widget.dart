@@ -1,5 +1,5 @@
 import 'package:donpmm/src/common/fal.dart';
-import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
+import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/xeditabletable/x_editable_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';

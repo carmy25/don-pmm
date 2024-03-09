@@ -1,7 +1,7 @@
 import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/common/rank.dart';
 import 'package:donpmm/src/common/utils.dart';
-import 'package:donpmm/src/features/report/data/outcomes_repository.dart';
+import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../cars/domain/car.dart';
 import '../../cars/presentation/car_screen.dart';
 import '../../cars/presentation/cars_list_widget.dart';
-import 'outcome_widget.dart';
+import '../../outcome/presentation/outcome_widget.dart';
 
 class ReportForm extends ConsumerStatefulWidget {
   const ReportForm({super.key});
