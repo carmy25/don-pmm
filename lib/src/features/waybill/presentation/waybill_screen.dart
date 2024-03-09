@@ -163,7 +163,7 @@ class WaybillScreenState extends ConsumerState {
   Future<void> _saveWaybill(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final dtString = _dateInput.text;
-      ref.read(waybillListProvider.notifier).addWaybill(Waybill(
+      final wb = Waybill(
           kmsStart: parseDouble(_kmsStartInput.text),
           kmsEnd: parseDouble(_kmsEndInput.text),
           mhStart: parseDouble(_mhStartInput.text),
@@ -171,12 +171,13 @@ class WaybillScreenState extends ConsumerState {
           uuid: waybill.uuid,
           carUuid: waybill.carUuid,
           issueDate: DateFormat.yMMMMd('uk').parse(dtString),
-          number: _numberInput.text));
+          number: _numberInput.text);
+      ref.read(waybillListProvider.notifier).addWaybill(wb);
       for (final o in _fillupsData.where((e) => e['comodity'] != null)) {
         await ref.read(fillupListProvider.notifier).addFillup(Fillup(
             uuid: o['uuid'] ?? const Uuid().v4(),
             falType: FALType.values.firstWhere((e) => e.name == o['comodity']),
-            date: waybill.issueDate!,
+            date: wb.issueDate!,
             beforeLtrs: o['availableLtrs'] ?? 0,
             fillupLtrs: o['gainedLtrs'] ?? 0,
             burnedLtrs: o['spentLtrs'] ?? 0,

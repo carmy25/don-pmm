@@ -31,7 +31,6 @@ class CarFormState extends ConsumerState<CarForm> {
   final TextEditingController _consumptionRateInput = TextEditingController();
   final TextEditingController _consumptionRateMHInput = TextEditingController();
 
-  bool _underRepair = false;
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
@@ -53,7 +52,6 @@ class CarFormState extends ConsumerState<CarForm> {
         name: nameInput.text,
         number: numberInput.text,
         note: _remarkInput.text,
-        underRepair: _underRepair,
         consumptionRate: double.parse(_consumptionRateInput.text),
         consumptionRateMH: double.parse(_consumptionRateMHInput.text)));
   }
@@ -117,16 +115,6 @@ class CarFormState extends ConsumerState<CarForm> {
                       text: 'Примітка' //label text of field
                       )),
             ],
-          ),
-          CheckboxListTile(
-            value: _underRepair,
-            onChanged: (bool? value) {
-              setState(() {
-                _underRepair = value!;
-              });
-            },
-            title: const Text('На ремонті/втрачено'),
-            subtitle: const Text('Вказати залишки в машині'),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
