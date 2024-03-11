@@ -1,5 +1,6 @@
 import 'package:donpmm/src/common/rank.dart';
 import 'package:donpmm/src/common/utils.dart';
+import 'package:donpmm/src/features/cars/presentation/cars_list_screen.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_screen.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
@@ -9,15 +10,10 @@ import 'package:donpmm/src/features/report/application/report_service.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:io' show Platform;
 import 'package:path_provider/path_provider.dart';
-
-import '../../cars/domain/car.dart';
-import '../../cars/presentation/car_screen.dart';
-import '../../cars/presentation/cars_list_widget.dart';
 
 class ReportForm extends ConsumerStatefulWidget {
   const ReportForm({super.key});
@@ -248,33 +244,24 @@ class ReportFormState extends ConsumerState<ReportForm> {
                             builder: (context) => const OutcomeScreen()));
                   },
                 )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SubheaderText('Машини/агрегати'),
-                IconButton(
-                  icon: const Icon(Icons.add_box_rounded),
-                  tooltip: 'Додати нову машину/агрегат',
+            Padding(
+                padding: const EdgeInsets.all(8),
+                child: TextButton(
+                  child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Машини/агрегати',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
+                        Icon(Icons.arrow_right)
+                      ]),
                   onPressed: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CarScreen(
-                                car: Car(
-                                  uuid: const Uuid().v4(),
-                                  name: '',
-                                  number: '',
-                                  note: '',
-                                  consumptionRate: 0,
-                                  consumptionRateMH: 0,
-                                ),
-                              )),
-                    );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CarsListScreen()));
                   },
-                ),
-              ],
-            ),
-            const Flexible(child: CarsListWidget()),
+                )),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
