@@ -103,12 +103,12 @@ class ReportService {
     c = sheet.getRangeByName('m2:m3');
     c.merge();
     c.cellStyle = _reportHeaderStyle;
-    c.text = 'Перенесенно, л';
+    c.text = 'Марка машини';
 
-    c = sheet.getRangeByName('m2:m3');
+    c = sheet.getRangeByName('n2:n3');
     c.merge();
     c.cellStyle = _reportHeaderStyle;
-    c.text = '№';
+    c.text = 'Номер машини';
 
     _updateDataCell(sheet, 'a3', '№').rowHeight = 25;
     _updateDataCell(sheet, 'b3', 'Дата');
@@ -148,8 +148,10 @@ class ReportService {
       _updateDataCell(sheet, 'A$cidx', waybill.number);
       _updateDataCell(
           sheet, 'B$cidx', DateFormat("dd.MM.yyyy").format(waybill.issueDate!));
-      _updateDataCell(sheet, 'C$cidx', waybill.kmsStart.toString());
-      _updateDataCell(sheet, 'D$cidx', waybill.kmsEnd.toString());
+      _updateDataCell(sheet, 'C$cidx', waybill.kmsStart.toString(),
+          isNumber: true);
+      _updateDataCell(sheet, 'D$cidx', waybill.kmsEnd.toString(),
+          isNumber: true);
 
       final kms = waybill.kmsEnd - waybill.kmsStart;
       if (kms > 0) {
@@ -221,8 +223,8 @@ class ReportService {
       _updateDataCell(sheet, 'k$cidx', ssum.toString(), isNumber: true);
       _updateDataCell(sheet, 'l$cidx', (fsum + bsum - ssum).toString(),
           isNumber: true);
-      _updateDataCell(sheet, 'm$cidx', '');
-      _updateDataCell(sheet, 'n$cidx', '');
+      _updateDataCell(sheet, 'm$cidx', car.name);
+      _updateDataCell(sheet, 'n$cidx', car.number);
     }
     ++cidx;
     _updateDataCell(sheet, 'a$cidx:d$cidx', 'РАЗОМ').merge();

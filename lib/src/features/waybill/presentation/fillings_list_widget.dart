@@ -59,7 +59,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Назва палива чи оливи",
         "display": true,
         "editable": true,
-        "width_factor": 0.33,
+        "width_factor": 0.4,
         "constrains": {"required": true},
         "style": {
           "font_weight": "bold",
@@ -79,7 +79,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Наявність перед виїздом(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.15,
+        "width_factor": 0.13,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
@@ -105,7 +105,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Отримано(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.15,
+        "width_factor": 0.13,
         "input_decoration": {
           "min_lines": 1,
           "max_lines": 1,
@@ -132,7 +132,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Витрачено(л)",
         "display": true,
         "editable": true,
-        "width_factor": 0.15,
+        "width_factor": 0.13,
         "input_decoration": {"hint_text": "Витрачено(л)"},
         "style": {
           "font_weight": "bold",
@@ -154,7 +154,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         "description": "Заправлено в іншому підрозділі",
         "display": true,
         "editable": true,
-        "width_factor": 0.13,
+        "width_factor": 0.12,
         "constrains": {"minimum": 1, "maximum": 100},
         "style": {
           "font_weight": "bold",
