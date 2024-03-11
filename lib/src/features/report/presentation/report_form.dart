@@ -1,7 +1,6 @@
-import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/common/rank.dart';
 import 'package:donpmm/src/common/utils.dart';
-import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
+import 'package:donpmm/src/features/outcome/presentation/outcome_screen.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ import 'package:path_provider/path_provider.dart';
 import '../../cars/domain/car.dart';
 import '../../cars/presentation/car_screen.dart';
 import '../../cars/presentation/cars_list_widget.dart';
-import '../../outcome/presentation/outcome_widget.dart';
 
 class ReportForm extends ConsumerStatefulWidget {
   const ReportForm({super.key});
@@ -33,7 +31,6 @@ class ReportForm extends ConsumerStatefulWidget {
 class ReportFormState extends ConsumerState<ReportForm> {
   late DateTimeRange? _dtRange;
   final _formKey = GlobalKey<FormState>();
-  final List<Map<String, dynamic>> _outcomeData = [];
   String? _chiefRank;
   String? _checkerRank;
   final TextEditingController _milBaseInput = TextEditingController();
@@ -60,16 +57,6 @@ class ReportFormState extends ConsumerState<ReportForm> {
             fileName: 'Донесення.xlsx',
             allowedExtensions: ['xlsx']));
     if (outputFile != null) {
-      final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
-
-      for (final o in _outcomeData.where((e) => e['availableLtrs'] != null)) {
-        outcomesRepo.addOutcome(
-            fal: FAL(
-                falType:
-                    FALType.values.firstWhere((e) => e.name == o['comodity']),
-                uuid: const Uuid().v4(),
-                amountLtrs: o['availableLtrs']));
-      }
       await ref.read(reportRepositoryProvider.notifier).createReport(
           milBase: _milBaseInput.text,
           unitName: _unitNameInput.text,
@@ -101,10 +88,10 @@ class ReportFormState extends ConsumerState<ReportForm> {
 
   @override
   Widget build(BuildContext context) {
-    final rankItems = Rank.values.map<DropdownMenuItem<String>>((Rank item) {
+    final rankItems = ranks.map<DropdownMenuItem<String>>((String item) {
       return DropdownMenuItem<String>(
-        value: item.name,
-        child: Text(item.name),
+        value: item,
+        child: Text(item),
       );
     }).toList();
     final report = ref.watch(reportRepositoryProvider).value;
@@ -192,7 +179,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
                         validator: validateNotEmpty,
                         value: _chiefRank,
                         decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.security)),
+                            prefixIcon: Icon(Icons.military_tech)),
                         onChanged: (String? newValue) {
                           setState(() {
                             _chiefRank = newValue!;
@@ -224,7 +211,7 @@ class ReportFormState extends ConsumerState<ReportForm> {
                         validator: validateNotEmpty,
                         value: _checkerRank,
                         decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.security)),
+                            prefixIcon: Icon(Icons.military_tech)),
                         onChanged: (String? newValue) {
                           setState(() {
                             _checkerRank = newValue!;
@@ -243,14 +230,24 @@ class ReportFormState extends ConsumerState<ReportForm> {
                 )),
               ],
             ),
-            const Row(
-              children: [
-                SubheaderText('ПММ передано в інші в/ч'),
-              ],
-            ),
-            Expanded(
-                child: SingleChildScrollView(
-                    child: OutcomeWidget(data: _outcomeData))),
+            Padding(
+                padding: const EdgeInsets.all(8),
+                child: TextButton(
+                  child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('ПММ передано в інші в/ч',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
+                        Icon(Icons.arrow_right)
+                      ]),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OutcomeScreen()));
+                  },
+                )),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

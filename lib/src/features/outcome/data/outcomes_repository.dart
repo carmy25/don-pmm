@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'outcomes_repository.g.dart';
 
-@Riverpod()
+@Riverpod(keepAlive: true)
 class OutcomesRepository extends _$OutcomesRepository {
   @override
   List<FAL> build() {
@@ -11,11 +11,11 @@ class OutcomesRepository extends _$OutcomesRepository {
   }
 
   void addOutcome({required FAL fal}) {
-    state = [...state, fal];
+    state = {...state, fal}.toList();
   }
 
   removeOutcomeByUuid(String uuid) {
-    final newState = state..where((fu) => fu.uuid != uuid).toList();
+    final newState = state.where((fu) => fu.uuid != uuid).toList();
     state = newState;
   }
 }

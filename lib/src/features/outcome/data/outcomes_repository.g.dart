@@ -156,12 +156,12 @@ class _OutcomeByFalTypeProviderElement extends AutoDisposeProviderElement<FAL?>
 }
 
 String _$outcomesRepositoryHash() =>
-    r'0db5aa2e77cf80a345f05b3fc576b8be05fa2d04';
+    r'ad908ee1ddbf59d2b6a2b658806f6bf0b2a9795b';
 
 /// See also [OutcomesRepository].
 @ProviderFor(OutcomesRepository)
 final outcomesRepositoryProvider =
-    AutoDisposeNotifierProvider<OutcomesRepository, List<FAL>>.internal(
+    NotifierProvider<OutcomesRepository, List<FAL>>.internal(
   OutcomesRepository.new,
   name: r'outcomesRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -171,6 +171,6 @@ final outcomesRepositoryProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$OutcomesRepository = AutoDisposeNotifier<List<FAL>>;
+typedef _$OutcomesRepository = Notifier<List<FAL>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

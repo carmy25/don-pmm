@@ -23,6 +23,24 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
     "removable": true,
     "columns": [
       {
+        "primary_key": true,
+        "name": "uuid",
+        "type": "string",
+        "format": null,
+        "description": null,
+        "display": false,
+        "editable": false,
+        "style": {
+          "font_weight": "bold",
+          "font_size": 14.0,
+          "font_color": "#333333",
+          "background_color": "#b5cfd2",
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
+          "text_align": "center"
+        }
+      },
+      {
         "name": "comodity",
         "title": "Назва ПММ",
         "type": "choice",
@@ -78,6 +96,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   };
   @override
   Widget build(BuildContext context) {
+    data['rows'] = widget.data;
     return XEditableTable(
       key: _editableTableKey,
       entity: TableEntity.fromJson(data),
@@ -105,9 +124,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
         if (uuid == null) {
           return;
         }
-        ref
-            .watch(outcomesRepositoryProvider.notifier)
-            .removeOutcomeByUuid(uuid);
+        ref.read(outcomesRepositoryProvider.notifier).removeOutcomeByUuid(uuid);
         debugPrint('row removed: ${row.toString()}');
       },
       onRowAdded: () {},
