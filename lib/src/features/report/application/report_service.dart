@@ -859,8 +859,7 @@ class ReportService {
     cidx += 2;
     c = sheet.getRangeByName('E$cidx:G$cidx');
     c.merge();
-    c.text =
-        '${report.chiefRank}                                                    ${report.chiefName}';
+    c.text = '${report.chiefRank}                 ${report.chiefName}';
     c.cellStyle.fontSize = 12;
 
     c = sheet.getRangeByName('A$cidx:C$cidx');

@@ -4,6 +4,7 @@ import 'package:donpmm/src/common/rank.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/presentation/cars_list_screen.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_screen.dart';
+import 'package:donpmm/src/features/report/application/report_loader.dart';
 import 'package:donpmm/src/features/report/application/report_service.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/report/domain/report.dart';
@@ -97,7 +98,10 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
 
   Future<bool> _openReport() async {
     String? outputFile = await _getFilepathOpen();
-    if (outputFile != null) {}
+    if (outputFile != null) {
+      final reportLoader = ref.read(reportLoaderServiceProvider);
+      await reportLoader.loadFromFile(outputFile);
+    }
     return true;
   }
 
