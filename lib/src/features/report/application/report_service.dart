@@ -7,6 +7,7 @@ import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
+import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -799,8 +800,12 @@ class ReportService {
       double fillupOtherMilBaseLtrs = 0;
       double burnedLtrs = 0;
       double outcomeTotal = outcome?.amountLtrs ?? 0;
+      final carsBeforeCalculated = <String>{};
       for (final fillup in fillups) {
-        beforeLtrs += fillup.beforeLtrs;
+        if (!carsBeforeCalculated.contains(fillup.waybill.carUuid)) {
+          beforeLtrs += fillup.beforeLtrs;
+          carsBeforeCalculated.add(fillup.waybill.carUuid);
+        }
         burnedLtrs += fillup.burnedLtrs;
         if (fillup.otherMilBase) {
           fillupOtherMilBaseLtrs += fillup.fillupLtrs;
