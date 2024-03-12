@@ -150,3 +150,9 @@ String unitCorrectEnding(int num) {
 }
 
 double parseDouble(String text) => text.isEmpty ? 0 : double.parse(text);
+
+String formatDateToString(DateTime? date) {
+  if (date == null) return '-';
+
+  return DateFormat('dd.MM.yyyy').format(date);
+}

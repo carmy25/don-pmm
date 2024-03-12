@@ -14,7 +14,6 @@ enum FALType {
   p1('А-92 Євро5 Е0', 0.75, FALCategory.petrol),
   p2('А-80 ДЗ', 0.75, FALCategory.petrol),
   p3('А-95 Євро5 Е5', 0.75, FALCategory.petrol),
-  p4('А-95 Євро5 Е5', 0.75, FALCategory.petrol),
   o1('Evinrude Johnson XD-100', 0.9, FALCategory.oil),
   o2('SAE 5W40 CI-4/SL', 0.9, FALCategory.oil),
   o3('Азмол Гарант M-4042 ВТ', 0.9, FALCategory.oil),

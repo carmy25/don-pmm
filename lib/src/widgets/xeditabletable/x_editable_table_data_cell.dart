@@ -335,8 +335,8 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
         validator: validateNotEmpty,
         value: _dropdownValue,
         onChanged: (String? newValue) {
-          widget.cellEntity.value = newValue;
           setState(() {
+            widget.cellEntity.value = newValue;
             _dropdownValue = newValue!;
           });
         },
