@@ -18,6 +18,10 @@ class OutcomesRepository extends _$OutcomesRepository {
     final newState = state.where((fu) => fu.uuid != uuid).toList();
     state = newState;
   }
+
+  void clear() {
+    state = [];
+  }
 }
 
 @riverpod

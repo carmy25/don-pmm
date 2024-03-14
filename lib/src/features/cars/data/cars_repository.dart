@@ -20,6 +20,10 @@ class CarList extends _$CarList {
     state = AsyncData(newState);
   }
 
+  clear() {
+    state = const AsyncData([]);
+  }
+
   Future<void> removeCar(Car car) async {
     final previousState = await future;
     ref.read(waybillListProvider.notifier).removeWaybillsByCar(car);

@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/cars/data/cars_repository.dart';
+import 'package:donpmm/src/features/cars/domain/car.dart';
+import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
+import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:excel/excel.dart';
 
-import 'package:donpmm/src/features/report/data/report_repository.dart';
-import 'package:donpmm/src/features/report/domain/report.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'report_loader.g.dart';
 
@@ -22,6 +26,64 @@ class ReportLoader {
         start: df.parse(start.group(0)!), end: df.parse(end.group(0)!));
   }
 
+  _loadCarsData(Excel xl) async {
+    final carsRepo = ref.watch(carListProvider.notifier);
+    carsRepo.clear();
+
+    final transcriptSheet = xl['Реєстр шляхових листів'];
+    var cidx = 8;
+    do {
+      final carName = transcriptSheet
+          .cell(CellIndex.indexByString('B$cidx'))
+          .value
+          .toString();
+      if (carName.startsWith('Разом')) {
+        break;
+      }
+      final carNumber = transcriptSheet
+          .cell(CellIndex.indexByString('C$cidx'))
+          .value
+          .toString();
+      final consumptionRate = 0.0;
+      final consumptionRateMH = 0.0;
+      await carsRepo.addCar(Car(
+          uuid: const Uuid().v4(),
+          consumptionRate: consumptionRate,
+          consumptionRateMH: consumptionRateMH,
+          name: carName,
+          number: carNumber));
+    } while (true);
+  }
+
+  _loadOutcomeData(Excel xl) async {
+    final reportSheet = xl['Донесення'];
+    final outcomeRepo = ref.watch(outcomesRepositoryProvider.notifier);
+    outcomeRepo.clear();
+    var cidx = 13;
+    do {
+      final comodityName =
+          reportSheet.cell(CellIndex.indexByString('B$cidx')).value.toString();
+      if (comodityName.startsWith('Шляхові листи')) {
+        break;
+      }
+      final comodityAmountString =
+          reportSheet.cell(CellIndex.indexByString('I$cidx')).value.toString();
+      debugPrint('_loadOutcomeData: [$comodityName]:[$comodityAmountString]');
+      final comodityAmount =
+          double.parse(comodityAmountString.split('/').first);
+      if (comodityAmount > 0) {
+        outcomeRepo.addOutcome(
+            fal: FAL(
+                uuid: const Uuid().v4(),
+                falType:
+                    FALType.values.where((e) => e.name == comodityName).first,
+                amountLtrs: comodityAmount));
+      }
+      ++cidx;
+    } while (true);
+    debugPrint('_loadOutcomeData: done');
+  }
+
   _loadReportGeneralData(Excel xl) async {
     final reportSheet = xl['Донесення'];
     final unitName =
@@ -29,10 +91,21 @@ class ReportLoader {
     final dtRangeString =
         reportSheet.cell(CellIndex.indexByString('A4')).value.toString();
     final dtRange = _parseDtRangeFromReport(dtRangeString);
+
+    final internalSheet = xl['__internal__'];
     final chiefPosition =
-        reportSheet.cell(CellIndex.indexByString('H8')).value.toString();
-    debugPrint('UN $unitName, ${dtRange.start}');
-    /*await ref.read(reportRepositoryProvider.notifier).createReport(
+        internalSheet.cell(CellIndex.indexByString('a2')).value.toString();
+    final chiefRank =
+        internalSheet.cell(CellIndex.indexByString('a3')).value.toString();
+    final chiefName =
+        internalSheet.cell(CellIndex.indexByString('a1')).value.toString();
+    final checkerName =
+        internalSheet.cell(CellIndex.indexByString('a4')).value.toString();
+    final checkerRank =
+        internalSheet.cell(CellIndex.indexByString('a5')).value.toString();
+    final milBase =
+        internalSheet.cell(CellIndex.indexByString('a6')).value.toString();
+    await ref.watch(reportRepositoryProvider.notifier).createReport(
         unitName: unitName,
         dtRange: dtRange,
         chiefPosition: chiefPosition,
@@ -40,13 +113,15 @@ class ReportLoader {
         chiefName: chiefName,
         checkerName: checkerName,
         checkerRank: checkerRank,
-        milBase: milBase);*/
+        milBase: milBase);
   }
 
   loadFromFile(String path) async {
     final bytes = await File(path).readAsBytes();
     final excel = Excel.decodeBytes(bytes);
     await _loadReportGeneralData(excel);
+    await _loadOutcomeData(excel);
+    await _loadCarsData(excel);
   }
 }
 

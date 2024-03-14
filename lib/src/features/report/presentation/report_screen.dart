@@ -26,8 +26,10 @@ class ReportScreen extends ConsumerStatefulWidget {
 class ReportScreenState extends ConsumerState<ReportScreen> {
   final _formKey = GlobalKey<FormState>();
   late DateTimeRange? _dtRange;
-  String? _chiefRank;
-  String? _checkerRank;
+  late final FocusNode _chiefRankNode;
+  late final FocusNode _checkerRankNode;
+  final TextEditingController _chiefRankInput = TextEditingController();
+  final TextEditingController _checkerRankInput = TextEditingController();
   final TextEditingController _milBaseInput = TextEditingController();
   final TextEditingController _unitNameInput = TextEditingController();
   final TextEditingController _chiefPositionInput = TextEditingController();
@@ -65,23 +67,16 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
           unitName: _unitNameInput.text,
           dtRange: _dtRange!,
           chiefPosition: _chiefPositionInput.text,
-          chiefRank: _chiefRank ?? '',
+          chiefRank: _chiefRankInput.text,
           chiefName: _chiefNameInput.text,
           checkerName: _checkerNameInput.text,
-          checkerRank: _checkerRank ?? '');
+          checkerRank: _checkerRankInput.text);
       final reportService = ref.read(reportServiceProvider);
       await reportService.saveToFile(outputFile);
       return true;
     }
     return false;
   }
-
-  final _rankItems = ranks.map<DropdownMenuItem<String>>((String item) {
-    return DropdownMenuItem<String>(
-      value: item,
-      child: Text(item),
-    );
-  }).toList();
 
   void _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -93,25 +88,41 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
+    _chiefRankNode = FocusNode();
+    _checkerRankNode = FocusNode();
+    // _loadPreferences();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _chiefRankNode.dispose();
+    _checkerRankNode.dispose();
   }
 
   Future<bool> _openReport() async {
     String? outputFile = await _getFilepathOpen();
     if (outputFile != null) {
-      final reportLoader = ref.read(reportLoaderServiceProvider);
+      final reportLoader = ref.watch(reportLoaderServiceProvider);
       await reportLoader.loadFromFile(outputFile);
     }
     return true;
   }
 
   Widget _reportFormWidget(Report? report) {
-    _checkerNameInput.text = _checkerNameInput.text == ''
-        ? report?.checkerName ?? ''
-        : _checkerNameInput.text;
-    _chiefNameInput.text = _chiefNameInput.text == ''
-        ? report?.chiefName ?? ''
-        : _chiefNameInput.text;
+    if (report != null) {
+      _milBaseInput.text = report.milBase;
+      _unitNameInput.text = report.unitName;
+      _dtRange = report.dtRange;
+      _dateInput.text =
+          'З ${formatDateToString(report.dtRange.start)} по ${formatDateToString(report.dtRange.end)}';
+      _checkerNameInput.text = report.checkerName;
+      _checkerRankInput.text = report.checkerRank;
+      _chiefPositionInput.text = report.chiefPosition;
+      _chiefNameInput.text = report.chiefName;
+      _chiefRankInput.text = report.chiefRank;
+      debugPrint('Report updated: ${report}');
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Донесення ПММ'),
@@ -199,9 +210,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                       firstDate: DateTime(2022),
                       lastDate: DateTime(2028),
                     );
-                    setState(() {
-                      _dtRange = result;
-                    });
+                    _dtRange = result;
 
                     if (result == null) return;
 
@@ -224,18 +233,67 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                     icon: const Icon(Icons.supervisor_account),
                   )),
                   Flexible(
-                      child: DropdownButtonFormField<String>(
-                          validator: validateNotEmpty,
-                          value: _chiefRank,
+                    child: RawAutocomplete<String>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        return ranks.where((String option) {
+                          return option
+                              .contains(textEditingValue.text.toLowerCase());
+                        });
+                      },
+                      textEditingController: _chiefRankInput,
+                      focusNode: _chiefRankNode,
+                      fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                      ) {
+                        return TextFormField(
+                          controller: textEditingController,
                           decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.military_tech)),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _chiefRank = newValue!;
-                            });
+                            labelText: 'Звання',
+                            icon: Icon(Icons.military_tech),
+                          ),
+                          focusNode: focusNode,
+                          onFieldSubmitted: (String value) {
+                            onFieldSubmitted();
                           },
-                          hint: const Text('Звання'),
-                          items: _rankItems)),
+                          validator: validateNotEmpty,
+                        );
+                      },
+                      optionsViewBuilder: (
+                        BuildContext context,
+                        AutocompleteOnSelected<String> onSelected,
+                        Iterable<String> options,
+                      ) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4.0,
+                            child: SizedBox(
+                              height: 200.0,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(8.0),
+                                itemCount: options.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final String option =
+                                      options.elementAt(index);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      onSelected(option);
+                                    },
+                                    child: ListTile(
+                                      title: Text(option),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
               Row(
@@ -256,18 +314,67 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
               Row(
                 children: [
                   Flexible(
-                      child: DropdownButtonFormField<String>(
-                          validator: validateNotEmpty,
-                          value: _checkerRank,
+                    child: RawAutocomplete<String>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        return ranks.where((String option) {
+                          return option
+                              .contains(textEditingValue.text.toLowerCase());
+                        });
+                      },
+                      textEditingController: _checkerRankInput,
+                      focusNode: _checkerRankNode,
+                      fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                      ) {
+                        return TextFormField(
+                          controller: textEditingController,
                           decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.military_tech)),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _checkerRank = newValue!;
-                            });
+                            labelText: 'Звання',
+                            icon: Icon(Icons.military_tech),
+                          ),
+                          focusNode: focusNode,
+                          onFieldSubmitted: (String value) {
+                            onFieldSubmitted();
                           },
-                          hint: const Text('Звання'),
-                          items: _rankItems)),
+                          validator: validateNotEmpty,
+                        );
+                      },
+                      optionsViewBuilder: (
+                        BuildContext context,
+                        AutocompleteOnSelected<String> onSelected,
+                        Iterable<String> options,
+                      ) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4.0,
+                            child: SizedBox(
+                              height: 200.0,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(8.0),
+                                itemCount: options.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final String option =
+                                      options.elementAt(index);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      onSelected(option);
+                                    },
+                                    child: ListTile(
+                                      title: Text(option),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   Flexible(
                       child: TextFormField(
                     validator: validateNotEmpty,

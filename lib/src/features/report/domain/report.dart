@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Report {
-  const Report({
+  Report({
     required this.unitName,
     required this.milBase,
     required this.dtRange,

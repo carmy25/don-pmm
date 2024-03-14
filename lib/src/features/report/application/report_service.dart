@@ -7,7 +7,6 @@ import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
-import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,10 +56,21 @@ class ReportService {
         workbook.worksheets.addWithName('Відомість ДП'), FALCategory.diesel);
     _generateWaybillsRegistrySheet(
         workbook.worksheets.addWithName('Реєстр шляхових листів'));
+    _generateInternalSheet(workbook.worksheets.addWithName('__internal__'));
 
     List<int> bytes = workbook.saveSync();
     await File(path).writeAsBytes(bytes);
     workbook.dispose();
+  }
+
+  _generateInternalSheet(Worksheet sheet) {
+    final report = ref.read(reportRepositoryProvider).value!;
+    sheet.getRangeByName('A1').text = report.chiefName;
+    sheet.getRangeByName('A2').text = report.chiefPosition;
+    sheet.getRangeByName('A3').text = report.chiefRank;
+    sheet.getRangeByName('A4').text = report.checkerName;
+    sheet.getRangeByName('A5').text = report.checkerRank;
+    sheet.getRangeByName('A6').text = report.milBase;
   }
 
   void _generateWaybillsRegistrySheet(Worksheet sheet) {
@@ -862,7 +872,7 @@ class ReportService {
     c.cellStyle.wrapText = true;
 
     cidx += 2;
-    c = sheet.getRangeByName('E$cidx:G$cidx');
+    c = sheet.getRangeByName('E$cidx:I$cidx');
     c.merge();
     c.text = '${report.chiefRank}                 ${report.chiefName}';
     c.cellStyle.fontSize = 12;
