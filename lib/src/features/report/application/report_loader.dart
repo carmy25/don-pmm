@@ -31,27 +31,31 @@ class ReportLoader {
     carsRepo.clear();
 
     final transcriptSheet = xl['Реєстр шляхових листів'];
-    var cidx = 8;
+    var cidx = 5;
     do {
-      final carName = transcriptSheet
-          .cell(CellIndex.indexByString('B$cidx'))
-          .value
-          .toString();
-      if (carName.startsWith('Разом')) {
+      final carName =
+          transcriptSheet.cell(CellIndex.indexByString('M$cidx')).value;
+      if (carName == null || carName.toString().isEmpty) {
         break;
       }
-      final carNumber = transcriptSheet
-          .cell(CellIndex.indexByString('C$cidx'))
-          .value
-          .toString();
-      final consumptionRate = 0.0;
-      final consumptionRateMH = 0.0;
+      final carNumber =
+          (transcriptSheet.cell(CellIndex.indexByString('N$cidx')).value ?? '')
+              .toString();
+      final consumptionRate =
+          (transcriptSheet.cell(CellIndex.indexByString('G$cidx')).value ?? '')
+              .toString();
+      final consumptionRateMH =
+          (transcriptSheet.cell(CellIndex.indexByString('H$cidx')).value ?? '')
+              .toString();
       await carsRepo.addCar(Car(
           uuid: const Uuid().v4(),
-          consumptionRate: consumptionRate,
-          consumptionRateMH: consumptionRateMH,
-          name: carName,
+          consumptionRate:
+              consumptionRate.isEmpty ? 0.0 : double.parse(consumptionRate),
+          consumptionRateMH:
+              consumptionRateMH.isEmpty ? 0.0 : double.parse(consumptionRateMH),
+          name: carName.toString(),
           number: carNumber));
+      ++cidx;
     } while (true);
   }
 

@@ -47,6 +47,8 @@ class ReportService {
   }
 
   saveToFile(String path) async {
+    _generateInternalSheetReportData(
+        workbook.worksheets.addWithName('__internal__'));
     _generateRegistrySheet(workbook.worksheets.addWithName('Реєстр'));
     _generateReportingSheet(workbook.worksheets.addWithName('Донесення'));
     _generateTranscriptSheet(workbook.worksheets.addWithName('Розшифровка'));
@@ -56,14 +58,13 @@ class ReportService {
         workbook.worksheets.addWithName('Відомість ДП'), FALCategory.diesel);
     _generateWaybillsRegistrySheet(
         workbook.worksheets.addWithName('Реєстр шляхових листів'));
-    _generateInternalSheet(workbook.worksheets.addWithName('__internal__'));
 
     List<int> bytes = workbook.saveSync();
     await File(path).writeAsBytes(bytes);
     workbook.dispose();
   }
 
-  _generateInternalSheet(Worksheet sheet) {
+  _generateInternalSheetReportData(Worksheet sheet) {
     final report = ref.read(reportRepositoryProvider).value!;
     sheet.getRangeByName('A1').text = report.chiefName;
     sheet.getRangeByName('A2').text = report.chiefPosition;
@@ -400,14 +401,15 @@ class ReportService {
       _updateDataCell(sheet, 'c$cidx', wb.number);
       _updateDataCell(sheet, 'd$cidx', 'л');
 
-      final remnant = ref
-          .read(fillupsByWaybillProvider(wb))
-          .where((fu) => fu.falType.category == category)
-          .map(
-            (e) => e.beforeLtrs + e.fillupLtrs - e.burnedLtrs,
-          )
-          .sum
-          .round();
+      final remnant = roundDouble(
+          ref
+              .read(fillupsByWaybillProvider(wb))
+              .where((fu) => fu.falType.category == category)
+              .map(
+                (e) => e.beforeLtrs + e.fillupLtrs - e.burnedLtrs,
+              )
+              .sum,
+          places: category == FALCategory.oil ? 1 : 0);
 
       _updateDataCell(sheet, 'e$cidx', remnant.toString(), isNumber: true);
       _updateDataCell(sheet, 'f$cidx', remnant.toString(), isNumber: true);
@@ -566,7 +568,10 @@ class ReportService {
 
     var cidx = 7;
     var waybillsAvailable = false;
+    final alreadyAddedCars = <String>{};
+    final internalSheet = workbook.worksheets['__internal__'];
     for (final (idx, car) in cars.indexed) {
+      debugPrint('Transcript for car: [${car.name}]');
       final waybills =
           ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
       if (waybills.isEmpty) {
@@ -582,32 +587,35 @@ class ReportService {
           sheet, 'D$cidx', '${waybills.last.kmsEnd - waybills.first.kmsStart}',
           isNumber: true);
 
-      final Map<String, int> burned = {'df': 0, 'pf': 0};
+      final Map<String, double> burned = {'df': 0, 'pf': 0};
       for (final wb in waybills) {
         final fillups = ref.read(fillupsByWaybillProvider(wb));
         for (final fu in fillups) {
           if (fu.falType.category == FALCategory.diesel) {
-            burned['df'] = burned['df']! + fu.burnedLtrs.round();
+            burned['df'] =
+                burned['df']! + roundDouble(fu.burnedLtrs, places: 0);
           } else if (fu.falType.category == FALCategory.petrol) {
-            burned['pf'] = burned['pf']! + fu.burnedLtrs.round();
+            burned['pf'] =
+                burned['pf']! + roundDouble(fu.burnedLtrs, places: 0);
           } else if (fu.falType.category == FALCategory.oil) {
             if (burned.containsKey(fu.falType.name)) {
-              burned[fu.falType.name] =
-                  burned[fu.falType.name]! + fu.burnedLtrs.round();
+              burned[fu.falType.name] = burned[fu.falType.name]! +
+                  roundDouble(fu.burnedLtrs, places: 1);
             } else {
-              burned[fu.falType.name] = fu.burnedLtrs.round();
+              burned[fu.falType.name] = roundDouble(fu.burnedLtrs, places: 1);
             }
           }
         }
       }
-      _updateDataCell(sheet, 'E$cidx', burned['df'].toString());
-      _updateDataCell(sheet, 'F$cidx', burned['pf'].toString());
+      _updateDataCell(sheet, 'E$cidx', burned['df'].toString(), isNumber: true);
+      _updateDataCell(sheet, 'F$cidx', burned['pf'].toString(), isNumber: true);
       for (final b in burned.entries) {
         if (['df', 'pf'].contains(b.key)) {
           continue;
         }
         final cellCol = String.fromCharCode(oilIndex[b.key]! + 71);
-        _updateDataCell(sheet, '$cellCol$cidx', b.value.toString());
+        _updateDataCell(sheet, '$cellCol$cidx', b.value.toString(),
+            isNumber: true);
       }
     }
     ++cidx;
@@ -799,7 +807,7 @@ class ReportService {
           sheet,
           'I$cidx',
           outcome != null
-              ? '${outcome.amountLtrs.round()}/${outcome.weightKgs.round()}'
+              ? '${removeDecimalZeroFormat(roundDouble(outcome.amountLtrs, places: falType.category == FALCategory.oil ? 1 : 0))}/${removeDecimalZeroFormat(roundDouble(outcome.weightKgs, places: falType.category == FALCategory.oil ? 1 : 0))}'
               : '0/0');
 
       final fillups = ref.read(fillupsByFalTypeProvider(falType));
@@ -824,22 +832,38 @@ class ReportService {
         }
       }
       outcomeTotal += burnedLtrs;
+      final roundPlaces = falType.category == FALCategory.oil ? 1 : 0;
+
+      final fillupKgs =
+          roundDouble(fillupLtrs * falType.density, places: roundPlaces);
+      final beforeKgs =
+          roundDouble(beforeLtrs * falType.density, places: roundPlaces);
+      final outcomeTotalKgs =
+          roundDouble(outcomeTotal * falType.density, places: roundPlaces);
+      final fillupOtherMilBaseKgs = roundDouble(
+          fillupOtherMilBaseLtrs * falType.density,
+          places: roundPlaces);
+      final burnedKgs =
+          roundDouble(burnedLtrs * falType.density, places: roundPlaces);
+
       final fillupTotal = fillupLtrs + fillupOtherMilBaseLtrs;
+      final fillupTotalKgs = fillupKgs + fillupOtherMilBaseKgs;
       final availableTotal = beforeLtrs + fillupTotal - outcomeTotal;
+      final availableTotalKgs = beforeKgs + fillupTotalKgs - outcomeTotalKgs;
       _updateDataCell(sheet, 'd$cidx',
-          '${beforeLtrs.round()}/${(beforeLtrs * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(beforeLtrs, places: roundPlaces))}/${removeDecimalZeroFormat(beforeKgs)}');
       _updateDataCell(sheet, 'e$cidx',
-          '${fillupLtrs.round()}/${(fillupLtrs * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(fillupLtrs, places: roundPlaces))}/${removeDecimalZeroFormat(fillupKgs)}');
       _updateDataCell(sheet, 'f$cidx',
-          '${fillupOtherMilBaseLtrs.round()}/${(fillupOtherMilBaseLtrs * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(fillupOtherMilBaseLtrs, places: roundPlaces))}/${removeDecimalZeroFormat(fillupOtherMilBaseKgs)}');
       _updateDataCell(sheet, 'g$cidx',
-          '${fillupTotal.round()}/${(fillupTotal * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(fillupTotal, places: roundPlaces))}/${removeDecimalZeroFormat(fillupTotalKgs)}');
       _updateDataCell(sheet, 'h$cidx',
-          '${burnedLtrs.round()}/${(burnedLtrs * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(burnedLtrs, places: roundPlaces))}/${removeDecimalZeroFormat(burnedKgs)}');
       _updateDataCell(sheet, 'j$cidx',
-          '${outcomeTotal.round()}/${(outcomeTotal * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(outcomeTotal, places: roundPlaces))}/${removeDecimalZeroFormat(outcomeTotalKgs)}');
       _updateDataCell(sheet, 'k$cidx',
-          '${availableTotal.round()}/${(availableTotal * falType.density).round()}');
+          '${removeDecimalZeroFormat(roundDouble(availableTotal, places: roundPlaces))}/${removeDecimalZeroFormat(availableTotalKgs)}');
     }
 
     ++cidx;

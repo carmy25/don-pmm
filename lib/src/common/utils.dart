@@ -156,3 +156,12 @@ String formatDateToString(DateTime? date) {
 
   return DateFormat('dd.MM.yyyy').format(date);
 }
+
+double roundDouble(double value, {int places = 1}) {
+  final mod = pow(10.0, places);
+  return ((value * mod).round().toDouble() / mod);
+}
+
+String removeDecimalZeroFormat(double n) {
+  return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1);
+}
