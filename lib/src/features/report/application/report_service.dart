@@ -47,8 +47,9 @@ class ReportService {
   }
 
   saveToFile(String path) async {
-    _generateInternalSheetReportData(
-        workbook.worksheets.addWithName('__internal__'));
+    final internalSheet = workbook.worksheets['Sheet1'];
+    internalSheet.name = '__internal__';
+    await _generateInternalSheetData(internalSheet);
     _generateRegistrySheet(workbook.worksheets.addWithName('Реєстр'));
     _generateReportingSheet(workbook.worksheets.addWithName('Донесення'));
     _generateTranscriptSheet(workbook.worksheets.addWithName('Розшифровка'));
@@ -64,7 +65,7 @@ class ReportService {
     workbook.dispose();
   }
 
-  _generateInternalSheetReportData(Worksheet sheet) {
+  _generateInternalSheetData(Worksheet sheet) async {
     final report = ref.read(reportRepositoryProvider).value!;
     sheet.getRangeByName('A1').text = report.chiefName;
     sheet.getRangeByName('A2').text = report.chiefPosition;
@@ -72,6 +73,19 @@ class ReportService {
     sheet.getRangeByName('A4').text = report.checkerName;
     sheet.getRangeByName('A5').text = report.checkerRank;
     sheet.getRangeByName('A6').text = report.milBase;
+
+    final waybills = await ref.read(waybillListProvider.future);
+
+    for (final (i, wb) in waybills.indexed) {
+      sheet.getRangeByName('i${i + 1}').text = wb.uuid;
+      sheet.getRangeByName('j${i + 1}').value = wb.issueDate;
+      sheet.getRangeByName('k${i + 1}').text = wb.number;
+      sheet.getRangeByName('l${i + 1}').value = wb.kmsStart;
+      sheet.getRangeByName('m${i + 1}').value = wb.kmsEnd;
+      sheet.getRangeByName('n${i + 1}').value = wb.mhStart;
+      sheet.getRangeByName('o${i + 1}').value = wb.mhEnd;
+      sheet.getRangeByName('p${i + 1}').text = wb.carUuid;
+    }
   }
 
   void _generateWaybillsRegistrySheet(Worksheet sheet) {
@@ -568,10 +582,16 @@ class ReportService {
 
     var cidx = 7;
     var waybillsAvailable = false;
-    final alreadyAddedCars = <String>{};
     final internalSheet = workbook.worksheets['__internal__'];
     for (final (idx, car) in cars.indexed) {
       debugPrint('Transcript for car: [${car.name}]');
+      internalSheet.getRangeByName('C${idx + 1}').text = car.name;
+      internalSheet.getRangeByName('d${idx + 1}').text = car.number;
+      internalSheet.getRangeByName('e${idx + 1}').text = car.note;
+      internalSheet.getRangeByName('f${idx + 1}').value = car.consumptionRate;
+      internalSheet.getRangeByName('g${idx + 1}').value = car.consumptionRateMH;
+      internalSheet.getRangeByName('h${idx + 1}').text = car.uuid;
+
       final waybills =
           ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
       if (waybills.isEmpty) {

@@ -30,31 +30,27 @@ class ReportLoader {
     final carsRepo = ref.watch(carListProvider.notifier);
     carsRepo.clear();
 
-    final transcriptSheet = xl['Реєстр шляхових листів'];
-    var cidx = 5;
+    final sheet = xl['__internal__'];
+    var cidx = 1;
     do {
-      final carName =
-          transcriptSheet.cell(CellIndex.indexByString('M$cidx')).value;
+      final carName = sheet.cell(CellIndex.indexByString('c$cidx')).value;
       if (carName == null || carName.toString().isEmpty) {
         break;
       }
-      final carNumber =
-          (transcriptSheet.cell(CellIndex.indexByString('N$cidx')).value ?? '')
-              .toString();
+      final carNumber = sheet.cell(CellIndex.indexByString('D$cidx')).value;
+      final carUuid = sheet.cell(CellIndex.indexByString('D$cidx')).value;
+      final carNote = sheet.cell(CellIndex.indexByString('e$cidx')).value;
       final consumptionRate =
-          (transcriptSheet.cell(CellIndex.indexByString('G$cidx')).value ?? '')
-              .toString();
+          sheet.cell(CellIndex.indexByString('f$cidx')).value;
       final consumptionRateMH =
-          (transcriptSheet.cell(CellIndex.indexByString('H$cidx')).value ?? '')
-              .toString();
+          sheet.cell(CellIndex.indexByString('g$cidx')).value;
       await carsRepo.addCar(Car(
-          uuid: const Uuid().v4(),
-          consumptionRate:
-              consumptionRate.isEmpty ? 0.0 : double.parse(consumptionRate),
-          consumptionRateMH:
-              consumptionRateMH.isEmpty ? 0.0 : double.parse(consumptionRateMH),
+          uuid: carUuid.toString(),
+          note: carNote == null ? '' : carNote.toString(),
+          consumptionRate: double.parse(consumptionRate!.toString()),
+          consumptionRateMH: double.parse(consumptionRateMH!.toString()),
           name: carName.toString(),
-          number: carNumber));
+          number: carNumber.toString()));
       ++cidx;
     } while (true);
   }
@@ -120,12 +116,15 @@ class ReportLoader {
         milBase: milBase);
   }
 
+  _loadWaybillsData(Excel xl) {}
+
   loadFromFile(String path) async {
     final bytes = await File(path).readAsBytes();
     final excel = Excel.decodeBytes(bytes);
     await _loadReportGeneralData(excel);
     await _loadOutcomeData(excel);
     await _loadCarsData(excel);
+    await _loadWaybillsData(excel);
   }
 }
 

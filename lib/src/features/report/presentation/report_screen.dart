@@ -78,12 +78,12 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
     return false;
   }
 
-  void _loadPreferences() async {
+  /*void _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     _unitNameInput.text = prefs.getString('unitName') ?? '';
     _milBaseInput.text = prefs.getString('milBase') ?? '';
     _chiefPositionInput.text = prefs.getString('chiefPosition') ?? '';
-  }
+  }*/
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
       _chiefPositionInput.text = report.chiefPosition;
       _chiefNameInput.text = report.chiefName;
       _chiefRankInput.text = report.chiefRank;
-      debugPrint('Report updated: ${report}');
+      debugPrint('Report updated: ${report.milBase}');
     }
     return Scaffold(
       appBar: AppBar(
