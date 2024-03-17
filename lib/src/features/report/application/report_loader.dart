@@ -4,6 +4,8 @@ import 'package:donpmm/src/features/cars/data/cars_repository.dart';
 import 'package:donpmm/src/features/cars/domain/car.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
+import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
+import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:excel/excel.dart';
 
 import 'package:flutter/material.dart';
@@ -38,12 +40,12 @@ class ReportLoader {
         break;
       }
       final carNumber = sheet.cell(CellIndex.indexByString('D$cidx')).value;
-      final carUuid = sheet.cell(CellIndex.indexByString('D$cidx')).value;
       final carNote = sheet.cell(CellIndex.indexByString('e$cidx')).value;
       final consumptionRate =
           sheet.cell(CellIndex.indexByString('f$cidx')).value;
       final consumptionRateMH =
           sheet.cell(CellIndex.indexByString('g$cidx')).value;
+      final carUuid = sheet.cell(CellIndex.indexByString('h$cidx')).value;
       await carsRepo.addCar(Car(
           uuid: carUuid.toString(),
           note: carNote == null ? '' : carNote.toString(),
@@ -116,7 +118,49 @@ class ReportLoader {
         milBase: milBase);
   }
 
-  _loadWaybillsData(Excel xl) {}
+  dynamic _getCellValue(Sheet sheet, String address) {
+    final value = switch (sheet.cell(CellIndex.indexByString(address)).value) {
+      (IntCellValue v) => v.value.toDouble(),
+      (DoubleCellValue v) => v.value,
+      (TextCellValue v) => v.value,
+      _ => 0
+    };
+    return value;
+  }
+
+  _loadWaybillsData(Excel xl) async {
+    final wbRepo = ref.read(waybillListProvider.notifier);
+
+    wbRepo.clear();
+
+    final sheet = xl['__internal__'];
+    var cidx = 1;
+    do {
+      final wbUuid = sheet.cell(CellIndex.indexByString('I$cidx')).value;
+      if (wbUuid == null || wbUuid.toString().isEmpty) {
+        break;
+      }
+      final wbIssueDate =
+          sheet.cell(CellIndex.indexByString('J$cidx')).value as DateCellValue;
+      final wbNumber = _getCellValue(sheet, 'K$cidx');
+      final wbKmsStart = _getCellValue(sheet, 'L$cidx');
+      final wbKmsEnd = _getCellValue(sheet, 'M$cidx');
+      final wbMhStart = _getCellValue(sheet, 'N$cidx');
+      final wbMhEnd = _getCellValue(sheet, 'O$cidx');
+      final wbCarUuid = _getCellValue(sheet, 'P$cidx');
+      wbRepo.addWaybill(Waybill(
+        uuid: wbUuid.toString(),
+        issueDate: wbIssueDate.asDateTimeLocal(),
+        number: wbNumber,
+        kmsStart: wbKmsStart,
+        kmsEnd: wbKmsEnd,
+        mhStart: wbMhStart,
+        mhEnd: wbMhEnd,
+        carUuid: wbCarUuid,
+      ));
+      ++cidx;
+    } while (true);
+  }
 
   loadFromFile(String path) async {
     final bytes = await File(path).readAsBytes();

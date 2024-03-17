@@ -28,6 +28,10 @@ class WaybillList extends _$WaybillList {
     state = AsyncData(newState);
   }
 
+  clear() {
+    state = const AsyncData([]);
+  }
+
   void removeWaybillsByCar(Car car) {
     final newState =
         state.value!.where((wb) => wb.carUuid != car.uuid).toList();
