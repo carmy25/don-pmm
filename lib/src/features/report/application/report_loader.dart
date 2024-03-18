@@ -4,6 +4,7 @@ import 'package:donpmm/src/features/cars/data/cars_repository.dart';
 import 'package:donpmm/src/features/cars/domain/car.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
+import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:excel/excel.dart';
@@ -128,7 +129,9 @@ class ReportLoader {
     return value;
   }
 
-  _loadFillupsData(Excel xl) async {}
+  _loadFillupsData(Excel xl) async {
+    final fuRepo = ref.read(fillupListProvider);
+  }
 
   void _loadWaybillsData(Excel xl) {
     final wbRepo = ref.read(waybillListProvider.notifier);
@@ -170,7 +173,7 @@ class ReportLoader {
     await _loadReportGeneralData(excel);
     await _loadOutcomeData(excel);
     await _loadCarsData(excel);
-    await _loadWaybillsData(excel);
+    _loadWaybillsData(excel);
     await _loadFillupsData(excel);
   }
 }

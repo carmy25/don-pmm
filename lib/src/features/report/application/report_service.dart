@@ -76,15 +76,32 @@ class ReportService {
 
     final waybills = await ref.read(waybillListProvider.future);
 
+    var fuIdx = 1;
     for (final (i, wb) in waybills.indexed) {
-      sheet.getRangeByName('i${i + 1}').text = wb.uuid;
-      sheet.getRangeByName('j${i + 1}').value = wb.issueDate;
-      sheet.getRangeByName('k${i + 1}').text = wb.number;
-      sheet.getRangeByName('l${i + 1}').value = wb.kmsStart;
-      sheet.getRangeByName('m${i + 1}').value = wb.kmsEnd;
-      sheet.getRangeByName('n${i + 1}').value = wb.mhStart;
-      sheet.getRangeByName('o${i + 1}').value = wb.mhEnd;
-      sheet.getRangeByName('p${i + 1}').text = wb.carUuid;
+      final idx = i + 1;
+      sheet.getRangeByName('i$idx').text = wb.uuid;
+      sheet.getRangeByName('j$idx').value = wb.issueDate;
+      sheet.getRangeByName('k$idx').text = wb.number;
+      sheet.getRangeByName('l$idx').value = wb.kmsStart;
+      sheet.getRangeByName('m$idx').value = wb.kmsEnd;
+      sheet.getRangeByName('n$idx').value = wb.mhStart;
+      sheet.getRangeByName('o$idx').value = wb.mhEnd;
+      sheet.getRangeByName('p$idx').text = wb.carUuid;
+      final fillups = ref.read(fillupsByWaybillProvider(wb));
+      for (final fu in fillups) {
+        // q, r, s, t, u, v, w, x
+        debugPrint(
+            '_generateInternalSheetData: wb[${wb.number}], fu[${fu.uuid}]');
+        sheet.getRangeByName('q$fuIdx').text = fu.uuid;
+        sheet.getRangeByName('r$fuIdx').text = fu.falType.name;
+        sheet.getRangeByName('s$fuIdx').value = fu.date;
+        sheet.getRangeByName('t$fuIdx').value = fu.beforeLtrs;
+        sheet.getRangeByName('u$fuIdx').value = fu.fillupLtrs;
+        sheet.getRangeByName('v$fuIdx').value = fu.burnedLtrs;
+        sheet.getRangeByName('w$fuIdx').text = fu.waybill.uuid;
+        sheet.getRangeByName('x$fuIdx').value = fu.otherMilBase;
+        ++fuIdx;
+      }
     }
   }
 
