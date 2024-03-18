@@ -21,6 +21,10 @@ class FillupList extends _$FillupList {
     state = AsyncData(newState);
   }
 
+  void clear() {
+    state = const AsyncData([]);
+  }
+
   removeFillupByUuid(String uuid) {
     final newState = state.value!.where((fu) => fu.uuid != uuid).toList();
     state = AsyncData(newState);

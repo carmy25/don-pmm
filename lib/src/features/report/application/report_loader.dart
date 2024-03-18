@@ -128,7 +128,9 @@ class ReportLoader {
     return value;
   }
 
-  _loadWaybillsData(Excel xl) async {
+  _loadFillupsData(Excel xl) async {}
+
+  void _loadWaybillsData(Excel xl) {
     final wbRepo = ref.read(waybillListProvider.notifier);
 
     wbRepo.clear();
@@ -169,6 +171,7 @@ class ReportLoader {
     await _loadOutcomeData(excel);
     await _loadCarsData(excel);
     await _loadWaybillsData(excel);
+    await _loadFillupsData(excel);
   }
 }
 
