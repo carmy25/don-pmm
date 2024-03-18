@@ -155,6 +155,134 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
+String _$waybillByUuidHash() => r'80b3a6d81a2d48dd365a7df15ea36f145df4450b';
+
+/// See also [waybillByUuid].
+@ProviderFor(waybillByUuid)
+const waybillByUuidProvider = WaybillByUuidFamily();
+
+/// See also [waybillByUuid].
+class WaybillByUuidFamily extends Family<Waybill> {
+  /// See also [waybillByUuid].
+  const WaybillByUuidFamily();
+
+  /// See also [waybillByUuid].
+  WaybillByUuidProvider call(
+    String uuid,
+  ) {
+    return WaybillByUuidProvider(
+      uuid,
+    );
+  }
+
+  @override
+  WaybillByUuidProvider getProviderOverride(
+    covariant WaybillByUuidProvider provider,
+  ) {
+    return call(
+      provider.uuid,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'waybillByUuidProvider';
+}
+
+/// See also [waybillByUuid].
+class WaybillByUuidProvider extends AutoDisposeProvider<Waybill> {
+  /// See also [waybillByUuid].
+  WaybillByUuidProvider(
+    String uuid,
+  ) : this._internal(
+          (ref) => waybillByUuid(
+            ref as WaybillByUuidRef,
+            uuid,
+          ),
+          from: waybillByUuidProvider,
+          name: r'waybillByUuidProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$waybillByUuidHash,
+          dependencies: WaybillByUuidFamily._dependencies,
+          allTransitiveDependencies:
+              WaybillByUuidFamily._allTransitiveDependencies,
+          uuid: uuid,
+        );
+
+  WaybillByUuidProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.uuid,
+  }) : super.internal();
+
+  final String uuid;
+
+  @override
+  Override overrideWith(
+    Waybill Function(WaybillByUuidRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: WaybillByUuidProvider._internal(
+        (ref) => create(ref as WaybillByUuidRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        uuid: uuid,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<Waybill> createElement() {
+    return _WaybillByUuidProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WaybillByUuidProvider && other.uuid == uuid;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, uuid.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin WaybillByUuidRef on AutoDisposeProviderRef<Waybill> {
+  /// The parameter `uuid` of this provider.
+  String get uuid;
+}
+
+class _WaybillByUuidProviderElement extends AutoDisposeProviderElement<Waybill>
+    with WaybillByUuidRef {
+  _WaybillByUuidProviderElement(super.provider);
+
+  @override
+  String get uuid => (origin as WaybillByUuidProvider).uuid;
+}
+
 String _$waybillsByCarAndDateHash() =>
     r'ecfd63e922bc48d62ef0db9bd55e39c7bdd4099a';
 
@@ -302,7 +430,7 @@ class _WaybillsByCarAndDateProviderElement
   DateTime get after => (origin as WaybillsByCarAndDateProvider).after;
 }
 
-String _$waybillListHash() => r'021a1c65ee80f4d3f227739239fe5ed26c4054e2';
+String _$waybillListHash() => r'c97b362c2c0194941b6f842b24edf4d7fa9e2494';
 
 /// See also [WaybillList].
 @ProviderFor(WaybillList)

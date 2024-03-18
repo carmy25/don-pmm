@@ -50,6 +50,12 @@ List<Waybill> waybillsByCar(WaybillsByCarRef ref, Car car) {
 }
 
 @riverpod
+Waybill waybillByUuid(WaybillByUuidRef ref, String uuid) {
+  final waybills = ref.watch(waybillListProvider).value!;
+  return waybills.where((wb) => wb.uuid == uuid).firstOrNull!;
+}
+
+@riverpod
 List<Waybill> waybillsByCarAndDate(
     WaybillsByCarAndDateRef ref, Car car, DateTime after) {
   final waybills = ref.read(waybillsByCarProvider(car));

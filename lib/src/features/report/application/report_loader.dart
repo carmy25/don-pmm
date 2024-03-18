@@ -6,6 +6,7 @@ import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
+import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:excel/excel.dart';
 
@@ -124,13 +125,39 @@ class ReportLoader {
       (IntCellValue v) => v.value.toDouble(),
       (DoubleCellValue v) => v.value,
       (TextCellValue v) => v.value,
+      (BoolCellValue v) => v.value,
+      (DateCellValue v) => v.asDateTimeLocal(),
       _ => 0
     };
     return value;
   }
 
   _loadFillupsData(Excel xl) async {
-    final fuRepo = ref.read(fillupListProvider);
+    final fuRepo = ref.read(fillupListProvider.notifier);
+    fuRepo.clear();
+
+    final sheet = xl['__internal__'];
+    var cidx = 1;
+    do {
+      final fuUuid = sheet.cell(CellIndex.indexByString('q$cidx')).value;
+      if (fuUuid == null || fuUuid.toString().isEmpty) {
+        break;
+      }
+      fuRepo.addFillup(Fillup(
+        uuid: fuUuid.toString(),
+        falType: FALType.values
+            .where((f) => f.name == _getCellValue(sheet, 'r$cidx'))
+            .first,
+        date: _getCellValue(sheet, 's$cidx'),
+        beforeLtrs: _getCellValue(sheet, 't$cidx'),
+        fillupLtrs: _getCellValue(sheet, 'u$cidx'),
+        burnedLtrs: _getCellValue(sheet, 'v$cidx'),
+        waybill:
+            ref.read(waybillByUuidProvider(_getCellValue(sheet, 'w$cidx'))),
+        otherMilBase: _getCellValue(sheet, 'x$cidx') == 'true' ? true : false,
+      ));
+      ++cidx;
+    } while (true);
   }
 
   void _loadWaybillsData(Excel xl) {
