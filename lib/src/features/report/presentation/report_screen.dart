@@ -167,7 +167,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
           ),
         ),*/
           padding: const EdgeInsets.all(8.0),
-          child: Column(
+          child: ListView(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
