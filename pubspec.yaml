@@ -113,3 +113,7 @@ flutter:
 
 flutter_localizations:
     sdk: flutter  
+
+msix_config:
+  sign_msix: false
+  publisher: "CN=PMM 37, O=PMM37, C=UK"
