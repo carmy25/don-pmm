@@ -29,6 +29,11 @@ jobs:
       - name: Start release build
         run: flutter build windows --release
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: build\windows\x64\runner\Release\donpmm.msix
+
       - name: Create MSIX package 
         run: flutter pub run msix:create
 
