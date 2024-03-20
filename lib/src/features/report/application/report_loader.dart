@@ -25,7 +25,7 @@ class ReportLoader {
   DateTimeRange _parseDtRangeFromReport(String text) {
     final datesRegExp = RegExp(r'\d[\d\.]+');
     final [start, end] = datesRegExp.allMatches(text).toList();
-    final df = DateFormat('dd.mm.yyyy');
+    final df = DateFormat('dd.MM.yyyy');
     return DateTimeRange(
         start: df.parse(start.group(0)!), end: df.parse(end.group(0)!));
   }
