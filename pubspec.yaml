@@ -117,3 +117,4 @@ flutter_localizations:
 msix_config:
   sign_msix: false
   publisher: "CN=PMM 37, O=PMM37, C=UK"
+  install_certificate: false
