@@ -29,8 +29,5 @@ jobs:
       - name: Start release build
         run: flutter build windows --release
 
-      # Upload generated apk to the artifacts.
-      - uses: actions/upload-artifact@v1
-        with:
-          name: release-windows
-          path: build\windows\x64\runner\Release
+      - name: Create MSIX package 
+        run: flutter pub run msix:create

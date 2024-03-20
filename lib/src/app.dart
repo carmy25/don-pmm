@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DON-PMM',
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [
         Locale('uk'),
@@ -22,7 +22,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: const StartupScreen(),
+      home: FutureBuilder<bool>(
+          future: () async {
+            const msg = 'App started';
+            Sentry.captureMessage(msg);
+            debugPrint(msg);
+            return true;
+          }(),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) =>
+              snapshot.hasData
+                  ? const StartupScreen()
+                  : const SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(),
+                    )),
     );
     return app;
   }

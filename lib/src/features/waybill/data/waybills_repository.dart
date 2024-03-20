@@ -64,3 +64,12 @@ List<Waybill> waybillsByCarAndDate(
           wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))))
       .toList();
 }
+
+@riverpod
+List<Waybill> waybillsByDate(WaybillsByDateRef ref, DateTime after) {
+  final waybills = ref.watch(waybillListProvider).value!;
+  return waybills
+      .where((wb) =>
+          wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))))
+      .toList();
+}

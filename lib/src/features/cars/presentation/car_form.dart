@@ -52,8 +52,12 @@ class CarFormState extends ConsumerState<CarForm> {
         name: nameInput.text,
         number: numberInput.text,
         note: _remarkInput.text,
-        consumptionRate: double.parse(_consumptionRateInput.text),
-        consumptionRateMH: double.parse(_consumptionRateMHInput.text)));
+        consumptionRate: double.parse(_consumptionRateInput.text.isNotEmpty
+            ? _consumptionRateInput.text
+            : '0.0'),
+        consumptionRateMH: double.parse(_consumptionRateMHInput.text.isNotEmpty
+            ? _consumptionRateMHInput.text
+            : '0.0')));
   }
 
   @override

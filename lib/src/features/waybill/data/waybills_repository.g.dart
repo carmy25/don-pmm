@@ -430,6 +430,134 @@ class _WaybillsByCarAndDateProviderElement
   DateTime get after => (origin as WaybillsByCarAndDateProvider).after;
 }
 
+String _$waybillsByDateHash() => r'41100da32ebac2c9d4b37bc934d076b99a7f792e';
+
+/// See also [waybillsByDate].
+@ProviderFor(waybillsByDate)
+const waybillsByDateProvider = WaybillsByDateFamily();
+
+/// See also [waybillsByDate].
+class WaybillsByDateFamily extends Family<List<Waybill>> {
+  /// See also [waybillsByDate].
+  const WaybillsByDateFamily();
+
+  /// See also [waybillsByDate].
+  WaybillsByDateProvider call(
+    DateTime after,
+  ) {
+    return WaybillsByDateProvider(
+      after,
+    );
+  }
+
+  @override
+  WaybillsByDateProvider getProviderOverride(
+    covariant WaybillsByDateProvider provider,
+  ) {
+    return call(
+      provider.after,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'waybillsByDateProvider';
+}
+
+/// See also [waybillsByDate].
+class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
+  /// See also [waybillsByDate].
+  WaybillsByDateProvider(
+    DateTime after,
+  ) : this._internal(
+          (ref) => waybillsByDate(
+            ref as WaybillsByDateRef,
+            after,
+          ),
+          from: waybillsByDateProvider,
+          name: r'waybillsByDateProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$waybillsByDateHash,
+          dependencies: WaybillsByDateFamily._dependencies,
+          allTransitiveDependencies:
+              WaybillsByDateFamily._allTransitiveDependencies,
+          after: after,
+        );
+
+  WaybillsByDateProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.after,
+  }) : super.internal();
+
+  final DateTime after;
+
+  @override
+  Override overrideWith(
+    List<Waybill> Function(WaybillsByDateRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: WaybillsByDateProvider._internal(
+        (ref) => create(ref as WaybillsByDateRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        after: after,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<List<Waybill>> createElement() {
+    return _WaybillsByDateProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WaybillsByDateProvider && other.after == after;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, after.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin WaybillsByDateRef on AutoDisposeProviderRef<List<Waybill>> {
+  /// The parameter `after` of this provider.
+  DateTime get after;
+}
+
+class _WaybillsByDateProviderElement
+    extends AutoDisposeProviderElement<List<Waybill>> with WaybillsByDateRef {
+  _WaybillsByDateProviderElement(super.provider);
+
+  @override
+  DateTime get after => (origin as WaybillsByDateProvider).after;
+}
+
 String _$waybillListHash() => r'c97b362c2c0194941b6f842b24edf4d7fa9e2494';
 
 /// See also [WaybillList].

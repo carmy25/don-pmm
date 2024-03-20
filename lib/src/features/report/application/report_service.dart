@@ -913,7 +913,7 @@ class ReportService {
 
     ++cidx;
     // List of waybills
-    final waybills = ref.watch(waybillListProvider).value!;
+    final waybills = ref.read(waybillsByDateProvider(report.dtRange.start));
     final waybillsListString = waybills.map((w) => w.number).join(', ');
 
     c = sheet.getRangeByName('A$cidx:K$cidx');
@@ -1019,7 +1019,7 @@ class ReportService {
 
     // Waybills registry
     var cidx = 7;
-    final waybills = ref.watch(waybillListProvider).value!;
+    final waybills = ref.read(waybillsByDateProvider(report.dtRange.start));
     for (final (idx, wb) in waybills.indexed) {
       ++cidx;
       // waybill index
