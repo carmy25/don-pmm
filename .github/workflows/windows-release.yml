@@ -30,4 +30,4 @@ jobs:
         run: flutter build windows --release
 
       - name: Create MSIX package 
-        run: flutter pub run msix:create --sign-msix=false
+        run: flutter pub run msix:create
