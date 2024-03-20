@@ -31,3 +31,8 @@ jobs:
 
       - name: Create MSIX package 
         run: flutter pub run msix:create
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: build\windows\x64\runner\Release\donpmm.msix
