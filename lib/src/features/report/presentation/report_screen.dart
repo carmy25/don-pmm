@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:donpmm/src/common/rank.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/presentation/cars_list_screen.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_screen.dart';
@@ -9,6 +8,7 @@ import 'package:donpmm/src/features/report/application/report_service.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/report/domain/report.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
+import 'package:donpmm/src/widgets/rank_autocomplete.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -233,66 +233,8 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                     icon: const Icon(Icons.supervisor_account),
                   )),
                   Flexible(
-                    child: RawAutocomplete<String>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        return ranks.where((String option) {
-                          return option
-                              .contains(textEditingValue.text.toLowerCase());
-                        });
-                      },
-                      textEditingController: _chiefRankInput,
-                      focusNode: _chiefRankNode,
-                      fieldViewBuilder: (
-                        BuildContext context,
-                        TextEditingController textEditingController,
-                        FocusNode focusNode,
-                        VoidCallback onFieldSubmitted,
-                      ) {
-                        return TextFormField(
-                          controller: textEditingController,
-                          decoration: const InputDecoration(
-                            labelText: 'Звання',
-                            icon: Icon(Icons.military_tech),
-                          ),
-                          focusNode: focusNode,
-                          onFieldSubmitted: (String value) {
-                            onFieldSubmitted();
-                          },
-                          validator: validateNotEmpty,
-                        );
-                      },
-                      optionsViewBuilder: (
-                        BuildContext context,
-                        AutocompleteOnSelected<String> onSelected,
-                        Iterable<String> options,
-                      ) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4.0,
-                            child: SizedBox(
-                              height: 200.0,
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(8.0),
-                                itemCount: options.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final String option =
-                                      options.elementAt(index);
-                                  return GestureDetector(
-                                    onTap: () {
-                                      onSelected(option);
-                                    },
-                                    child: ListTile(
-                                      title: Text(option),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    child: RankAutoComplete(
+                        rankInput: _chiefRankInput, rankNode: _chiefRankNode),
                   ),
                 ],
               ),
@@ -314,7 +256,10 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
               Row(
                 children: [
                   Flexible(
-                    child: RawAutocomplete<String>(
+                      child: RankAutoComplete(
+                          rankInput: _checkerRankInput,
+                          rankNode: _checkerRankNode)
+                      /*RawAutocomplete<String>(
                       optionsBuilder: (TextEditingValue textEditingValue) {
                         return ranks.where((String option) {
                           return option
@@ -373,8 +318,8 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                           ),
                         );
                       },
-                    ),
-                  ),
+                    ),*/
+                      ),
                   Flexible(
                       child: TextFormField(
                     validator: validateNotEmpty,

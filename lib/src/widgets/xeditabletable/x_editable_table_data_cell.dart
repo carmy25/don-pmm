@@ -100,6 +100,8 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
         return _buildDateTimePicker(context);
       case 'choice':
         return _buildDropdown(context);
+      case 'autocomplete':
+        return _buildAutocompete(context);
       case 'integer':
       case 'int':
       case 'float':
@@ -319,6 +321,10 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
               });
             },
     );
+  }
+
+  Widget _buildAutocompete(BuildContext context) {
+    return const Text('hello');
   }
 
   Widget _buildDropdown(BuildContext context) {
