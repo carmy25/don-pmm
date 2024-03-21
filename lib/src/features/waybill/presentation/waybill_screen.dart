@@ -1,5 +1,4 @@
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
-import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';

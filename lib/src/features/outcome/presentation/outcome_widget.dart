@@ -17,12 +17,13 @@ class OutcomeWidget extends ConsumerStatefulWidget {
 class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
   final _editableTableKey = GlobalKey<XEditableTableState>();
   Future<Map<String, dynamic>> _getTableData() async {
-    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
-    final data = {
+    final falTypes = await ref.read(falTypesRepositoryProvider.future);
+    return {
       "column_count": null,
       "row_count": null,
       "addable": true,
       "removable": true,
+      "rows": widget.data,
       "columns": [
         {
           "primary_key": true,
@@ -96,14 +97,13 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
         },
       ]
     };
-    data['rows'] = widget.data;
-    return data;
   }
 
   @override
   Widget build(BuildContext context) {
+    final tableData = _getTableData();
     return FutureBuilder<Map<String, dynamic>>(
-        future: _getTableData(),
+        future: tableData,
         builder: (BuildContext context, snapshot) => snapshot.hasData
             ? XEditableTable(
                 key: _editableTableKey,
