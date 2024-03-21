@@ -1,4 +1,5 @@
-import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
@@ -173,10 +174,11 @@ class WaybillScreenState extends ConsumerState {
           issueDate: DateFormat.yMMMMd('uk').parse(dtString),
           number: _numberInput.text);
       ref.read(waybillListProvider.notifier).addWaybill(wb);
+      final falTypes = await ref.watch(falTypesRepositoryProvider.future);
       for (final o in _fillupsData.where((e) => e['comodity'] != null)) {
         await ref.read(fillupListProvider.notifier).addFillup(Fillup(
             uuid: o['uuid'] ?? const Uuid().v4(),
-            falType: FALType.values.firstWhere((e) => e.name == o['comodity']),
+            falType: falTypes.firstWhere((e) => e.name == o['comodity']),
             date: wb.issueDate!,
             beforeLtrs: o['availableLtrs'] ?? 0,
             fillupLtrs: o['gainedLtrs'] ?? 0,

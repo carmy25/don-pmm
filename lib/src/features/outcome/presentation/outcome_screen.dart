@@ -1,4 +1,5 @@
-import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
+import 'package:donpmm/src/features/fal/domain/fal.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_widget.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +21,14 @@ class OutcomeScreenState extends ConsumerState {
 
   OutcomeScreenState();
 
-  _saveOutcomes() {
+  Future<void> _saveOutcomes() async {
     final outcomesRepo = ref.watch(outcomesRepositoryProvider.notifier);
+    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
 
     for (final o in _outcomeData.where((e) => e['availableLtrs'] != null)) {
       outcomesRepo.addOutcome(
           fal: FAL(
-              falType:
-                  FALType.values.firstWhere((e) => e.name == o['comodity']),
+              falType: falTypes.firstWhere((e) => e.name == o['comodity']),
               uuid: o['uuid'] ?? const Uuid().v4(),
               amountLtrs: o['availableLtrs']));
     }
@@ -65,8 +66,8 @@ class OutcomeScreenState extends ConsumerState {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              _saveOutcomes();
-                              Navigator.pop(context);
+                              _saveOutcomes()
+                                  .then((value) => Navigator.pop(context));
                             }
                           },
                           child: const Text('Зберегти'),

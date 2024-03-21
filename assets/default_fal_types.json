@@ -1,0 +1,14 @@
+{"data": [
+  {
+    "uuid": "023672ef-8d43-4d36-90fa-0145d0a98b6e",
+    "name": "ДП-л-Євро5-В0",
+    "category": "diesel",
+    "density": 0.84
+  },
+  {
+    "uuid": "57e1d2e9-e116-4221-8eaf-5ef7d110f6fb",
+    "name": "А-95-Євро5-Е0",
+    "category": "petrol",
+    "density": 0.75
+  }
+]}

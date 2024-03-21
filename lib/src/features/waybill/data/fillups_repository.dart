@@ -1,4 +1,4 @@
-import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../domain/waybill.dart';

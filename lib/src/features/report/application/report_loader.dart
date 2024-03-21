@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
+import 'package:donpmm/src/features/fal/domain/fal.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
 import 'package:donpmm/src/features/cars/domain/car.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
@@ -62,6 +63,7 @@ class ReportLoader {
   _loadOutcomeData(Excel xl) async {
     final reportSheet = xl['Донесення'];
     final outcomeRepo = ref.watch(outcomesRepositoryProvider.notifier);
+    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
     outcomeRepo.clear();
     var cidx = 13;
     do {
@@ -79,8 +81,7 @@ class ReportLoader {
         outcomeRepo.addOutcome(
             fal: FAL(
                 uuid: const Uuid().v4(),
-                falType:
-                    FALType.values.where((e) => e.name == comodityName).first,
+                falType: falTypes.where((e) => e.name == comodityName).first,
                 amountLtrs: comodityAmount));
       }
       ++cidx;
@@ -136,6 +137,8 @@ class ReportLoader {
     final fuRepo = ref.read(fillupListProvider.notifier);
     fuRepo.clear();
 
+    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
+
     final sheet = xl['__internal__'];
     var cidx = 1;
     do {
@@ -145,7 +148,7 @@ class ReportLoader {
       }
       fuRepo.addFillup(Fillup(
         uuid: fuUuid.toString(),
-        falType: FALType.values
+        falType: falTypes
             .where((f) => f.name == _getCellValue(sheet, 'r$cidx'))
             .first,
         date: _getCellValue(sheet, 's$cidx'),

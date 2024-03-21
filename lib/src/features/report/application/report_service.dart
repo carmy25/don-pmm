@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
-import 'package:donpmm/src/common/fal.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';

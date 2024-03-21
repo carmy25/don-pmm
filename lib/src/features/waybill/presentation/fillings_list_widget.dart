@@ -1,4 +1,4 @@
-import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:donpmm/src/widgets/xeditabletable/x_editable_table.dart';
@@ -27,161 +27,166 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
   FillingsListWidgetState({required this.waybill});
   final Waybill waybill;
   final _editableTableKey = GlobalKey<XEditableTableState>();
-  final data = {
-    "column_count": null,
-    "row_count": null,
-    "addable": true,
-    "removable": true,
-    "columns": [
-      {
-        "primary_key": true,
-        "name": "uuid",
-        "type": "string",
-        "format": null,
-        "description": null,
-        "display": false,
-        "editable": false,
-        "style": {
-          "font_weight": "bold",
-          "font_size": 14.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
-        }
-      },
-      {
-        "name": "comodity",
-        "title": "Паливо/Олива",
-        "type": "choice",
-        'format': FALType.values.map((e) => e.name).join(','),
-        "description": "Назва палива чи оливи",
-        "display": true,
-        "editable": true,
-        "width_factor": 0.4,
-        "constrains": {"required": true},
-        "style": {
-          "font_weight": "bold",
-          "font_size": 12.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
-        }
-      },
-      {
-        "name": "availableLtrs",
-        "title": "Наявність перед виїздом",
-        "type": "float",
-        "format": null,
-        "description": "Наявність перед виїздом(л)",
-        "display": true,
-        "editable": true,
-        "width_factor": 0.13,
-        "input_decoration": {
-          "min_lines": 1,
-          "max_lines": 1,
-          "max_length": 4,
-          "hint_text": "Наявність перед виїздом(л)"
+  Future<Map<String, dynamic>> _getTableData() async {
+    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
+    final data = {
+      "column_count": null,
+      "row_count": null,
+      "addable": true,
+      "removable": true,
+      "columns": [
+        {
+          "primary_key": true,
+          "name": "uuid",
+          "type": "string",
+          "format": null,
+          "description": null,
+          "display": false,
+          "editable": false,
+          "style": {
+            "font_weight": "bold",
+            "font_size": 14.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
         },
-        "constrains": {"minimum": 0},
-        "style": {
-          "font_weight": "bold",
-          "font_size": 12.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
-        }
-      },
-      {
-        "name": "gainedLtrs",
-        "title": "Отримано",
-        "type": "float",
-        "format": null,
-        "description": "Отримано(л)",
-        "display": true,
-        "editable": true,
-        "width_factor": 0.13,
-        "input_decoration": {
-          "min_lines": 1,
-          "max_lines": 1,
-          "max_length": 12,
-          "hint_text": "Отримано(л)"
+        {
+          "name": "comodity",
+          "title": "Паливо/Олива",
+          "type": "choice",
+          'format': falTypes.map((e) => e.name).join(','),
+          "description": "Назва палива чи оливи",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.4,
+          "constrains": {"required": true},
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
         },
-        "constrains": {"required": true, "minimum": 0},
-        "style": {
-          "font_weight": "bold",
-          "font_size": 12.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
-        }
-      },
-      {
-        "name": "spentLtrs",
-        "title": "Витрачено",
-        "type": "float",
-        "format": null,
-        "constrains": {"required": true, "minimum": 0},
-        "description": "Витрачено(л)",
-        "display": true,
-        "editable": true,
-        "width_factor": 0.13,
-        "input_decoration": {"hint_text": "Витрачено(л)"},
-        "style": {
-          "font_weight": "bold",
-          "font_size": 12.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
+        {
+          "name": "availableLtrs",
+          "title": "Наявність перед виїздом",
+          "type": "float",
+          "format": null,
+          "description": "Наявність перед виїздом(л)",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.13,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 4,
+            "hint_text": "Наявність перед виїздом(л)"
+          },
+          "constrains": {"minimum": 0},
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
         },
-      },
-      {
-        "primary_key": false,
-        "auto_increase": false,
-        "name": "otherMilBase",
-        "title": "Заправлено в іншому підрозділі?",
-        "type": "bool",
-        "format": null,
-        "description": "Заправлено в іншому підрозділі",
-        "display": true,
-        "editable": true,
-        "width_factor": 0.12,
-        "constrains": {"minimum": 1, "maximum": 100},
-        "style": {
-          "font_weight": "bold",
-          "font_size": 14.0,
-          "font_color": "#333333",
-          "background_color": "#b5cfd2",
-          "horizontal_alignment": "center",
-          "vertical_alignment": "center",
-          "text_align": "center"
-        }
-      },
-    ],
-  };
+        {
+          "name": "gainedLtrs",
+          "title": "Отримано",
+          "type": "float",
+          "format": null,
+          "description": "Отримано(л)",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.13,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 12,
+            "hint_text": "Отримано(л)"
+          },
+          "constrains": {"required": true, "minimum": 0},
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
+        },
+        {
+          "name": "spentLtrs",
+          "title": "Витрачено",
+          "type": "float",
+          "format": null,
+          "constrains": {"required": true, "minimum": 0},
+          "description": "Витрачено(л)",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.13,
+          "input_decoration": {"hint_text": "Витрачено(л)"},
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          },
+        },
+        {
+          "primary_key": false,
+          "auto_increase": false,
+          "name": "otherMilBase",
+          "title": "Заправлено в іншому підрозділі?",
+          "type": "bool",
+          "format": null,
+          "description": "Заправлено в іншому підрозділі",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.12,
+          "constrains": {"minimum": 1, "maximum": 100},
+          "style": {
+            "font_weight": "bold",
+            "font_size": 14.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
+        },
+      ],
+    };
+    return data;
+  }
 
   @override
   Widget build(BuildContext context) {
     final fillups = ref.watch(fillupsByWaybillProvider(waybill));
-    return _xEditableTable(fillups);
-    /*
-    return switch (fillups) {
-      AsyncData(:final value) => _xEditableTable(value),
-      AsyncError(:final error) => Text('error: $error'),
-      _ => const Text('loading'),
-    };*/
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _getTableData(),
+      builder: (context, snapshot) => snapshot.hasData
+          ? _xEditableTable(fillups, snapshot.requireData)
+          : const SizedBox(
+              width: 60, height: 60, child: CircularProgressIndicator()),
+    );
   }
 
-  XEditableTable _xEditableTable(List<Fillup> rowsData) {
+  XEditableTable _xEditableTable(
+      List<Fillup> rowsData, Map<String, dynamic> data) {
     data['rows'] = rowsData
         .map((e) => {
               'uuid': e.uuid,

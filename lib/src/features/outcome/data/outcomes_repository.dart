@@ -1,4 +1,5 @@
-import 'package:donpmm/src/common/fal.dart';
+import 'package:donpmm/src/features/fal/domain/fal.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'outcomes_repository.g.dart';
