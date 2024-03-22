@@ -1,8 +1,10 @@
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/widgets/xeditabletable/x_editable_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/constants.dart';
+import 'package:flutter_editable_table/entities/cell_entity.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -46,12 +48,12 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
         {
           "name": "comodity",
           "title": "Назва ПММ",
-          "type": "choice",
+          "type": "autocomplete",
           'format': falTypes.map((e) => e.name).join(','),
           "description": "Назва палива чи оливи",
           "display": true,
           "editable": true,
-          "width_factor": 0.73,
+          "width_factor": 0.33,
           "input_decoration": {
             "min_lines": 1,
             "max_lines": 1,
@@ -70,10 +72,62 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
           }
         },
         {
+          "name": "density",
+          "title": "Густина",
+          "type": "float",
+          "constrains": {"required": true},
+          "format": null,
+          "description": "Густина(кг/м3)",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.20,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 10,
+            "hint_text": "Густина(кг/дм3)"
+          },
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
+        },
+        {
+          "name": "category",
+          "title": "Тип ПММ",
+          "type": "choice",
+          'format': FALCategory.values.map((e) => e.name).join(','),
+          "description": "Тип ПММ",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.2,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 128,
+            "hint_text": "Тип ПММ"
+          },
+          "constrains": {"required": true},
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
+        },
+        {
           "name": "availableLtrs",
           "title": "Кількість(л)",
           "type": "float",
-          "constrains": {"required": false},
+          "constrains": {"required": true},
           "format": null,
           "description": "Кількість(л)",
           "display": true,
@@ -141,6 +195,17 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
                 onRowAdded: () {},
                 onFilling: (FillingArea area, dynamic value) {
                   widget.data.clear();
+                  final falTypeString = switch (value) {
+                    CellEntity() => value.columnInfo.name,
+                    _ => null,
+                  };
+                  debugPrint('fts: $falTypeString');
+                  if (falTypeString == 'comodity') {
+                    // set density
+                    _editableTableKey.currentState!.currentData.rows[0]
+                        .cells![2].value = 14.3;
+                    _editableTableKey.currentState!.setState(() {});
+                  }
                   widget.data.addAll(_editableTableKey
                       .currentState!.currentData.rows
                       .map((e) => e.toJson()));

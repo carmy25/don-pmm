@@ -5,13 +5,17 @@ part 'fal_type.g.dart';
 
 enum FALCategory {
   @JsonValue('diesel')
-  diesel,
+  diesel(name: 'Дизель'),
 
   @JsonValue('petrol')
-  petrol,
+  petrol(name: 'Бензин'),
 
   @JsonValue('oil')
-  oil
+  oil(name: 'Олива');
+
+  const FALCategory({required this.name});
+
+  final String name;
 }
 
 @freezed

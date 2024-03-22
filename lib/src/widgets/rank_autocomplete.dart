@@ -7,10 +7,10 @@ class RankAutoComplete extends StatelessWidget {
     super.key,
     required TextEditingController rankInput,
     required FocusNode rankNode,
-  })  : _chiefRankInput = rankInput,
+  })  : _rankInput = rankInput,
         _rankNode = rankNode;
 
-  final TextEditingController _chiefRankInput;
+  final TextEditingController _rankInput;
   final FocusNode _rankNode;
 
   @override
@@ -21,7 +21,7 @@ class RankAutoComplete extends StatelessWidget {
           return option.contains(textEditingValue.text.toLowerCase());
         });
       },
-      textEditingController: _chiefRankInput,
+      textEditingController: _rankInput,
       focusNode: _rankNode,
       fieldViewBuilder: (
         BuildContext context,

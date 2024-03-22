@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_widget.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +23,29 @@ class OutcomeScreenState extends ConsumerState {
 
   OutcomeScreenState();
 
+  Future<FALType> _createNewFalType(Map<String, dynamic> data) async {
+    final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
+    final falType = FALType(
+        uuid: const Uuid().v4(),
+        name: data['comodity'],
+        category:
+            FALCategory.values.firstWhere((e) => e.name == data['category']),
+        density: data['density']);
+    falTypesRepo.addFalType(falType);
+    return falType;
+  }
+
   Future<void> _saveOutcomes() async {
     final outcomesRepo = ref.watch(outcomesRepositoryProvider.notifier);
     final falTypes = await ref.watch(falTypesRepositoryProvider.future);
 
-    for (final o in _outcomeData.where((e) => e['availableLtrs'] != null)) {
+    for (final o in _outcomeData) {
+      final falType =
+          falTypes.firstWhereOrNull((e) => e.name == o['comodity']) ??
+              (await _createNewFalType(o));
       outcomesRepo.addOutcome(
           fal: FAL(
-              falType: falTypes.firstWhere((e) => e.name == o['comodity']),
+              falType: falType,
               uuid: o['uuid'] ?? const Uuid().v4(),
               amountLtrs: o['availableLtrs']));
     }

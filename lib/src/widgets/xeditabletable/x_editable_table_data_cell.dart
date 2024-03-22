@@ -43,16 +43,19 @@ class XEditableTableDataCell extends StatefulWidget {
 class XEditableTableDataCellState extends State<XEditableTableDataCell> {
   late final TextEditingController _textEditingController;
   String? _dropdownValue;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
     _textEditingController = TextEditingController();
+    _focusNode = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -324,7 +327,80 @@ class XEditableTableDataCellState extends State<XEditableTableDataCell> {
   }
 
   Widget _buildAutocompete(BuildContext context) {
-    return const Text('hello');
+    final values = widget.cellEntity.columnInfo.format!.split(',');
+    return RawAutocomplete<String>(
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        return values.where((String option) {
+          return option.contains(textEditingValue.text.toLowerCase());
+        });
+      },
+      onSelected: _autoCompleteOnChanged,
+      textEditingController: _textEditingController,
+      focusNode: _focusNode,
+      fieldViewBuilder: (
+        BuildContext context,
+        TextEditingController textEditingController,
+        FocusNode focusNode,
+        VoidCallback onFieldSubmitted,
+      ) {
+        return TextFormField(
+          controller: textEditingController,
+          decoration: InputDecoration(
+            hintText: widget.cellEntity.columnInfo.inputDecoration?.hintText,
+          ),
+          focusNode: focusNode,
+          onChanged: _autoCompleteOnChanged,
+          onFieldSubmitted: (String value) {
+            onFieldSubmitted();
+            if (widget.onSubmitted != null) {
+              widget.onSubmitted!(FillingArea.body, value);
+            }
+          },
+          validator: validateNotEmpty,
+        );
+      },
+      optionsViewBuilder: (
+        BuildContext context,
+        AutocompleteOnSelected<String> onSelected,
+        Iterable<String> options,
+      ) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 4.0,
+            child: SizedBox(
+              height: 200.0,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: options.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final String option = options.elementAt(index);
+                  return GestureDetector(
+                    onTap: () {
+                      onSelected(option);
+                    },
+                    child: ListTile(
+                      title: Text(option),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _autoCompleteOnChanged(String value) {
+    if (value.isEmpty) {
+      widget.cellEntity.value = null;
+      return;
+    }
+    widget.cellEntity.value = value;
+    if (widget.onFilling != null) {
+      widget.onFilling!(FillingArea.body, widget.cellEntity);
+    }
   }
 
   Widget _buildDropdown(BuildContext context) {

@@ -14,4 +14,9 @@ class FalTypesRepository extends _$FalTypesRepository {
     final jsonData = json.decode(jsonString) as List<dynamic>;
     return jsonData.map((item) => FALType.fromJson(item)).toList();
   }
+
+  addFalType(FALType falType) async {
+    final prevState = await future;
+    state = AsyncData([...prevState, falType]);
+  }
 }

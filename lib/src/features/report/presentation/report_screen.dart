@@ -160,12 +160,6 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
       body: Form(
         key: _formKey,
         child: Container(
-          /* decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/bg2.jpg"),
-            fit: BoxFit.cover,
-          ),
-        ),*/
           padding: const EdgeInsets.all(8.0),
           child: ListView(
             children: [
@@ -258,68 +252,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                   Flexible(
                       child: RankAutoComplete(
                           rankInput: _checkerRankInput,
-                          rankNode: _checkerRankNode)
-                      /*RawAutocomplete<String>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        return ranks.where((String option) {
-                          return option
-                              .contains(textEditingValue.text.toLowerCase());
-                        });
-                      },
-                      textEditingController: _checkerRankInput,
-                      focusNode: _checkerRankNode,
-                      fieldViewBuilder: (
-                        BuildContext context,
-                        TextEditingController textEditingController,
-                        FocusNode focusNode,
-                        VoidCallback onFieldSubmitted,
-                      ) {
-                        return TextFormField(
-                          controller: textEditingController,
-                          decoration: const InputDecoration(
-                            labelText: 'Звання',
-                            icon: Icon(Icons.military_tech),
-                          ),
-                          focusNode: focusNode,
-                          onFieldSubmitted: (String value) {
-                            onFieldSubmitted();
-                          },
-                          validator: validateNotEmpty,
-                        );
-                      },
-                      optionsViewBuilder: (
-                        BuildContext context,
-                        AutocompleteOnSelected<String> onSelected,
-                        Iterable<String> options,
-                      ) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4.0,
-                            child: SizedBox(
-                              height: 200.0,
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(8.0),
-                                itemCount: options.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final String option =
-                                      options.elementAt(index);
-                                  return GestureDetector(
-                                    onTap: () {
-                                      onSelected(option);
-                                    },
-                                    child: ListTile(
-                                      title: Text(option),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),*/
-                      ),
+                          rankNode: _checkerRankNode)),
                   Flexible(
                       child: TextFormField(
                     validator: validateNotEmpty,
@@ -342,16 +275,12 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                                   fontWeight: FontWeight.bold, fontSize: 18)),
                           Icon(Icons.arrow_right)
                         ]),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const OutcomeScreen()));
-                    },
+                    onPressed: () => _moveToScreen(const OutcomeScreen()),
                   )),
               Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextButton(
+                    onPressed: () => _moveToScreen(const CarsListScreen()),
                     child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -360,18 +289,16 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                                   fontWeight: FontWeight.bold, fontSize: 18)),
                           Icon(Icons.arrow_right)
                         ]),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CarsListScreen()));
-                    },
                   )),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _moveToScreen(Widget screen) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
   @override
