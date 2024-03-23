@@ -199,11 +199,10 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
                     CellEntity() => value.columnInfo.name,
                     _ => null,
                   };
-                  debugPrint('fts: $falTypeString');
+                  debugPrint('fts: ${area.index}: ${area.name}');
                   if (falTypeString == 'comodity') {
-                    // set density
-                    _editableTableKey.currentState!.currentData.rows[0]
-                        .cells![2].value = 14.3;
+                    // set density and type
+                    _setFalTypeByName(value.value);
                     _editableTableKey.currentState!.setState(() {});
                   }
                   widget.data.addAll(_editableTableKey
@@ -214,5 +213,20 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
               )
             : const SizedBox(
                 width: 60, height: 60, child: CircularProgressIndicator()));
+  }
+
+  void _setFalTypeByName(String name) {
+    final rows = _editableTableKey.currentState!.currentData.rows;
+    final falType = ref.read(falTypeByNameProvider(name));
+    if (falType == null) {
+      return;
+    }
+    for (final row in rows) {
+      final cells = row.cells!;
+      if (cells[1].value == name) {
+        cells[2].value = falType.density;
+        cells[3].value = falType.category.name;
+      }
+    }
   }
 }

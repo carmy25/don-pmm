@@ -15,8 +15,14 @@ class FalTypesRepository extends _$FalTypesRepository {
     return jsonData.map((item) => FALType.fromJson(item)).toList();
   }
 
-  addFalType(FALType falType) async {
+  Future<void> addFalType(FALType falType) async {
     final prevState = await future;
     state = AsyncData([...prevState, falType]);
   }
+}
+
+@riverpod
+FALType? falTypeByName(FalTypeByNameRef ref, String value) {
+  final falTypes = ref.watch(falTypesRepositoryProvider).value!;
+  return falTypes.where((f) => f.name == value).firstOrNull;
 }

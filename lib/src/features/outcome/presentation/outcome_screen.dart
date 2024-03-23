@@ -31,7 +31,7 @@ class OutcomeScreenState extends ConsumerState {
         category:
             FALCategory.values.firstWhere((e) => e.name == data['category']),
         density: data['density']);
-    falTypesRepo.addFalType(falType);
+    await falTypesRepo.addFalType(falType);
     return falType;
   }
 
@@ -59,6 +59,8 @@ class OutcomeScreenState extends ConsumerState {
         'uuid': outcome.uuid,
         'comodity': outcome.falType.name,
         'availableLtrs': outcome.amountLtrs,
+        'density': outcome.falType.density,
+        'category': outcome.falType.category.name
       });
     }
     return Scaffold(
