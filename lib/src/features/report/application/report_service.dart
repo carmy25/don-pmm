@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
+import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
@@ -93,7 +94,7 @@ class ReportService {
         debugPrint(
             '_generateInternalSheetData: wb[${wb.number}], fu[${fu.uuid}]');
         sheet.getRangeByName('q$fuIdx').text = fu.uuid;
-        sheet.getRangeByName('r$fuIdx').text = fu.falType.name;
+        sheet.getRangeByName('r$fuIdx').text = fu.falType.uuid;
         sheet.getRangeByName('s$fuIdx').value = fu.date;
         sheet.getRangeByName('t$fuIdx').value = fu.beforeLtrs;
         sheet.getRangeByName('u$fuIdx').value = fu.fillupLtrs;
@@ -102,6 +103,16 @@ class ReportService {
         sheet.getRangeByName('x$fuIdx').value = fu.otherMilBase;
         ++fuIdx;
       }
+    }
+
+    final falTypes = await ref.read(falTypesRepositoryProvider.future);
+    var tIdx = 1;
+    for (final falType in falTypes) {
+      sheet.getRangeByName('y$tIdx').text = falType.uuid;
+      sheet.getRangeByName('z$tIdx').text = falType.name;
+      sheet.getRangeByName('aa$tIdx').text = falType.category.name;
+      sheet.getRangeByName('ab$tIdx').value = falType.density;
+      ++tIdx;
     }
   }
 

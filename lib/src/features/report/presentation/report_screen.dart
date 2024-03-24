@@ -127,34 +127,48 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
       appBar: AppBar(
         title: const Text('Донесення ПММ'),
         actions: [
-          IconButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _saveReport().then(
-                    (saved) {
-                      if (saved) {
-                        const snackBar = SnackBar(
-                          content: Text('Збережено!'),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      }
-                    },
-                  );
+          PopupMenuButton<String>(
+            onSelected: (v) {
+              Future? future;
+              String snackText = '';
+              debugPrint(v);
+              if (v == 'SAVE' && _formKey.currentState!.validate()) {
+                snackText = 'Збережено!';
+                future = _saveReport();
+              } else if (v == 'OPEN') {
+                snackText = 'Відкрито!';
+                future = _openReport();
+              } else if (v == 'NEW_FROM_CURRENT') {
+                snackText = 'Створено!';
+              }
+              future?.then((done) {
+                if (done) {
+                  final snackBar = SnackBar(content: Text(snackText));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-              },
-              icon: const Icon(Icons.save)),
-          IconButton(
-              onPressed: () {
-                _openReport().then((opened) {
-                  if (opened) {
-                    const snackBar = SnackBar(
-                      content: Text('Відкрито!'),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                });
-              },
-              icon: const Icon(Icons.file_open)),
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'SAVE',
+                  child: ListTile(
+                      title: Text('Зберегти'), leading: Icon(Icons.save)),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'OPEN',
+                  child: ListTile(
+                      title: Text('Відкрити'), leading: Icon(Icons.file_open)),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'NEW_FROM_CURRENT',
+                  child: ListTile(
+                      title: Text('Нове з поточного'),
+                      leading: Icon(Icons.next_plan)),
+                )
+              ];
+            },
+          ),
         ],
       ),
       body: Form(

@@ -13,7 +13,7 @@ class FillupList extends _$FillupList {
     return [];
   }
 
-  addFillup(Fillup fillup) {
+  void addFillup(Fillup fillup) {
     final newState = {fillup, ...state.value!}.toList();
     newState.sort(
       (a, b) => a.date.compareTo(b.date),

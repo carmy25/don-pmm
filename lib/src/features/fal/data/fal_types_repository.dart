@@ -15,6 +15,10 @@ class FalTypesRepository extends _$FalTypesRepository {
     return jsonData.map((item) => FALType.fromJson(item)).toList();
   }
 
+  void clear() {
+    state = const AsyncData([]);
+  }
+
   Future<void> addFalType(FALType falType) async {
     final prevState = await future;
     state = AsyncData([...prevState, falType]);

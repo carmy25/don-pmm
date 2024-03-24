@@ -1,10 +1,12 @@
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:donpmm/src/widgets/xeditabletable/x_editable_table.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_editable_table/constants.dart';
+import 'package:flutter_editable_table/entities/cell_entity.dart';
 import 'package:flutter_editable_table/entities/table_entity.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,13 +57,71 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         },
         {
           "name": "comodity",
-          "title": "Паливо/Олива",
-          "type": "choice",
+          "title": "Назва ПММ",
+          "type": "autocomplete",
           'format': falTypes.map((e) => e.name).join(','),
           "description": "Назва палива чи оливи",
           "display": true,
+          "constrains": {"required": true},
           "editable": true,
-          "width_factor": 0.4,
+          "width_factor": 0.33,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 128,
+            "hint_text": "Паливо/Мастило"
+          },
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
+        },
+        {
+          "name": "density",
+          "title": "Густина",
+          "type": "float",
+          "constrains": {"required": true},
+          "format": null,
+          "description": "Густина(кг/м3)",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.09,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 10,
+            "hint_text": "Густина(кг/дм3)"
+          },
+          "style": {
+            "font_weight": "bold",
+            "font_size": 12.0,
+            "font_color": "#333333",
+            "background_color": "#b5cfd2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "text_align": "center"
+          }
+        },
+        {
+          "name": "category",
+          "title": "Тип ПММ",
+          "type": "choice",
+          'format': FALCategory.values.map((e) => e.name).join(','),
+          "description": "Тип ПММ",
+          "display": true,
+          "editable": true,
+          "width_factor": 0.15,
+          "input_decoration": {
+            "min_lines": 1,
+            "max_lines": 1,
+            "max_length": 128,
+            "hint_text": "Тип ПММ"
+          },
           "constrains": {"required": true},
           "style": {
             "font_weight": "bold",
@@ -81,7 +141,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           "description": "Наявність перед виїздом(л)",
           "display": true,
           "editable": true,
-          "width_factor": 0.13,
+          "width_factor": 0.09,
           "input_decoration": {
             "min_lines": 1,
             "max_lines": 1,
@@ -107,7 +167,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           "description": "Отримано(л)",
           "display": true,
           "editable": true,
-          "width_factor": 0.13,
+          "width_factor": 0.09,
           "input_decoration": {
             "min_lines": 1,
             "max_lines": 1,
@@ -134,7 +194,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           "description": "Витрачено(л)",
           "display": true,
           "editable": true,
-          "width_factor": 0.13,
+          "width_factor": 0.09,
           "input_decoration": {"hint_text": "Витрачено(л)"},
           "style": {
             "font_weight": "bold",
@@ -156,7 +216,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           "description": "Заправлено в іншому підрозділі",
           "display": true,
           "editable": true,
-          "width_factor": 0.12,
+          "width_factor": 0.09,
           "constrains": {"minimum": 1, "maximum": 100},
           "style": {
             "font_weight": "bold",
@@ -191,6 +251,8 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         .map((e) => {
               'uuid': e.uuid,
               'comodity': e.falType.name,
+              'density': e.falType.density,
+              'category': e.falType.category.name,
               'date': waybill.issueDate,
               'availableLtrs': e.beforeLtrs,
               'gainedLtrs': e.fillupLtrs,
@@ -232,14 +294,38 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         debugPrint('row added');
       },
       onFilling: (FillingArea area, dynamic value) {
-        debugPrint('filling: ${area.toString()}, value: ${value.toString()}');
         widget.data.clear();
+        final falTypeString = switch (value) {
+          CellEntity() => value.columnInfo.name,
+          _ => null,
+        };
+        debugPrint('fts: ${area.index}: ${area.name}');
+        if (falTypeString == 'comodity') {
+          // set density and type
+          _setFalTypeByName(value.value);
+          _editableTableKey.currentState!.setState(() {});
+        }
         widget.data.addAll(_editableTableKey.currentState!.currentData.rows
             .map((e) => e.toJson()));
       },
       onSubmitted: (FillingArea area, dynamic value) {
-        debugPrint('submitted: ${area.toString()}, value: ${value.toString()}');
+        debugPrint('submitted: ${area.toString()}, value: $value}');
       },
     );
+  }
+
+  void _setFalTypeByName(String name) {
+    final rows = _editableTableKey.currentState!.currentData.rows;
+    final falType = ref.read(falTypeByNameProvider(name));
+    if (falType == null) {
+      return;
+    }
+    for (final row in rows) {
+      final cells = row.cells!;
+      if (cells[1].value == name) {
+        cells[2].value = falType.density;
+        cells[3].value = falType.category.name;
+      }
+    }
   }
 }

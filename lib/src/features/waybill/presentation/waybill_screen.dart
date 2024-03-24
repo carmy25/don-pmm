@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/common/utils.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
@@ -174,10 +176,13 @@ class WaybillScreenState extends ConsumerState {
           number: _numberInput.text);
       ref.read(waybillListProvider.notifier).addWaybill(wb);
       final falTypes = await ref.watch(falTypesRepositoryProvider.future);
-      for (final o in _fillupsData.where((e) => e['comodity'] != null)) {
-        await ref.read(fillupListProvider.notifier).addFillup(Fillup(
+      for (final o in _fillupsData) {
+        final falType =
+            falTypes.firstWhereOrNull((e) => e.name == o['comodity']) ??
+                (await _createNewFalType(o));
+        ref.read(fillupListProvider.notifier).addFillup(Fillup(
             uuid: o['uuid'] ?? const Uuid().v4(),
-            falType: falTypes.firstWhere((e) => e.name == o['comodity']),
+            falType: falType,
             date: wb.issueDate!,
             beforeLtrs: o['availableLtrs'] ?? 0,
             fillupLtrs: o['gainedLtrs'] ?? 0,
@@ -189,5 +194,17 @@ class WaybillScreenState extends ConsumerState {
         Navigator.pop(context);
       }
     }
+  }
+
+  Future<FALType> _createNewFalType(Map<String, dynamic> data) async {
+    final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
+    final falType = FALType(
+        uuid: const Uuid().v4(),
+        name: data['comodity'],
+        category:
+            FALCategory.values.firstWhere((e) => e.name == data['category']),
+        density: data['density']);
+    await falTypesRepo.addFalType(falType);
+    return falType;
   }
 }

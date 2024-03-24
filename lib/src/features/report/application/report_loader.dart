@@ -3,6 +3,7 @@ import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
 import 'package:donpmm/src/features/cars/domain/car.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
@@ -149,7 +150,7 @@ class ReportLoader {
       fuRepo.addFillup(Fillup(
         uuid: fuUuid.toString(),
         falType: falTypes
-            .where((f) => f.name == _getCellValue(sheet, 'r$cidx'))
+            .where((f) => f.uuid == _getCellValue(sheet, 'r$cidx'))
             .first,
         date: _getCellValue(sheet, 's$cidx'),
         beforeLtrs: _getCellValue(sheet, 't$cidx'),
@@ -197,6 +198,30 @@ class ReportLoader {
     } while (true);
   }
 
+  Future<void> _loadFALTypesData(Excel xl) async {
+    final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
+    falTypesRepo.clear();
+    final sheet = xl['__internal__'];
+    var cidx = 1;
+    do {
+      final ftUuid = sheet.cell(CellIndex.indexByString('y$cidx')).value;
+      if (ftUuid == null || ftUuid.toString().isEmpty) {
+        break;
+      }
+      final ftName = _getCellValue(sheet, 'z$cidx');
+      final category = FALCategory.values
+          .firstWhere((c) => c.name == _getCellValue(sheet, 'aa$cidx'));
+      final density = _getCellValue(sheet, 'ab$cidx');
+      falTypesRepo.addFalType(FALType(
+        uuid: ftUuid.toString(),
+        name: ftName,
+        category: category,
+        density: density,
+      ));
+      ++cidx;
+    } while (true);
+  }
+
   loadFromFile(String path) async {
     final bytes = await File(path).readAsBytes();
     final excel = Excel.decodeBytes(bytes);
@@ -204,6 +229,7 @@ class ReportLoader {
     await _loadOutcomeData(excel);
     await _loadCarsData(excel);
     _loadWaybillsData(excel);
+    await _loadFALTypesData(excel);
     await _loadFillupsData(excel);
   }
 }
