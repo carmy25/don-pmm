@@ -16,6 +16,13 @@ enum FALCategory {
   const FALCategory({required this.name});
 
   final String name;
+
+  static FALCategory fromName(String name) => switch (name.toLowerCase()) {
+        'дизель' => FALCategory.diesel,
+        'бензин' => FALCategory.petrol,
+        'олива' => FALCategory.oil,
+        _ => throw ArgumentError('Invalid FAL Category: [$name]')
+      };
 }
 
 @freezed

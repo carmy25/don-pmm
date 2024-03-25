@@ -201,8 +201,7 @@ class WaybillScreenState extends ConsumerState {
     final falType = FALType(
         uuid: const Uuid().v4(),
         name: data['comodity'],
-        category:
-            FALCategory.values.firstWhere((e) => e.name == data['category']),
+        category: FALCategory.fromName(data['category']),
         density: data['density']);
     await falTypesRepo.addFalType(falType);
     return falType;

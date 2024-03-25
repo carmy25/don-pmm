@@ -209,8 +209,7 @@ class ReportLoader {
         break;
       }
       final ftName = _getCellValue(sheet, 'z$cidx');
-      final category = FALCategory.values
-          .firstWhere((c) => c.name == _getCellValue(sheet, 'aa$cidx'));
+      final category = FALCategory.fromName(_getCellValue(sheet, 'aa$cidx'));
       final density = _getCellValue(sheet, 'ab$cidx');
       falTypesRepo.addFalType(FALType(
         uuid: ftUuid.toString(),
