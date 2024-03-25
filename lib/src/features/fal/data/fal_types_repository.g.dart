@@ -156,7 +156,7 @@ class _FalTypeByNameProviderElement extends AutoDisposeProviderElement<FALType?>
 }
 
 String _$falTypesRepositoryHash() =>
-    r'1b5d129c54bcb6cf607c2401f7938edbc1be6c8e';
+    r'89e02c26c59ed50a8c01dee7bfed8308b8660c4a';
 
 /// See also [FalTypesRepository].
 @ProviderFor(FalTypesRepository)

@@ -111,7 +111,7 @@ class ReportLoader {
         internalSheet.cell(CellIndex.indexByString('a5')).value.toString();
     final milBase =
         internalSheet.cell(CellIndex.indexByString('a6')).value.toString();
-    await ref.watch(reportRepositoryProvider.notifier).createReport(
+    ref.watch(reportRepositoryProvider.notifier).createReport(
         unitName: unitName,
         dtRange: dtRange,
         chiefPosition: chiefPosition,

@@ -6,7 +6,7 @@ part of 'waybills_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$waybillsByCarHash() => r'e094ba0eafe5bdb5c3a45284f2e35de64c4a5e2f';
+String _$waybillsByCarHash() => r'96ae21e30b30ef321d4de3f7e2f600fcb4ab2809';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -155,7 +155,7 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillByUuidHash() => r'80b3a6d81a2d48dd365a7df15ea36f145df4450b';
+String _$waybillByUuidHash() => r'27fc41ed996e35842d8a3c45a1af9e588ed50488';
 
 /// See also [waybillByUuid].
 @ProviderFor(waybillByUuid)
@@ -430,7 +430,7 @@ class _WaybillsByCarAndDateProviderElement
   DateTime get after => (origin as WaybillsByCarAndDateProvider).after;
 }
 
-String _$waybillsByDateHash() => r'41100da32ebac2c9d4b37bc934d076b99a7f792e';
+String _$waybillsByDateHash() => r'9f1ac7f295a1be93551ec5e8893c63f88437eeab';
 
 /// See also [waybillsByDate].
 @ProviderFor(waybillsByDate)
@@ -558,12 +558,12 @@ class _WaybillsByDateProviderElement
   DateTime get after => (origin as WaybillsByDateProvider).after;
 }
 
-String _$waybillListHash() => r'c97b362c2c0194941b6f842b24edf4d7fa9e2494';
+String _$waybillListHash() => r'1413e5ac5f1b96094525eed892ec65f78569004a';
 
 /// See also [WaybillList].
 @ProviderFor(WaybillList)
 final waybillListProvider =
-    AsyncNotifierProvider<WaybillList, List<Waybill>>.internal(
+    NotifierProvider<WaybillList, List<Waybill>>.internal(
   WaybillList.new,
   name: r'waybillListProvider',
   debugGetCreateSourceHash:
@@ -572,6 +572,6 @@ final waybillListProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$WaybillList = AsyncNotifier<List<Waybill>>;
+typedef _$WaybillList = Notifier<List<Waybill>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

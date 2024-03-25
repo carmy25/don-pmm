@@ -67,7 +67,7 @@ class ReportService {
   }
 
   _generateInternalSheetData(Worksheet sheet) async {
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
     sheet.getRangeByName('A1').text = report.chiefName;
     sheet.getRangeByName('A2').text = report.chiefPosition;
     sheet.getRangeByName('A3').text = report.chiefRank;
@@ -75,7 +75,7 @@ class ReportService {
     sheet.getRangeByName('A5').text = report.checkerRank;
     sheet.getRangeByName('A6').text = report.milBase;
 
-    final waybills = await ref.read(waybillListProvider.future);
+    final waybills = ref.read(waybillListProvider);
 
     var fuIdx = 1;
     for (final (i, wb) in waybills.indexed) {
@@ -117,7 +117,7 @@ class ReportService {
   }
 
   void _generateWaybillsRegistrySheet(Worksheet sheet) {
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
     _updateDataCell(sheet, 'a1:n1', 'Реєстр шляхових листів').merge();
     _updateDataCell(sheet, 'a2:b2', 'Шляховий лист').merge();
     _updateDataCell(sheet, 'c2:d2', 'Показання').merge();
@@ -190,9 +190,8 @@ class ReportService {
   }
 
   int _waybillsRegistryAddTableCells(Worksheet sheet) {
-    final report = ref.read(reportRepositoryProvider).value!;
-    final waybills = ref.read(waybillListProvider).value!.where((wb) => wb
-        .issueDate!
+    final report = ref.read(reportRepositoryProvider)!;
+    final waybills = ref.read(waybillListProvider).where((wb) => wb.issueDate!
         .isAfter(report.dtRange.start.subtract(const Duration(days: 1))));
 
     var cidx = 4;
@@ -292,7 +291,7 @@ class ReportService {
   }
 
   void _generateInfoSheet(Worksheet sheet, FALCategory category) {
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
     sheet.enableSheetCalculations();
 
     var c = sheet.getRangeByName('g1:h1');
@@ -428,7 +427,7 @@ class ReportService {
   int _infoAddTableCells(Worksheet sheet, FALCategory category) {
     var cidx = 8;
     final cars = ref.watch(carListProvider).value!;
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
     var waybillsAvailable = false;
     for (final car in cars) {
       final waybills =
@@ -493,7 +492,7 @@ class ReportService {
 
   void _generateTranscriptSheet(Worksheet sheet) {
     sheet.enableSheetCalculations();
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
     var c = sheet.getRangeByName('A1:J1');
     c.merge();
     c.text = 'РОЗШИФРОВКА';
@@ -606,7 +605,7 @@ class ReportService {
   int _transcriptAddTableCells(Worksheet sheet,
       {required Map<String, int> oilIndex}) {
     final cars = ref.watch(carListProvider).value!;
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
 
     var cidx = 7;
     var waybillsAvailable = false;
@@ -684,7 +683,7 @@ class ReportService {
   }
 
   void _generateReportingSheet(Worksheet sheet) {
-    final report = ref.watch(reportRepositoryProvider).value!;
+    final report = ref.watch(reportRepositoryProvider)!;
     var c = sheet.getRangeByName('A1:K1');
     c.merge();
     c.text = 'Додаток 17';
@@ -989,7 +988,7 @@ class ReportService {
 
   void _generateRegistrySheet(Worksheet sheet) {
     //Create a Excel document.
-    final report = ref.read(reportRepositoryProvider).value!;
+    final report = ref.read(reportRepositoryProvider)!;
 
     var c = sheet.getRangeByName('A1:F1');
     c.merge();

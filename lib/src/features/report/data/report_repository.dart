@@ -8,12 +8,12 @@ part 'report_repository.g.dart';
 @Riverpod(keepAlive: true)
 class ReportRepository extends _$ReportRepository {
   @override
-  FutureOr<Report?> build() {
+  Report? build() {
     debugPrint('ReportRepos init');
     return null;
   }
 
-  Future<void> createReport(
+  void createReport(
       {required String unitName,
       required DateTimeRange dtRange,
       required String chiefPosition,
@@ -21,8 +21,8 @@ class ReportRepository extends _$ReportRepository {
       required String chiefName,
       required String checkerName,
       required String checkerRank,
-      required String milBase}) async {
-    state = AsyncData(Report(
+      required String milBase}) {
+    state = Report(
         unitName: unitName,
         milBase: milBase,
         dtRange: dtRange,
@@ -30,6 +30,10 @@ class ReportRepository extends _$ReportRepository {
         chiefRank: chiefRank,
         chiefName: chiefName,
         checkerName: checkerName,
-        checkerRank: checkerRank));
+        checkerRank: checkerRank);
+  }
+
+  void updateReport(Report report) {
+    state = report;
   }
 }

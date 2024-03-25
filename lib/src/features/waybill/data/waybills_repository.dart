@@ -9,12 +9,12 @@ part 'waybills_repository.g.dart';
 @Riverpod(keepAlive: true)
 class WaybillList extends _$WaybillList {
   @override
-  FutureOr<List<Waybill>> build() {
+  List<Waybill> build() {
     return [];
   }
 
   void addWaybill(Waybill waybill) {
-    final newState = {waybill, ...state.value!}.toList();
+    final newState = {waybill, ...state}.toList();
     newState.sort(
       (a, b) {
         final aIssueDate = a.issueDate;
@@ -25,33 +25,31 @@ class WaybillList extends _$WaybillList {
         return aIssueDate.compareTo(bIssueDate);
       },
     );
-    state = AsyncData(newState);
+    state = newState;
   }
 
   clear() {
-    state = const AsyncData([]);
+    state = [];
   }
 
   void removeWaybillsByCar(Car car) {
-    final newState =
-        state.value!.where((wb) => wb.carUuid != car.uuid).toList();
-    for (final wb
-        in state.value!.where((wb) => wb.carUuid == car.uuid).toList()) {
+    final newState = state.where((wb) => wb.carUuid != car.uuid).toList();
+    for (final wb in state.where((wb) => wb.carUuid == car.uuid).toList()) {
       ref.read(fillupListProvider.notifier).removeFillupsByWaybill(wb);
     }
-    state = AsyncData(newState);
+    state = newState;
   }
 }
 
 @riverpod
 List<Waybill> waybillsByCar(WaybillsByCarRef ref, Car car) {
-  final waybills = ref.watch(waybillListProvider).value!;
+  final waybills = ref.watch(waybillListProvider);
   return waybills.where((wb) => wb.carUuid == car.uuid).toList();
 }
 
 @riverpod
 Waybill waybillByUuid(WaybillByUuidRef ref, String uuid) {
-  final waybills = ref.watch(waybillListProvider).value!;
+  final waybills = ref.watch(waybillListProvider);
   return waybills.where((wb) => wb.uuid == uuid).firstOrNull!;
 }
 
@@ -67,7 +65,7 @@ List<Waybill> waybillsByCarAndDate(
 
 @riverpod
 List<Waybill> waybillsByDate(WaybillsByDateRef ref, DateTime after) {
-  final waybills = ref.watch(waybillListProvider).value!;
+  final waybills = ref.watch(waybillListProvider);
   return waybills
       .where((wb) =>
           wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))))

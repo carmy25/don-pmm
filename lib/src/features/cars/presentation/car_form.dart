@@ -1,3 +1,6 @@
+import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
+import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
+import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
@@ -125,27 +128,9 @@ class CarFormState extends ConsumerState<CarForm> {
             children: [
               const SubheaderText('Шляхові/робочі листи'),
               IconButton(
-                icon: const Icon(Icons.add_box_rounded),
-                tooltip: 'Додати шляховий/робочий лист',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _addCar();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => WaybillScreen(
-                              waybill: Waybill(
-                                  kmsStart: 0,
-                                  kmsEnd: 0,
-                                  mhStart: 0,
-                                  mhEnd: 0,
-                                  uuid: const Uuid().v4(),
-                                  number: '',
-                                  carUuid: car.uuid))),
-                    );
-                  }
-                },
-              ),
+                  icon: const Icon(Icons.add_box_rounded),
+                  tooltip: 'Додати шляховий/робочий лист',
+                  onPressed: _addNewWaybill),
             ],
           ),
           Flexible(child: WaybillsListWidget(car: car)),
@@ -170,5 +155,41 @@ class CarFormState extends ConsumerState<CarForm> {
         ],
       ),
     );
+  }
+
+  void _addNewWaybill() {
+    if (_formKey.currentState!.validate()) {
+      _addCar();
+      final lastWaybill = ref.read(waybillsByCarProvider(car)).lastOrNull;
+      final waybill = Waybill(
+          kmsStart: lastWaybill?.kmsEnd ?? 0,
+          kmsEnd: 0,
+          mhStart: lastWaybill?.mhEnd ?? 0,
+          mhEnd: 0,
+          uuid: const Uuid().v4(),
+          number: '',
+          carUuid: car.uuid);
+      if (lastWaybill != null) {
+        final fillups = ref.read(fillupsByWaybillProvider(lastWaybill));
+        final fillupRepo = ref.read(fillupListProvider.notifier);
+        for (final fu in fillups) {
+          fillupRepo.addFillup(Fillup(
+            uuid: const Uuid().v4(),
+            falType: fu.falType,
+            beforeLtrs: fu.beforeLtrs + fu.fillupLtrs - fu.burnedLtrs,
+            fillupLtrs: 0,
+            burnedLtrs: 0,
+            waybill: waybill,
+            otherMilBase: fu.otherMilBase,
+          ));
+        }
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => WaybillScreen(waybill: waybill)),
+      );
+    }
   }
 }

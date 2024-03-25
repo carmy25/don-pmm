@@ -62,7 +62,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
     prefs.setString('chiefPosition', _chiefPositionInput.text);
     String? outputFile = await _getFilepathSave('Донесення.xlsx');
     if (outputFile != null) {
-      await ref.read(reportRepositoryProvider.notifier).createReport(
+      ref.read(reportRepositoryProvider.notifier).createReport(
           milBase: _milBaseInput.text,
           unitName: _unitNameInput.text,
           dtRange: _dtRange!,
@@ -98,6 +98,18 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
     super.dispose();
     _chiefRankNode.dispose();
     _checkerRankNode.dispose();
+  }
+
+  Future<bool> _newReportFromCurrent() async {
+    final report = ref.read(reportRepositoryProvider);
+    if (report == null) return false;
+    final reportRepo = ref.read(reportRepositoryProvider.notifier);
+    final newReport = report.copyWith(
+        dtRange: DateTimeRange(
+            start: report.dtRange.start.add(const Duration(days: 1)),
+            end: report.dtRange.end.add(const Duration(days: 30))));
+    reportRepo.updateReport(newReport);
+    return true;
   }
 
   Future<bool> _openReport() async {
@@ -140,12 +152,17 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                 future = _openReport();
               } else if (v == 'NEW_FROM_CURRENT') {
                 snackText = 'Створено!';
+                future = _newReportFromCurrent();
               }
               future?.then((done) {
                 if (done) {
                   final snackBar = SnackBar(content: Text(snackText));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
                 }
+                const snackBar = SnackBar(
+                    content: Text('Спочатку збережіть поточне донесення.'));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               });
             },
             itemBuilder: (BuildContext context) {
@@ -318,10 +335,6 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
   @override
   Widget build(BuildContext context) {
     final report = ref.watch(reportRepositoryProvider);
-    return switch (report) {
-      AsyncData(:final value) => _reportFormWidget(value),
-      AsyncError(:final error) => Text('error: $error'),
-      _ => const Text('loading'),
-    };
+    return _reportFormWidget(report);
   }
 }

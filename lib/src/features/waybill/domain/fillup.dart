@@ -6,7 +6,7 @@ class Fillup {
   const Fillup(
       {required this.uuid,
       required this.falType,
-      required this.date,
+      this.date,
       required this.beforeLtrs,
       required this.fillupLtrs,
       required this.burnedLtrs,
@@ -14,7 +14,7 @@ class Fillup {
       required this.otherMilBase});
   final bool otherMilBase;
   final FALType falType;
-  final DateTime date;
+  final DateTime? date;
   final String uuid;
   final Waybill waybill;
   final double beforeLtrs, fillupLtrs, burnedLtrs;
