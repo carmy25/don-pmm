@@ -135,7 +135,7 @@ class ReportLoader {
   }
 
   _loadFillupsData(Excel xl) async {
-    final falTypes = await ref.read(falTypesRepositoryProvider.future);
+    final falTypes = ref.read(falTypesRepositoryProvider).value!;
     final fuRepo = ref.read(fillupListProvider.notifier);
     fuRepo.clear();
 
@@ -146,17 +146,19 @@ class ReportLoader {
       if (fuUuid == null || fuUuid.toString().isEmpty) {
         break;
       }
+      final wb =
+          ref.read(waybillByUuidProvider(_getCellValue(sheet, 'w$cidx')));
+      final fuDate = _getCellValue(sheet, 's$cidx');
       fuRepo.addFillup(Fillup(
         uuid: fuUuid.toString(),
         falType: falTypes
             .where((f) => f.uuid == _getCellValue(sheet, 'r$cidx'))
             .first,
-        date: _getCellValue(sheet, 's$cidx'),
+        date: fuDate == 0 ? wb.issueDate : fuDate,
         beforeLtrs: _getCellValue(sheet, 't$cidx'),
         fillupLtrs: _getCellValue(sheet, 'u$cidx'),
         burnedLtrs: _getCellValue(sheet, 'v$cidx'),
-        waybill:
-            ref.read(waybillByUuidProvider(_getCellValue(sheet, 'w$cidx'))),
+        waybill: wb,
         otherMilBase: _getCellValue(sheet, 'x$cidx') == 'true' ? true : false,
       ));
       ++cidx;
@@ -197,7 +199,8 @@ class ReportLoader {
     } while (true);
   }
 
-  void _loadFALTypesData(Excel xl) {
+  Future<void> _loadFALTypesData(Excel xl) async {
+    await ref.read(falTypesRepositoryProvider.future);
     final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
     falTypesRepo.clear();
     final sheet = xl['__internal__'];
@@ -210,7 +213,7 @@ class ReportLoader {
       final ftName = _getCellValue(sheet, 'z$cidx');
       final category = FALCategory.fromName(_getCellValue(sheet, 'aa$cidx'));
       final density = _getCellValue(sheet, 'ab$cidx');
-      falTypesRepo.addFalType(FALType(
+      await falTypesRepo.addFalType(FALType(
         uuid: ftUuid.toString(),
         name: ftName,
         category: category,
@@ -223,7 +226,7 @@ class ReportLoader {
   loadFromFile(String path) async {
     final bytes = await File(path).readAsBytes();
     final excel = Excel.decodeBytes(bytes);
-    _loadFALTypesData(excel);
+    await _loadFALTypesData(excel);
     await _loadReportGeneralData(excel);
     await _loadOutcomeData(excel);
     _loadCarsData(excel);

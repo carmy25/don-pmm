@@ -31,7 +31,7 @@ class OutcomeScreenState extends ConsumerState {
         category:
             FALCategory.values.firstWhere((e) => e.name == data['category']),
         density: data['density']);
-    falTypesRepo.addFalType(falType);
+    await falTypesRepo.addFalType(falType);
     return falType;
   }
 

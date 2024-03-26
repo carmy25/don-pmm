@@ -1,3 +1,4 @@
+import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,11 +13,17 @@ class WaybillsListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final waybills = ref.watch(waybillsByCarProvider(car));
+    final report = ref.watch(reportRepositoryProvider);
     return ListView.builder(
       itemCount: waybills.length,
       itemBuilder: (_, i) {
         final wb = waybills[i];
+        final reportStart = report?.dtRange.start;
         return ListTile(
+          leading: Icon(
+              (reportStart != null && wb.issueDate!.isAfter(reportStart))
+                  ? Icons.online_prediction
+                  : Icons.warning),
           title: Text(wb.number),
           onTap: () {
             Navigator.push(

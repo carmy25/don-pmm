@@ -106,7 +106,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
     final reportRepo = ref.read(reportRepositoryProvider.notifier);
     final newReport = report.copyWith(
         dtRange: DateTimeRange(
-            start: report.dtRange.start.add(const Duration(days: 1)),
+            start: report.dtRange.end.add(const Duration(days: 1)),
             end: report.dtRange.end.add(const Duration(days: 30))));
     reportRepo.updateReport(newReport);
     return true;
@@ -229,15 +229,26 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                   readOnly:
                       true, //set it true, so that user will not able to edit text
                   onTap: () async {
+                    final report = ref.read(reportRepositoryProvider);
                     final result = await showDateRangePicker(
                       locale: const Locale("uk", "UA"),
                       context: context,
+                      initialDateRange: report?.dtRange,
                       firstDate: DateTime(2022),
                       lastDate: DateTime(2028),
                     );
                     _dtRange = result;
 
                     if (result == null) return;
+
+                    if (report != null) {
+                      final reportRepo =
+                          ref.read(reportRepositoryProvider.notifier);
+                      final newReport = report.copyWith(
+                          dtRange: DateTimeRange(
+                              start: result.start, end: result.end));
+                      reportRepo.updateReport(newReport);
+                    }
 
                     _dateInput.text =
                         'З ${formatDateToString(result.start)} по ${formatDateToString(result.end)}';

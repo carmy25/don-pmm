@@ -203,7 +203,7 @@ class WaybillScreenState extends ConsumerState {
         name: data['comodity'],
         category: FALCategory.fromName(data['category']),
         density: data['density']);
-    falTypesRepo.addFalType(falType);
+    await falTypesRepo.addFalType(falType);
     return falType;
   }
 }
