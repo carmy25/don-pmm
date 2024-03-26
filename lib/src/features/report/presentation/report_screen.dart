@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/presentation/cars_list_screen.dart';
+import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_screen.dart';
 import 'package:donpmm/src/features/report/application/report_loader.dart';
 import 'package:donpmm/src/features/report/application/report_service.dart';
@@ -102,6 +103,8 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
 
   Future<bool> _newReportFromCurrent() async {
     final report = ref.read(reportRepositoryProvider);
+    final outcomesRepo = ref.read(outcomesRepositoryProvider.notifier);
+    outcomesRepo.clear();
     if (report == null) return false;
     final reportRepo = ref.read(reportRepositoryProvider.notifier);
     final newReport = report.copyWith(
@@ -109,6 +112,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
             start: report.dtRange.end.add(const Duration(days: 1)),
             end: report.dtRange.end.add(const Duration(days: 30))));
     reportRepo.updateReport(newReport);
+
     return true;
   }
 
