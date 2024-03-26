@@ -6,7 +6,7 @@ part of 'cars_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$carByUuidHash() => r'bffa9b37c42d9c0ab54b946d8237c5ee5b1d5424';
+String _$carByUuidHash() => r'89f83d116e416b745dffcdc2a8cdb5acc6e0ccff';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -154,11 +154,11 @@ class _CarByUuidProviderElement extends AutoDisposeProviderElement<Car>
   String get uuid => (origin as CarByUuidProvider).uuid;
 }
 
-String _$carListHash() => r'e90d13f5cd26b4ddbe42026ce0ee6df03efbbf69';
+String _$carListHash() => r'06218e45550133998f14c9964a7ff5e580918e88';
 
 /// See also [CarList].
 @ProviderFor(CarList)
-final carListProvider = AsyncNotifierProvider<CarList, List<Car>>.internal(
+final carListProvider = NotifierProvider<CarList, List<Car>>.internal(
   CarList.new,
   name: r'carListProvider',
   debugGetCreateSourceHash:
@@ -167,6 +167,6 @@ final carListProvider = AsyncNotifierProvider<CarList, List<Car>>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef _$CarList = AsyncNotifier<List<Car>>;
+typedef _$CarList = Notifier<List<Car>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

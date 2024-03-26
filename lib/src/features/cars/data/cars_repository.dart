@@ -9,31 +9,31 @@ part 'cars_repository.g.dart';
 @Riverpod(keepAlive: true)
 class CarList extends _$CarList {
   @override
-  FutureOr<List<Car>> build() {
+  List<Car> build() {
     debugPrint('CarListRepo init');
     return [];
   }
 
-  Future<void> addCar(Car car) async {
-    final previousState = await future;
+  void addCar(Car car) {
+    final previousState = state;
     final newState = {car, ...previousState}.toList();
-    state = AsyncData(newState);
+    state = newState;
   }
 
   clear() {
-    state = const AsyncData([]);
+    state = const [];
   }
 
-  Future<void> removeCar(Car car) async {
-    final previousState = await future;
+  void removeCar(Car car) {
+    final previousState = state;
     ref.read(waybillListProvider.notifier).removeWaybillsByCar(car);
     final newState = previousState.where((c) => c != car).toList();
-    state = AsyncData(newState);
+    state = newState;
   }
 }
 
 @riverpod
 Car carByUuid(CarByUuidRef ref, String uuid) {
-  final cars = ref.watch(carListProvider).value!;
+  final cars = ref.watch(carListProvider);
   return cars.where((c) => c.uuid == uuid).first;
 }

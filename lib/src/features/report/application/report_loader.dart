@@ -32,7 +32,7 @@ class ReportLoader {
         start: df.parse(start.group(0)!), end: df.parse(end.group(0)!));
   }
 
-  _loadCarsData(Excel xl) async {
+  _loadCarsData(Excel xl) {
     final carsRepo = ref.watch(carListProvider.notifier);
     carsRepo.clear();
 
@@ -50,7 +50,7 @@ class ReportLoader {
       final consumptionRateMH =
           sheet.cell(CellIndex.indexByString('g$cidx')).value;
       final carUuid = sheet.cell(CellIndex.indexByString('h$cidx')).value;
-      await carsRepo.addCar(Car(
+      carsRepo.addCar(Car(
           uuid: carUuid.toString(),
           note: carNote == null ? '' : carNote.toString(),
           consumptionRate: double.parse(consumptionRate!.toString()),
@@ -135,10 +135,9 @@ class ReportLoader {
   }
 
   _loadFillupsData(Excel xl) async {
+    final falTypes = await ref.read(falTypesRepositoryProvider.future);
     final fuRepo = ref.read(fillupListProvider.notifier);
     fuRepo.clear();
-
-    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
 
     final sheet = xl['__internal__'];
     var cidx = 1;
@@ -198,7 +197,7 @@ class ReportLoader {
     } while (true);
   }
 
-  Future<void> _loadFALTypesData(Excel xl) async {
+  void _loadFALTypesData(Excel xl) {
     final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
     falTypesRepo.clear();
     final sheet = xl['__internal__'];
@@ -224,11 +223,11 @@ class ReportLoader {
   loadFromFile(String path) async {
     final bytes = await File(path).readAsBytes();
     final excel = Excel.decodeBytes(bytes);
+    _loadFALTypesData(excel);
     await _loadReportGeneralData(excel);
     await _loadOutcomeData(excel);
-    await _loadCarsData(excel);
+    _loadCarsData(excel);
     _loadWaybillsData(excel);
-    await _loadFALTypesData(excel);
     await _loadFillupsData(excel);
   }
 }

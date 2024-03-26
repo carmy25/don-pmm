@@ -426,7 +426,7 @@ class ReportService {
 
   int _infoAddTableCells(Worksheet sheet, FALCategory category) {
     var cidx = 8;
-    final cars = ref.watch(carListProvider).value!;
+    final cars = ref.watch(carListProvider);
     final report = ref.read(reportRepositoryProvider)!;
     var waybillsAvailable = false;
     for (final car in cars) {
@@ -604,7 +604,7 @@ class ReportService {
 
   int _transcriptAddTableCells(Worksheet sheet,
       {required Map<String, int> oilIndex}) {
-    final cars = ref.watch(carListProvider).value!;
+    final cars = ref.watch(carListProvider);
     final report = ref.read(reportRepositoryProvider)!;
 
     var cidx = 7;

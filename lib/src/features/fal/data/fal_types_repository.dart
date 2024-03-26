@@ -12,15 +12,17 @@ class FalTypesRepository extends _$FalTypesRepository {
     final jsonString =
         await rootBundle.loadString('assets/default_fal_types.json');
     final jsonData = json.decode(jsonString) as List<dynamic>;
-    return jsonData.map((item) => FALType.fromJson(item)).toList();
+    state = AsyncValue.data(
+        jsonData.map((item) => FALType.fromJson(item)).toList());
+    return state.value!;
   }
 
   void clear() {
     state = const AsyncData([]);
   }
 
-  Future<void> addFalType(FALType falType) async {
-    final prevState = await future;
+  void addFalType(FALType falType) {
+    final prevState = state.value!;
     state = AsyncData([...prevState, falType]);
   }
 }
