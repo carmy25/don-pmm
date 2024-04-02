@@ -1,3 +1,4 @@
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
@@ -59,7 +60,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           "name": "comodity",
           "title": "Назва ПММ",
           "type": "autocomplete",
-          'format': falTypes.map((e) => e.name).join(','),
+          'format': falTypes.map((e) => '${e.name}: ${e.density}').join(','),
           "description": "Назва палива чи оливи",
           "display": true,
           "constrains": {"required": true},
@@ -250,7 +251,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
     data['rows'] = rowsData
         .map((e) => {
               'uuid': e.uuid,
-              'comodity': e.falType.name,
+              'comodity': '${e.falType.name}: ${e.falType.density}',
               'density': e.falType.density,
               'category': e.falType.category.name,
               'date': waybill.issueDate,
@@ -302,7 +303,8 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         debugPrint('fts: ${area.index}: ${area.name}');
         if (falTypeString == 'comodity') {
           // set density and type
-          _setFalTypeByName(value.value);
+          setFalTypeByName((value.value as String),
+              _editableTableKey.currentState!.currentData.rows, ref);
           _editableTableKey.currentState!.setState(() {});
         }
         widget.data.addAll(_editableTableKey.currentState!.currentData.rows
@@ -312,20 +314,5 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         debugPrint('submitted: ${area.toString()}, value: $value}');
       },
     );
-  }
-
-  void _setFalTypeByName(String name) {
-    final rows = _editableTableKey.currentState!.currentData.rows;
-    final falType = ref.read(falTypeByNameProvider(name));
-    if (falType == null) {
-      return;
-    }
-    for (final row in rows) {
-      final cells = row.cells!;
-      if (cells[1].value == name) {
-        cells[2].value = falType.density;
-        cells[3].value = falType.category.name;
-      }
-    }
   }
 }

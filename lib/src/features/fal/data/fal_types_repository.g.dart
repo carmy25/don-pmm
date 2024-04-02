@@ -6,7 +6,8 @@ part of 'fal_types_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$falTypeByNameHash() => r'3fae9bea4e27e646a8108e8466e81c04b1d8a791';
+String _$falTypeByNameAndDensityHash() =>
+    r'8165c9393d9e6ae175aaf9cb5a6c42198ec41dec';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,30 +30,33 @@ class _SystemHash {
   }
 }
 
-/// See also [falTypeByName].
-@ProviderFor(falTypeByName)
-const falTypeByNameProvider = FalTypeByNameFamily();
+/// See also [falTypeByNameAndDensity].
+@ProviderFor(falTypeByNameAndDensity)
+const falTypeByNameAndDensityProvider = FalTypeByNameAndDensityFamily();
 
-/// See also [falTypeByName].
-class FalTypeByNameFamily extends Family<FALType?> {
-  /// See also [falTypeByName].
-  const FalTypeByNameFamily();
+/// See also [falTypeByNameAndDensity].
+class FalTypeByNameAndDensityFamily extends Family<FALType?> {
+  /// See also [falTypeByNameAndDensity].
+  const FalTypeByNameAndDensityFamily();
 
-  /// See also [falTypeByName].
-  FalTypeByNameProvider call(
-    String value,
-  ) {
-    return FalTypeByNameProvider(
+  /// See also [falTypeByNameAndDensity].
+  FalTypeByNameAndDensityProvider call(
+    String value, {
+    double? density,
+  }) {
+    return FalTypeByNameAndDensityProvider(
       value,
+      density: density,
     );
   }
 
   @override
-  FalTypeByNameProvider getProviderOverride(
-    covariant FalTypeByNameProvider provider,
+  FalTypeByNameAndDensityProvider getProviderOverride(
+    covariant FalTypeByNameAndDensityProvider provider,
   ) {
     return call(
       provider.value,
+      density: provider.density,
     );
   }
 
@@ -68,32 +72,35 @@ class FalTypeByNameFamily extends Family<FALType?> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'falTypeByNameProvider';
+  String? get name => r'falTypeByNameAndDensityProvider';
 }
 
-/// See also [falTypeByName].
-class FalTypeByNameProvider extends AutoDisposeProvider<FALType?> {
-  /// See also [falTypeByName].
-  FalTypeByNameProvider(
-    String value,
-  ) : this._internal(
-          (ref) => falTypeByName(
-            ref as FalTypeByNameRef,
+/// See also [falTypeByNameAndDensity].
+class FalTypeByNameAndDensityProvider extends AutoDisposeProvider<FALType?> {
+  /// See also [falTypeByNameAndDensity].
+  FalTypeByNameAndDensityProvider(
+    String value, {
+    double? density,
+  }) : this._internal(
+          (ref) => falTypeByNameAndDensity(
+            ref as FalTypeByNameAndDensityRef,
             value,
+            density: density,
           ),
-          from: falTypeByNameProvider,
-          name: r'falTypeByNameProvider',
+          from: falTypeByNameAndDensityProvider,
+          name: r'falTypeByNameAndDensityProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$falTypeByNameHash,
-          dependencies: FalTypeByNameFamily._dependencies,
+                  : _$falTypeByNameAndDensityHash,
+          dependencies: FalTypeByNameAndDensityFamily._dependencies,
           allTransitiveDependencies:
-              FalTypeByNameFamily._allTransitiveDependencies,
+              FalTypeByNameAndDensityFamily._allTransitiveDependencies,
           value: value,
+          density: density,
         );
 
-  FalTypeByNameProvider._internal(
+  FalTypeByNameAndDensityProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -101,62 +108,74 @@ class FalTypeByNameProvider extends AutoDisposeProvider<FALType?> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.value,
+    required this.density,
   }) : super.internal();
 
   final String value;
+  final double? density;
 
   @override
   Override overrideWith(
-    FALType? Function(FalTypeByNameRef provider) create,
+    FALType? Function(FalTypeByNameAndDensityRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: FalTypeByNameProvider._internal(
-        (ref) => create(ref as FalTypeByNameRef),
+      override: FalTypeByNameAndDensityProvider._internal(
+        (ref) => create(ref as FalTypeByNameAndDensityRef),
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         value: value,
+        density: density,
       ),
     );
   }
 
   @override
   AutoDisposeProviderElement<FALType?> createElement() {
-    return _FalTypeByNameProviderElement(this);
+    return _FalTypeByNameAndDensityProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is FalTypeByNameProvider && other.value == value;
+    return other is FalTypeByNameAndDensityProvider &&
+        other.value == value &&
+        other.density == density;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, value.hashCode);
+    hash = _SystemHash.combine(hash, density.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin FalTypeByNameRef on AutoDisposeProviderRef<FALType?> {
+mixin FalTypeByNameAndDensityRef on AutoDisposeProviderRef<FALType?> {
   /// The parameter `value` of this provider.
   String get value;
+
+  /// The parameter `density` of this provider.
+  double? get density;
 }
 
-class _FalTypeByNameProviderElement extends AutoDisposeProviderElement<FALType?>
-    with FalTypeByNameRef {
-  _FalTypeByNameProviderElement(super.provider);
+class _FalTypeByNameAndDensityProviderElement
+    extends AutoDisposeProviderElement<FALType?>
+    with FalTypeByNameAndDensityRef {
+  _FalTypeByNameAndDensityProviderElement(super.provider);
 
   @override
-  String get value => (origin as FalTypeByNameProvider).value;
+  String get value => (origin as FalTypeByNameAndDensityProvider).value;
+  @override
+  double? get density => (origin as FalTypeByNameAndDensityProvider).density;
 }
 
 String _$falTypesRepositoryHash() =>
-    r'458c8a3f327f5b72caffd4a33c5b77bae5bf7e23';
+    r'89e02c26c59ed50a8c01dee7bfed8308b8660c4a';
 
 /// See also [FalTypesRepository].
 @ProviderFor(FalTypesRepository)

@@ -200,7 +200,7 @@ class WaybillScreenState extends ConsumerState {
     final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
     final falType = FALType(
         uuid: const Uuid().v4(),
-        name: data['comodity'],
+        name: data['comodity'].split(':')[0],
         category: FALCategory.fromName(data['category']),
         density: data['density']);
     await falTypesRepo.addFalType(falType);

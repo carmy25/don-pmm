@@ -1,3 +1,4 @@
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
@@ -49,7 +50,7 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
           "name": "comodity",
           "title": "Назва ПММ",
           "type": "autocomplete",
-          'format': falTypes.map((e) => e.name).join(','),
+          'format': falTypes.map((e) => '${e.name}: ${e.density}').join(','),
           "description": "Назва палива чи оливи",
           "display": true,
           "editable": true,
@@ -202,7 +203,8 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
                   debugPrint('fts: ${area.index}: ${area.name}');
                   if (falTypeString == 'comodity') {
                     // set density and type
-                    _setFalTypeByName(value.value);
+                    setFalTypeByName((value.value as String),
+                        _editableTableKey.currentState!.currentData.rows, ref);
                     _editableTableKey.currentState!.setState(() {});
                   }
                   widget.data.addAll(_editableTableKey
@@ -213,20 +215,5 @@ class _OutcomeWidgetState extends ConsumerState<OutcomeWidget> {
               )
             : const SizedBox(
                 width: 60, height: 60, child: CircularProgressIndicator()));
-  }
-
-  void _setFalTypeByName(String name) {
-    final rows = _editableTableKey.currentState!.currentData.rows;
-    final falType = ref.read(falTypeByNameProvider(name));
-    if (falType == null) {
-      return;
-    }
-    for (final row in rows) {
-      final cells = row.cells!;
-      if (cells[1].value == name) {
-        cells[2].value = falType.density;
-        cells[3].value = falType.category.name;
-      }
-    }
   }
 }

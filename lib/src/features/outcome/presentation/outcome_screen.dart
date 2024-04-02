@@ -27,9 +27,8 @@ class OutcomeScreenState extends ConsumerState {
     final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
     final falType = FALType(
         uuid: const Uuid().v4(),
-        name: data['comodity'],
-        category:
-            FALCategory.values.firstWhere((e) => e.name == data['category']),
+        name: data['comodity'].split(':')[0],
+        category: FALCategory.fromName(data['category']),
         density: data['density']);
     await falTypesRepo.addFalType(falType);
     return falType;
@@ -40,9 +39,10 @@ class OutcomeScreenState extends ConsumerState {
     final falTypes = await ref.watch(falTypesRepositoryProvider.future);
 
     for (final o in _outcomeData) {
-      final falType =
-          falTypes.firstWhereOrNull((e) => e.name == o['comodity']) ??
-              (await _createNewFalType(o));
+      final falType = falTypes.firstWhereOrNull((e) =>
+              e.name == o['comodity'].split(':')[0] &&
+              e.density == o['density']) ??
+          (await _createNewFalType(o));
       outcomesRepo.addOutcome(
           fal: FAL(
               falType: falType,
@@ -57,7 +57,7 @@ class OutcomeScreenState extends ConsumerState {
     for (final outcome in outcomes) {
       _outcomeData.add({
         'uuid': outcome.uuid,
-        'comodity': outcome.falType.name,
+        'comodity': '${outcome.falType.name}: ${outcome.falType.density}',
         'availableLtrs': outcome.amountLtrs,
         'density': outcome.falType.density,
         'category': outcome.falType.category.name

@@ -1,14 +1,26 @@
 [
   {
     "uuid": "023672ef-8d43-4d36-90fa-0145d0a98b6e",
-    "name": "ДП-л-Євро5-В0",
+    "name": "ДП-л-Євро5 В0",
     "category": "diesel",
     "density": 0.84
   },
   {
+    "uuid": "ad762aa5-40bb-43df-9153-e7382dad7bd4",
+    "name": "ДП-з-Євро5 В0",
+    "category": "diesel",
+    "density": 0.85
+  },
+  {
     "uuid": "57e1d2e9-e116-4221-8eaf-5ef7d110f6fb",
-    "name": "А-95-Євро5-Е0",
+    "name": "А-95-Євро5 Е0",
     "category": "petrol",
     "density": 0.75
+  },
+  {
+    "uuid": "b0afab04-fbb8-4596-abaa-0baf1f7b1903",
+    "name": "15W40",
+    "category": "oil",
+    "density": 0.9
   }
 ]

@@ -26,7 +26,11 @@ class FalTypesRepository extends _$FalTypesRepository {
 }
 
 @riverpod
-FALType? falTypeByName(FalTypeByNameRef ref, String value) {
+FALType? falTypeByNameAndDensity(FalTypeByNameAndDensityRef ref, String value,
+    {double? density}) {
   final falTypes = ref.watch(falTypesRepositoryProvider).value!;
-  return falTypes.where((f) => f.name == value).firstOrNull;
+  return falTypes
+      .where((f) =>
+          f.name == value && (density == null ? true : f.density == density))
+      .firstOrNull;
 }
