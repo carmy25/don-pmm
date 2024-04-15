@@ -23,7 +23,6 @@ jobs:
         with:
           channel: 'beta'
           cache: true
-          version: 3.22.0
       - name: Get dependencies
         run: flutter pub get
 
