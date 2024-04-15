@@ -177,9 +177,10 @@ class WaybillScreenState extends ConsumerState {
       ref.read(waybillListProvider.notifier).addWaybill(wb);
       final falTypes = await ref.watch(falTypesRepositoryProvider.future);
       for (final o in _fillupsData) {
-        final falType =
-            falTypes.firstWhereOrNull((e) => e.name == o['comodity']) ??
-                (await _createNewFalType(o));
+        final falType = falTypes.firstWhereOrNull((e) =>
+                e.name == o['comodity'].split(':')[0] &&
+                e.density == o['density']) ??
+            (await _createNewFalType(o));
         ref.read(fillupListProvider.notifier).addFillup(Fillup(
             uuid: o['uuid'] ?? const Uuid().v4(),
             falType: falType,

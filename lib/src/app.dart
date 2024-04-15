@@ -1,6 +1,6 @@
+import 'package:donpmm/src/features/splash/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'features/report/presentation/startup_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
@@ -19,24 +19,8 @@ class MyApp extends StatelessWidget {
         SentryNavigatorObserver(),
       ],
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-      ),
-      home: FutureBuilder<bool>(
-          future: () async {
-            const msg = 'App started';
-            Sentry.captureMessage(msg);
-            debugPrint(msg);
-            return true;
-          }(),
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) =>
-              snapshot.hasData
-                  ? const StartupScreen()
-                  : const SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: CircularProgressIndicator(),
-                    )),
+      theme: ThemeData.light(),
+      home: const SplashScreen(),
     );
     return app;
   }

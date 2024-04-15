@@ -43,11 +43,12 @@ dependencies:
   flutter_localizations:
       sdk: flutter
   file_picker: ^6.1.1
-  flutter_editable_table: ^1.1.2
+  flutter_editable_table:
+     git: git@github.com:carmy25/flutter_editable_table.git
   path_provider: ^2.1.2
   spreadsheet_decoder: ^2.2.0
   syncfusion_flutter_xlsio: ^24.2.7
-  intl: ^0.18.1
+  intl: ^0.19.0
   flutter_datetime_picker_bdaya: ^3.0.2
   collection: ^1.18.0
   shared_preferences: ^2.2.2
@@ -55,6 +56,7 @@ dependencies:
   sentry_flutter: ^7.18.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
+  easy_splash_screen: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -91,6 +93,7 @@ flutter:
   # https://flutter.dev/assets-and-images/#resolution-aware
   assets:
     - assets/default_fal_types.json
+    - assets/splash.png
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
