@@ -20,10 +20,11 @@ class WaybillsListWidget extends ConsumerWidget {
         final wb = waybills[i];
         final reportStart = report?.dtRange.start;
         return ListTile(
-          leading: Icon(
-              (reportStart != null && wb.issueDate!.isAfter(reportStart))
-                  ? Icons.online_prediction
-                  : Icons.warning),
+          leading: Icon((reportStart != null &&
+                  wb.issueDate!
+                      .isAfter(reportStart.subtract(const Duration(days: 1))))
+              ? Icons.online_prediction
+              : Icons.warning),
           title: Text(wb.number),
           onTap: () {
             Navigator.push(
