@@ -43,8 +43,7 @@ dependencies:
   flutter_localizations:
       sdk: flutter
   file_picker: ^6.1.1
-  flutter_editable_table:
-     git: http://github.com/carmy25/flutter_editable_table.git
+  flutter_editable_table: ^1.1.2
   path_provider: ^2.1.2
   spreadsheet_decoder: ^2.2.0
   syncfusion_flutter_xlsio: ^24.2.7
