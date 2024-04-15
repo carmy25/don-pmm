@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_editable_table/entities/row_entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -172,8 +173,14 @@ String removeDecimalZeroFormat(double n) {
 void setFalTypeByName(String name, List<RowEntity> rows, WidgetRef ref) {
   final [falName, ...density] = name.split(':');
   final densityStr = density.isEmpty ? '' : density[0];
+  double densityParsed = 0;
+  try {
+    densityParsed = double.parse(densityStr.trim());
+  } catch (e) {
+    debugPrint('Unable to parse: [$densityStr]');
+  }
   final falType = ref.read(falTypeByNameAndDensityProvider(falName,
-      density: densityStr.isEmpty ? null : double.parse(densityStr.trim())));
+      density: densityStr.isEmpty ? null : densityParsed));
   if (falType == null) {
     return;
   }
