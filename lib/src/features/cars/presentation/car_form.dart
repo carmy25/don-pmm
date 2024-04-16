@@ -1,3 +1,5 @@
+import 'package:donpmm/src/common/utils.dart';
+import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
@@ -176,7 +178,9 @@ class CarFormState extends ConsumerState<CarForm> {
           fillupRepo.addFillup(Fillup(
             uuid: const Uuid().v4(),
             falType: fu.falType,
-            beforeLtrs: fu.beforeLtrs + fu.fillupLtrs - fu.burnedLtrs,
+            beforeLtrs: roundDouble(
+                fu.beforeLtrs + fu.fillupLtrs - fu.burnedLtrs,
+                places: fu.falType.category == FALCategory.oil ? 1 : 0),
             fillupLtrs: 0,
             burnedLtrs: 0,
             waybill: waybill,
