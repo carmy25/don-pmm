@@ -19,11 +19,10 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: 'gradle'
-      - name: Cleanup
-        run: flutter clean
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'beta'
+          channel: 'stable'
+          flutter-version-file: pubspec.yaml
           cache: true
       - name: Get dependencies
         run: flutter pub get
