@@ -23,8 +23,8 @@ jobs:
         uses: dcarbone/install-yq-action@v1.1.1
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'beta'
-          flutter-version: 3.22.0
+          channel: 'stable'
+          flutter-version: 3.22.2
       - name: Get dependencies
         run: flutter pub get
 
