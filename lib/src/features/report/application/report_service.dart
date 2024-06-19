@@ -840,23 +840,8 @@ class ReportService {
     final falTypesByIndex = {for (final (i, v) in falTypes.indexed) i: v};
     for (final f in falTypesByIndex.entries) {
       final (index, falType) = (f.key, f.value);
-      ++cidx;
-      _updateDataCell(sheet, 'A$cidx', '${index + 1}');
-
-      // FAL name
-      _updateDataCell(sheet, 'b$cidx', falType.name);
-
-      _updateDataCell(sheet, 'c$cidx', 'л/кг');
-
       // FAL outcome
       final outcome = ref.read(outcomeByFalTypeProvider(falType));
-      _updateDataCell(
-          sheet,
-          'I$cidx',
-          outcome != null
-              ? '${removeDecimalZeroFormat(roundDouble(outcome.amountLtrs, places: falType.category == FALCategory.oil ? 1 : 0))}/${removeDecimalZeroFormat(roundDouble(outcome.weightKgs, places: falType.category == FALCategory.oil ? 1 : 0))}'
-              : '0/0');
-
       final fillups = ref.read(fillupsByFalTypeProvider(falType));
 
       // FAL income/outcome
@@ -867,15 +852,23 @@ class ReportService {
       double outcomeTotal = outcome?.amountLtrs ?? 0;
       final carsBeforeCalculated = <String>{};
       for (final fillup in fillups) {
-        if (!carsBeforeCalculated.contains(fillup.waybill.carUuid)) {
+        if (!carsBeforeCalculated.contains(fillup.waybill.carUuid) &&
+            fillup.waybill.issueDate!.isAfter(
+                report.dtRange.start.subtract(const Duration(days: 1)))) {
           beforeLtrs += fillup.beforeLtrs;
           carsBeforeCalculated.add(fillup.waybill.carUuid);
         }
-        burnedLtrs += fillup.burnedLtrs;
-        if (fillup.otherMilBase) {
-          fillupOtherMilBaseLtrs += fillup.fillupLtrs;
-        } else {
-          fillupLtrs += fillup.fillupLtrs;
+        if (fillup.waybill.issueDate!
+            .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
+          burnedLtrs += fillup.burnedLtrs;
+        }
+        if (fillup.waybill.issueDate!
+            .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
+          if (fillup.otherMilBase) {
+            fillupOtherMilBaseLtrs += fillup.fillupLtrs;
+          } else {
+            fillupLtrs += fillup.fillupLtrs;
+          }
         }
       }
       outcomeTotal += burnedLtrs;
@@ -897,6 +890,14 @@ class ReportService {
       final fillupTotalKgs = fillupKgs + fillupOtherMilBaseKgs;
       final availableTotal = beforeLtrs + fillupTotal - outcomeTotal;
       final availableTotalKgs = beforeKgs + fillupTotalKgs - outcomeTotalKgs;
+
+      if (fillupTotal == 0 &&
+          beforeLtrs == 0 &&
+          outcomeTotal == 0 &&
+          outcome == null) {
+        continue;
+      }
+      ++cidx;
       _updateDataCell(sheet, 'd$cidx',
           '${removeDecimalZeroFormat(roundDouble(beforeLtrs, places: roundPlaces))}/${removeDecimalZeroFormat(beforeKgs)}');
       _updateDataCell(sheet, 'e$cidx',
@@ -911,6 +912,19 @@ class ReportService {
           '${removeDecimalZeroFormat(roundDouble(outcomeTotal, places: roundPlaces))}/${removeDecimalZeroFormat(outcomeTotalKgs)}');
       _updateDataCell(sheet, 'k$cidx',
           '${removeDecimalZeroFormat(roundDouble(availableTotal, places: roundPlaces))}/${removeDecimalZeroFormat(availableTotalKgs)}');
+
+      _updateDataCell(sheet, 'A$cidx', '${index + 1}');
+
+      // FAL name
+      _updateDataCell(sheet, 'b$cidx', falType.name);
+
+      _updateDataCell(sheet, 'c$cidx', 'л/кг');
+      _updateDataCell(
+          sheet,
+          'I$cidx',
+          outcome != null
+              ? '${removeDecimalZeroFormat(roundDouble(outcome.amountLtrs, places: falType.category == FALCategory.oil ? 1 : 0))}/${removeDecimalZeroFormat(roundDouble(outcome.weightKgs, places: falType.category == FALCategory.oil ? 1 : 0))}'
+              : '0/0');
     }
 
     ++cidx;
