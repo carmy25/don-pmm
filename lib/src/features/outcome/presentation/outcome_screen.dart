@@ -85,8 +85,9 @@ class OutcomeScreenState extends ConsumerState {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              _saveOutcomes()
-                                  .then((value) => Navigator.pop(context));
+                              _saveOutcomes().then((value) {
+                                if (context.mounted) Navigator.pop(context);
+                              });
                             }
                           },
                           child: const Text('Зберегти'),

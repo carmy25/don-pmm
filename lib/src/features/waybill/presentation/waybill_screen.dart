@@ -20,28 +20,27 @@ class WaybillScreen extends ConsumerStatefulWidget {
   final Waybill waybill;
 
   @override
-  // ignore: no_logic_in_create_state
-  WaybillScreenState createState() => WaybillScreenState(waybill: waybill);
+  WaybillScreenState createState() => WaybillScreenState();
 }
 
-class WaybillScreenState extends ConsumerState {
+class WaybillScreenState extends ConsumerState<WaybillScreen> {
   final TextEditingController _numberInput = TextEditingController();
   final TextEditingController _kmsStartInput = TextEditingController();
   final TextEditingController _kmsEndInput = TextEditingController();
   final TextEditingController _mhStartInput = TextEditingController();
   final TextEditingController _mhEndInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
-  final Waybill waybill;
   final _formKey = GlobalKey<FormState>();
   final List<Map<String, dynamic>> _fillupsData = [];
 
-  WaybillScreenState({required this.waybill});
+  WaybillScreenState();
 
   @override
   Widget build(BuildContext context) {
-    _numberInput.text = waybill.number;
+    final waybill = widget.waybill;
+    _numberInput.text = widget.waybill.number;
     _kmsStartInput.text =
-        waybill.kmsStart > 0 ? waybill.kmsStart.toString() : '';
+        widget.waybill.kmsStart > 0 ? waybill.kmsStart.toString() : '';
     _kmsEndInput.text = waybill.kmsEnd > 0 ? waybill.kmsEnd.toString() : '';
     _mhStartInput.text = waybill.mhStart > 0 ? waybill.mhStart.toString() : '';
     _mhEndInput.text = waybill.mhEnd > 0 ? waybill.mhEnd.toString() : '';
@@ -170,8 +169,8 @@ class WaybillScreenState extends ConsumerState {
           kmsEnd: parseDouble(_kmsEndInput.text),
           mhStart: parseDouble(_mhStartInput.text),
           mhEnd: parseDouble(_mhEndInput.text),
-          uuid: waybill.uuid,
-          carUuid: waybill.carUuid,
+          uuid: widget.waybill.uuid,
+          carUuid: widget.waybill.carUuid,
           issueDate: DateFormat.yMMMMd('uk').parse(dtString),
           number: _numberInput.text);
       ref.read(waybillListProvider.notifier).addWaybill(wb);
@@ -189,7 +188,7 @@ class WaybillScreenState extends ConsumerState {
             fillupLtrs: o['gainedLtrs'] ?? 0,
             burnedLtrs: o['spentLtrs'] ?? 0,
             otherMilBase: o['otherMilBase'] ?? false,
-            waybill: waybill));
+            waybill: wb));
       }
       if (context.mounted) {
         Navigator.pop(context);
