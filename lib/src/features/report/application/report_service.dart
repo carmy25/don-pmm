@@ -852,6 +852,10 @@ class ReportService {
       double outcomeTotal = outcome?.amountLtrs ?? 0;
       final carsBeforeCalculated = <String>{};
       for (final fillup in fillups) {
+        if (fillup.waybill.issueDate == null) {
+          debugPrint('wb without issueDate: ${fillup.waybill.uuid}');
+          continue;
+        }
         if (!carsBeforeCalculated.contains(fillup.waybill.carUuid) &&
             fillup.waybill.issueDate!.isAfter(
                 report.dtRange.start.subtract(const Duration(days: 1)))) {
