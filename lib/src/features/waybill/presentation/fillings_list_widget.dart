@@ -261,6 +261,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
               'otherMilBase': e.otherMilBase,
             })
         .toList();
+    widget.data.addAll(List.from(data['rows']));
     final jsonData = TableEntity.fromJson(data);
     return XEditableTable(
       key: _editableTableKey,
