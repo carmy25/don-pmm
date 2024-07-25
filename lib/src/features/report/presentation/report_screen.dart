@@ -79,19 +79,11 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
     return false;
   }
 
-  /*void _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    _unitNameInput.text = prefs.getString('unitName') ?? '';
-    _milBaseInput.text = prefs.getString('milBase') ?? '';
-    _chiefPositionInput.text = prefs.getString('chiefPosition') ?? '';
-  }*/
-
   @override
   void initState() {
     super.initState();
     _chiefRankNode = FocusNode();
     _checkerRankNode = FocusNode();
-    // _loadPreferences();
   }
 
   @override
@@ -123,6 +115,21 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
       await reportLoader.loadFromFile(outputFile);
     }
     return true;
+  }
+
+  _validateAndNavigate(Widget screen) {
+    if (_formKey.currentState!.validate()) {
+      ref.read(reportRepositoryProvider.notifier).createReport(
+          milBase: _milBaseInput.text,
+          unitName: _unitNameInput.text,
+          dtRange: _dtRange!,
+          chiefPosition: _chiefPositionInput.text,
+          chiefRank: _chiefRankInput.text,
+          chiefName: _chiefNameInput.text,
+          checkerName: _checkerNameInput.text,
+          checkerRank: _checkerRankInput.text);
+      _moveToScreen(screen);
+    }
   }
 
   Widget _reportFormWidget(Report? report) {
@@ -321,12 +328,14 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
                                   fontWeight: FontWeight.bold, fontSize: 18)),
                           Icon(Icons.arrow_right)
                         ]),
-                    onPressed: () => _moveToScreen(const OutcomeScreen()),
+                    onPressed: () =>
+                        _validateAndNavigate(const OutcomeScreen()),
                   )),
               Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextButton(
-                    onPressed: () => _moveToScreen(const CarsListScreen()),
+                    onPressed: () =>
+                        _validateAndNavigate(const CarsListScreen()),
                     child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
