@@ -26,6 +26,7 @@ class ReportScreen extends ConsumerStatefulWidget {
 
 class ReportScreenState extends ConsumerState<ReportScreen> {
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late DateTimeRange? _dtRange;
   late final FocusNode _chiefRankNode;
   late final FocusNode _checkerRankNode;
@@ -148,56 +149,64 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
       debugPrint('Report updated: ${report.milBase}');
     }
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Донесення ПММ'),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (v) {
-              Future? future;
-              String snackText = '';
-              debugPrint(v);
-              if (v == 'SAVE' && _formKey.currentState!.validate()) {
-                snackText = 'Збережено!';
-                future = _saveReport();
-              } else if (v == 'OPEN') {
-                snackText = 'Відкрито!';
-                future = _openReport();
-              } else if (v == 'NEW_FROM_CURRENT') {
-                snackText = 'Створено!';
-                future = _newReportFromCurrent();
-              }
-              future?.then((done) {
-                if (done) {
-                  final snackBar = SnackBar(content: Text(snackText));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  return;
+          Builder(builder: (context) {
+            return PopupMenuButton<String>(
+              onSelected: (v) {
+                Future? future;
+                String snackText = '';
+                debugPrint(v);
+                if (v == 'SAVE' && _formKey.currentState!.validate()) {
+                  snackText = 'Збережено!';
+                  future = _saveReport();
+                } else if (v == 'OPEN') {
+                  snackText = 'Відкрито!';
+                  future = _openReport();
+                } else if (v == 'NEW_FROM_CURRENT') {
+                  snackText = 'Створено!';
+                  future = _newReportFromCurrent();
                 }
-                const snackBar = SnackBar(
-                    content: Text('Спочатку збережіть поточне донесення.'));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              });
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem<String>(
-                  value: 'SAVE',
-                  child: ListTile(
-                      title: Text('Зберегти'), leading: Icon(Icons.save)),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'OPEN',
-                  child: ListTile(
-                      title: Text('Відкрити'), leading: Icon(Icons.file_open)),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'NEW_FROM_CURRENT',
-                  child: ListTile(
-                      title: Text('Нове з поточного'),
-                      leading: Icon(Icons.next_plan)),
-                )
-              ];
-            },
-          ),
+                future?.then((done) {
+                  if (done) {
+                    final snackBar = SnackBar(content: Text(snackText));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    return;
+                  }
+                  const snackBar = SnackBar(
+                      content: Text('Спочатку збережіть поточне донесення.'));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                });
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  const PopupMenuItem<String>(
+                    value: 'SAVE',
+                    child: ListTile(
+                        title: Text('Зберегти'), leading: Icon(Icons.save)),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'OPEN',
+                    child: ListTile(
+                        title: Text('Відкрити'),
+                        leading: Icon(Icons.file_open)),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'NEW_FROM_CURRENT',
+                    child: ListTile(
+                        title: Text('Нове з поточного'),
+                        leading: Icon(Icons.next_plan)),
+                  )
+                ];
+              },
+            );
+          }),
         ],
       ),
       body: Form(
