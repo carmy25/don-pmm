@@ -44,6 +44,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
         : (await FilePicker.platform.saveFile(
             dialogTitle: 'Вкажіть назву файлу:',
             fileName: basicFilename,
+            type: FileType.custom,
             allowedExtensions: ['xlsx']));
   }
 

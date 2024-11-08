@@ -1,4 +1,5 @@
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../cars/domain/car.dart';
@@ -42,20 +43,20 @@ class WaybillList extends _$WaybillList {
 }
 
 @riverpod
-List<Waybill> waybillsByCar(WaybillsByCarRef ref, Car car) {
+List<Waybill> waybillsByCar(Ref ref, Car car) {
   final waybills = ref.watch(waybillListProvider);
   return waybills.where((wb) => wb.carUuid == car.uuid).toList();
 }
 
 @riverpod
-Waybill waybillByUuid(WaybillByUuidRef ref, String uuid) {
+Waybill waybillByUuid(Ref ref, String uuid) {
   final waybills = ref.watch(waybillListProvider);
   return waybills.where((wb) => wb.uuid == uuid).firstOrNull!;
 }
 
 @riverpod
 List<Waybill> waybillsByCarAndDate(
-    WaybillsByCarAndDateRef ref, Car car, DateTime after) {
+    Ref ref, Car car, DateTime after) {
   final waybills = ref.read(waybillsByCarProvider(car));
   return waybills
       .where((wb) =>
@@ -64,7 +65,7 @@ List<Waybill> waybillsByCarAndDate(
 }
 
 @riverpod
-List<Waybill> waybillsByDate(WaybillsByDateRef ref, DateTime after) {
+List<Waybill> waybillsByDate(Ref ref, DateTime after) {
   final waybills = ref.watch(waybillListProvider);
   return waybills
       .where((wb) =>

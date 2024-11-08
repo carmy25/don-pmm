@@ -1,5 +1,6 @@
 import 'package:donpmm/src/features/fal/domain/fal.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'outcomes_repository.g.dart';
@@ -26,7 +27,7 @@ class OutcomesRepository extends _$OutcomesRepository {
 }
 
 @riverpod
-FAL? outcomeByFalType(OutcomeByFalTypeRef ref, FALType falType) {
+FAL? outcomeByFalType(Ref ref, FALType falType) {
   final outcomes = ref.watch(outcomesRepositoryProvider);
   final outcomeFiltered = outcomes.where((f) => f.falType == falType);
   return outcomeFiltered.isEmpty ? null : outcomeFiltered.first;

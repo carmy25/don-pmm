@@ -6,7 +6,7 @@ part of 'outcomes_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$outcomeByFalTypeHash() => r'eeabd0a72d213ee527ee811eb9f100400e34561c';
+String _$outcomeByFalTypeHash() => r'1c0a582e5e3f7b6895666c8a1aec05169d254bc2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -142,6 +142,8 @@ class OutcomeByFalTypeProvider extends AutoDisposeProvider<FAL?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin OutcomeByFalTypeRef on AutoDisposeProviderRef<FAL?> {
   /// The parameter `falType` of this provider.
   FALType get falType;
@@ -173,4 +175,4 @@ final outcomesRepositoryProvider =
 
 typedef _$OutcomesRepository = Notifier<List<FAL>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

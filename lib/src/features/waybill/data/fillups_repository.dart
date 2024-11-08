@@ -1,4 +1,5 @@
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../domain/waybill.dart';
@@ -42,20 +43,20 @@ class FillupList extends _$FillupList {
 }
 
 @riverpod
-List<Fillup> fillupsByWaybill(FillupsByWaybillRef ref, Waybill waybill) {
+List<Fillup> fillupsByWaybill(Ref ref, Waybill waybill) {
   final fillups = ref.watch(fillupListProvider).value!;
   return fillups.where((f) => f.waybill == waybill).toList();
 }
 
 @riverpod
-List<Fillup> fillupsByFalType(FillupsByFalTypeRef ref, FALType falType) {
+List<Fillup> fillupsByFalType(Ref ref, FALType falType) {
   final fillups = ref.watch(fillupListProvider).value!;
   final fillupsFiltered = fillups.where((f) => f.falType == falType);
   return fillupsFiltered.toList();
 }
 
 @riverpod
-List<FALType> fillupFalTypes(FillupFalTypesRef ref) {
+List<FALType> fillupFalTypes(Ref ref) {
   final fillups = ref.watch(fillupListProvider).value!;
   return {...fillups.map((e) => e.falType)}.toList();
 }

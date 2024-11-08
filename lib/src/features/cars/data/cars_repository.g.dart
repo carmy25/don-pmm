@@ -6,7 +6,7 @@ part of 'cars_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$carByUuidHash() => r'89f83d116e416b745dffcdc2a8cdb5acc6e0ccff';
+String _$carByUuidHash() => r'85d7478f0f5c68342a238c3b94ccd84d18133f9f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -141,6 +141,8 @@ class CarByUuidProvider extends AutoDisposeProvider<Car> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin CarByUuidRef on AutoDisposeProviderRef<Car> {
   /// The parameter `uuid` of this provider.
   String get uuid;
@@ -169,4 +171,4 @@ final carListProvider = NotifierProvider<CarList, List<Car>>.internal(
 
 typedef _$CarList = Notifier<List<Car>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

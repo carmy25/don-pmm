@@ -1149,6 +1149,6 @@ String _formatDateRange(DateTimeRange? dtRange) {
 }
 
 @riverpod
-ReportService reportService(ReportServiceRef ref) {
+ReportService reportService(Ref ref) {
   return ReportService(ref: ref);
 }

@@ -6,7 +6,7 @@ part of 'fillups_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fillupsByWaybillHash() => r'2eebd304ca57e49807e2765511ded750695a3209';
+String _$fillupsByWaybillHash() => r'd84fb53417dd6962f498d6cf3a5c77ccaaed8d17';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -142,6 +142,8 @@ class FillupsByWaybillProvider extends AutoDisposeProvider<List<Fillup>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin FillupsByWaybillRef on AutoDisposeProviderRef<List<Fillup>> {
   /// The parameter `waybill` of this provider.
   Waybill get waybill;
@@ -155,7 +157,7 @@ class _FillupsByWaybillProviderElement
   Waybill get waybill => (origin as FillupsByWaybillProvider).waybill;
 }
 
-String _$fillupsByFalTypeHash() => r'3a81876e7bac933a8ceedd003f9394ccd34f597e';
+String _$fillupsByFalTypeHash() => r'6dafee8c8d9d8f529711d17671dbeb3ca561b032';
 
 /// See also [fillupsByFalType].
 @ProviderFor(fillupsByFalType)
@@ -270,6 +272,8 @@ class FillupsByFalTypeProvider extends AutoDisposeProvider<List<Fillup>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin FillupsByFalTypeRef on AutoDisposeProviderRef<List<Fillup>> {
   /// The parameter `falType` of this provider.
   FALType get falType;
@@ -283,7 +287,7 @@ class _FillupsByFalTypeProviderElement
   FALType get falType => (origin as FillupsByFalTypeProvider).falType;
 }
 
-String _$fillupFalTypesHash() => r'76469f83b7526060f38e835f98e1259df160fdcf';
+String _$fillupFalTypesHash() => r'befeaea83fc8e5f67dbe88c215651cab44727847';
 
 /// See also [fillupFalTypes].
 @ProviderFor(fillupFalTypes)
@@ -297,6 +301,8 @@ final fillupFalTypesProvider = AutoDisposeProvider<List<FALType>>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef FillupFalTypesRef = AutoDisposeProviderRef<List<FALType>>;
 String _$fillupListHash() => r'82c1b050119989d509456bedb421f56ceeac2e7d';
 
@@ -314,4 +320,4 @@ final fillupListProvider =
 
 typedef _$FillupList = AsyncNotifier<List<Fillup>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

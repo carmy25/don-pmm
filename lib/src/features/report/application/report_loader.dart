@@ -236,6 +236,6 @@ class ReportLoader {
 }
 
 @riverpod
-ReportLoader reportLoaderService(ReportLoaderServiceRef ref) {
+ReportLoader reportLoaderService(Ref ref) {
   return ReportLoader(ref: ref);
 }

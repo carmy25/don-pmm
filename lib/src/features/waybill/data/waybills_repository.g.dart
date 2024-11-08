@@ -6,7 +6,7 @@ part of 'waybills_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$waybillsByCarHash() => r'96ae21e30b30ef321d4de3f7e2f600fcb4ab2809';
+String _$waybillsByCarHash() => r'fd3c91492366cb054f7115c888f24393dc569270';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -142,6 +142,8 @@ class WaybillsByCarProvider extends AutoDisposeProvider<List<Waybill>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin WaybillsByCarRef on AutoDisposeProviderRef<List<Waybill>> {
   /// The parameter `car` of this provider.
   Car get car;
@@ -155,7 +157,7 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillByUuidHash() => r'27fc41ed996e35842d8a3c45a1af9e588ed50488';
+String _$waybillByUuidHash() => r'b3abbdeb6a384194f8f539e17cdd126f84b9b500';
 
 /// See also [waybillByUuid].
 @ProviderFor(waybillByUuid)
@@ -270,6 +272,8 @@ class WaybillByUuidProvider extends AutoDisposeProvider<Waybill> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin WaybillByUuidRef on AutoDisposeProviderRef<Waybill> {
   /// The parameter `uuid` of this provider.
   String get uuid;
@@ -284,7 +288,7 @@ class _WaybillByUuidProviderElement extends AutoDisposeProviderElement<Waybill>
 }
 
 String _$waybillsByCarAndDateHash() =>
-    r'ecfd63e922bc48d62ef0db9bd55e39c7bdd4099a';
+    r'9ccee93780fd645b0af7a291ebd20f52406278a5';
 
 /// See also [waybillsByCarAndDate].
 @ProviderFor(waybillsByCarAndDate)
@@ -411,6 +415,8 @@ class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin WaybillsByCarAndDateRef on AutoDisposeProviderRef<List<Waybill>> {
   /// The parameter `car` of this provider.
   Car get car;
@@ -430,7 +436,7 @@ class _WaybillsByCarAndDateProviderElement
   DateTime get after => (origin as WaybillsByCarAndDateProvider).after;
 }
 
-String _$waybillsByDateHash() => r'9f1ac7f295a1be93551ec5e8893c63f88437eeab';
+String _$waybillsByDateHash() => r'8caaf8a7d941ddb3e9834a941de1acd84977756e';
 
 /// See also [waybillsByDate].
 @ProviderFor(waybillsByDate)
@@ -545,6 +551,8 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin WaybillsByDateRef on AutoDisposeProviderRef<List<Waybill>> {
   /// The parameter `after` of this provider.
   DateTime get after;
@@ -574,4 +582,4 @@ final waybillListProvider =
 
 typedef _$WaybillList = Notifier<List<Waybill>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

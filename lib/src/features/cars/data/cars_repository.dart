@@ -1,5 +1,6 @@
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../domain/car.dart';
@@ -33,7 +34,7 @@ class CarList extends _$CarList {
 }
 
 @riverpod
-Car carByUuid(CarByUuidRef ref, String uuid) {
+Car carByUuid(Ref ref, String uuid) {
   final cars = ref.watch(carListProvider);
   return cars.where((c) => c.uuid == uuid).first;
 }

@@ -7,7 +7,7 @@ part of 'fal_types_repository.dart';
 // **************************************************************************
 
 String _$falTypeByNameAndDensityHash() =>
-    r'8165c9393d9e6ae175aaf9cb5a6c42198ec41dec';
+    r'7d30248b895be7995f3cbb2c019f0e6cf43845ab';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -155,6 +155,8 @@ class FalTypeByNameAndDensityProvider extends AutoDisposeProvider<FALType?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin FalTypeByNameAndDensityRef on AutoDisposeProviderRef<FALType?> {
   /// The parameter `value` of this provider.
   String get value;
@@ -192,4 +194,4 @@ final falTypesRepositoryProvider =
 
 typedef _$FalTypesRepository = AsyncNotifier<List<FALType>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

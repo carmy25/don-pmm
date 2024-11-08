@@ -1,5 +1,6 @@
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:convert';
 
@@ -26,7 +27,7 @@ class FalTypesRepository extends _$FalTypesRepository {
 }
 
 @riverpod
-FALType? falTypeByNameAndDensity(FalTypeByNameAndDensityRef ref, String value,
+FALType? falTypeByNameAndDensity(Ref ref, String value,
     {double? density}) {
   final falTypes = ref.watch(falTypesRepositoryProvider).value!;
   return falTypes
