@@ -70,7 +70,7 @@ class ReportLoader {
     do {
       final comodityName =
           reportSheet.cell(CellIndex.indexByString('B$cidx')).value.toString();
-      if (comodityName.startsWith('Шляхові листи')) {
+      if (comodityName.startsWith('Шляхові листи') || comodityName == 'null') {
         break;
       }
       final comodityAmountString =
@@ -126,7 +126,7 @@ class ReportLoader {
     final value = switch (sheet.cell(CellIndex.indexByString(address)).value) {
       (IntCellValue v) => v.value.toDouble(),
       (DoubleCellValue v) => v.value,
-      (TextCellValue v) => v.value,
+      (TextCellValue v) => v.value.text,
       (BoolCellValue v) => v.value,
       (DateCellValue v) => v.asDateTimeLocal(),
       _ => 0

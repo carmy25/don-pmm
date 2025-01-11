@@ -25,6 +25,14 @@ class WaybillsListWidget extends ConsumerWidget {
               ? Icons.online_prediction
               : Icons.warning),
           title: Text(wb.number),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete),
+            tooltip: 'Видалити лист',
+            onPressed: () {
+              debugPrint('delete waybill: ${wb.uuid}');
+              ref.read(waybillListProvider.notifier).removeWaybill(wb);
+            },
+          ),
           onTap: () {
             Navigator.push(
               context,

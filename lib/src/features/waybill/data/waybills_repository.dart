@@ -40,6 +40,12 @@ class WaybillList extends _$WaybillList {
     }
     state = newState;
   }
+
+  void removeWaybill(Waybill wb) {
+    final newState = state.where((w) => w.uuid != wb.uuid).toList();
+    ref.read(fillupListProvider.notifier).removeFillupsByWaybill(wb);
+    state = newState;
+  }
 }
 
 @riverpod
@@ -55,8 +61,7 @@ Waybill waybillByUuid(Ref ref, String uuid) {
 }
 
 @riverpod
-List<Waybill> waybillsByCarAndDate(
-    Ref ref, Car car, DateTime after) {
+List<Waybill> waybillsByCarAndDate(Ref ref, Car car, DateTime after) {
   final waybills = ref.read(waybillsByCarProvider(car));
   return waybills
       .where((wb) =>
