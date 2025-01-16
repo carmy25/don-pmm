@@ -46,12 +46,12 @@ dependencies:
       git: https://github.com/carmy25/flutter_editable_table.git
   path_provider: ^2.1.2
   spreadsheet_decoder: ^2.2.0
-  syncfusion_flutter_xlsio: ^27.1.57
+  syncfusion_flutter_xlsio: ^28.1.39
   intl: ^0.19.0
   flutter_datetime_picker_bdaya: ^3.0.2
   shared_preferences: ^2.2.2
   excel: ^4.0.6
-  sentry_flutter: ^8.9.0
+  sentry_flutter: ^8.12.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   easy_splash_screen: ^1.0.4
