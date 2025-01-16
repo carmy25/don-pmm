@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
@@ -25,6 +25,7 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: 3.27.2
+          cache: true
       - name: Get dependencies
         run: flutter pub get
 
