@@ -1,11 +1,14 @@
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:flutter/material.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:uuid/uuid.dart';
 
 class FillupDataSource extends DataGridSource {
   late List<Fillup> _fillups;
@@ -90,104 +93,174 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
   FillingsListWidgetSfState();
 
   final _formKey = GlobalKey<FormState>();
+  final _densityInput = TextEditingController();
+  final _categoryInput = TextEditingController();
+  final _falNameFocusNode = FocusNode();
+
   String? _falName;
+  String? _category;
+
+  @override
+  void dispose() {
+    _densityInput.dispose();
+    _categoryInput.dispose();
+    _falNameFocusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _displayTextInputDialog(
-      BuildContext context, List<FALType> falTypes) async {
+      BuildContext context, List<FALType> falTypes, Function onConfirm) async {
+    final width = MediaQuery.of(context).size.width;
+    final falCategories = falTypes.map((e) => e.category.name).toSet().toList();
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Нова заправка'),
-          content: Form(
-              key: _formKey,
-              child: Row(
-                children: [
-                  Flexible(
-                    child: Autocomplete<String>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text == '') {
-                          return const Iterable<String>.empty();
-                        }
-                        setState(() {
-                          _falName = textEditingValue.text;
-                        });
-                        return falTypes.where((FALType ft) {
-                          return ft.name
-                              .toLowerCase()
-                              .contains(textEditingValue.text.toLowerCase());
-                        }).map((FALType ft) => '${ft.name}: ${ft.density}');
-                      },
-                      fieldViewBuilder: (BuildContext context,
-                          TextEditingController textEditingController,
-                          FocusNode focusNode,
-                          VoidCallback onFieldSubmitted) {
-                        return TextFormField(
-                          controller: textEditingController,
-                          focusNode: focusNode,
-                          decoration: InputDecoration(
-                            labelText: 'Тип палива',
-                            icon: const Icon(Icons.local_gas_station),
+          content: SizedBox(
+            width: width - 100,
+            child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Autocomplete<String>(
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<String>.empty();
+                              }
+                              return falTypes.where((FALType ft) {
+                                return ft.name.toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase());
+                              }).map(
+                                  (FALType ft) => '${ft.name}: ${ft.density}');
+                            },
+                            fieldViewBuilder: (BuildContext context,
+                                TextEditingController textEditingController,
+                                FocusNode focusNode,
+                                VoidCallback onFieldSubmitted) {
+                              focusNode.addListener(() {
+                                if (!focusNode.hasFocus) {
+                                  debugPrint('Focus lost');
+                                  onFieldSubmitted();
+                                }
+                              });
+                              return TextFormField(
+                                controller: textEditingController,
+                                focusNode: focusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'Тип палива',
+                                  icon: const Icon(Icons.local_gas_station),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Вкажіть тип палива';
+                                  }
+                                  return null;
+                                },
+                              );
+                            },
+                            onSelected: (String selection) {
+                              setState(() {
+                                _falName = selection;
+                              });
+                              _falName = selection;
+                              final [falName, ...density] =
+                                  _falName!.split(':');
+                              final densityStr =
+                                  density.isEmpty ? '' : density[0];
+                              _densityInput.text = densityStr;
+                              final falType = ref.read(
+                                  falTypeByNameAndDensityProvider(falName,
+                                      density: double.tryParse(densityStr)));
+                              if (falType != null) {
+                                _categoryInput.text = falType.category.name;
+                              }
+
+                              debugPrint('You just selected $selection');
+                            },
                           ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Вкажіть тип палива';
-                            }
-                            return null;
-                          },
-                          onFieldSubmitted: (String value) {
-                            onFieldSubmitted();
-                            print('You just typed a new entry  $value');
-                          },
-                        );
-                      },
-                      onSelected: (String selection) {
-                        _falName = selection;
-                        debugPrint('You just selected $selection');
-                      },
-                    ),
-                  ),
-                  /* Flexible(
-                      child: TextFormField(
-                    controller: _numberInput,
-                    validator: validateNotEmpty,
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.numbers), //icon of text field
-                        labelText: 'Номер листа' //label text of field
                         ),
-                  )),
-                  Flexible(
-                      child: TextFormField(
-                          validator: validateNotEmpty,
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.directions_car),
-                              labelText: 'Початковий пробіг'))),
-                  Flexible(
-                      child: TextFormField(
-                          validator: validateNotEmpty,
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.directions_car),
-                              labelText: 'Кінцевий пробіг'))),
-                  Flexible(
-                      child: TextFormField(
-                          validator: validateNotEmpty,
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.directions_car),
-                              labelText: 'Початковий мотогодинник'))),
-                  Flexible(
-                      child: TextFormField(
-                          validator: validateNotEmpty,
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.directions_car),
-                              labelText: 'Кінцевий мотогодинник'))),
-                  Flexible(
-                      child: TextFormField(
-                          validator: validateNotEmpty,
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.date_range),
-                              labelText: 'Дата видачі'))), */
-                ],
-              )),
+                        Flexible(
+                            child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: _densityInput,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+\.?\d{0,2}'))
+                                ],
+                                validator: validateNotEmptyNumber,
+                                decoration: const InputDecoration(
+                                    icon: Icon(Icons.density_small),
+                                    labelText: 'Густина'))),
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownMenu<String>(
+                              initialSelection: falCategories.first,
+                              controller: _categoryInput,
+                              onSelected: (String? value) {
+                                // This is called when the user selects an item.
+                                setState(() {
+                                  _category = value!;
+                                });
+                              },
+                              dropdownMenuEntries: falCategories
+                                  .map<DropdownMenuEntry<String>>(
+                                      (String value) {
+                                return DropdownMenuEntry<String>(
+                                  value: value,
+                                  label: value,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                            child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+\.?\d{0,2}'))
+                                ],
+                                validator: validateNotEmpty,
+                                decoration: const InputDecoration(
+                                    icon: Icon(Icons.local_gas_station),
+                                    labelText: 'Перед виїздом'))),
+                        Flexible(
+                            child: TextFormField(
+                                validator: validateNotEmpty,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+\.?\d{0,2}'))
+                                ],
+                                decoration: const InputDecoration(
+                                    icon: Icon(Icons.local_gas_station),
+                                    labelText: 'Отримано'))),
+                        Flexible(
+                            child: TextFormField(
+                                validator: validateNotEmpty,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+\.?\d{0,2}'))
+                                ],
+                                decoration: const InputDecoration(
+                                    icon: Icon(Icons.local_gas_station),
+                                    labelText: 'Витрачено'))),
+                      ],
+                    )
+                  ],
+                )),
+          ),
           actions: <Widget>[
             TextButton(
               child: Text('Відмінити'),
@@ -199,6 +272,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
               child: Text('Додати'),
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
+                  onConfirm();
                   Navigator.pop(context);
                 }
               },
@@ -224,7 +298,25 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
               columnWidthMode: ColumnWidthMode.fill,
               footer: MaterialButton(
                 onPressed: () {
-                  _displayTextInputDialog(context, value);
+                  _displayTextInputDialog(context, value, () {
+                    final falType = ref.read(falTypeByNameAndDensityProvider(
+                        _falName!.split(':').first,
+                        density: double.tryParse(_densityInput.text)));
+                    if (falType != null) {
+                      final fillup = Fillup(
+                          uuid: const Uuid().v4(),
+                          falType: falType,
+                          beforeLtrs: double.tryParse(_densityInput.text)!,
+                          fillupLtrs: double.tryParse(_densityInput.text)!,
+                          burnedLtrs: double.tryParse(_densityInput.text)!,
+                          waybill: widget.waybill,
+                          otherMilBase: false);
+                      fillupsRepo.addFillup(fillup);
+                      fillupDataSource._fillups.add(fillup);
+                      fillupDataSource.updateDataGridRows();
+                      fillupDataSource.updateDataGridSource();
+                    }
+                  });
                 },
                 child: Text('Додати нову заправку'),
               ),
