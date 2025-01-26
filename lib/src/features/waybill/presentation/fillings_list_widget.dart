@@ -306,7 +306,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           // set density and type
           setFalTypeByName((value.value as String),
               _editableTableKey.currentState!.currentData.rows, ref);
-          //_editableTableKey.currentState!.setState(() {});
+          _editableTableKey.currentState!.setState(() {});
         }
         widget.data.addAll(_editableTableKey.currentState!.currentData.rows
             .map((e) => e.toJson()));
