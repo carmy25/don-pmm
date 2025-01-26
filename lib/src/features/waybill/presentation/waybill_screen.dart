@@ -4,6 +4,7 @@ import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
+import 'package:donpmm/src/features/waybill/presentation/fillings_list_widget_sf.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:uuid/uuid.dart';
 
 import '../data/waybills_repository.dart';
 import '../domain/waybill.dart';
-import 'fillings_list_widget.dart';
 
 class WaybillScreen extends ConsumerStatefulWidget {
   const WaybillScreen({super.key, required this.waybill});
@@ -137,11 +137,13 @@ class WaybillScreenState extends ConsumerState<WaybillScreen> {
                 children: [SubheaderText('Заправки')],
               ),
               Expanded(
-                  child: SingleChildScrollView(
-                      child: FillingsListWidget(
-                data: _fillupsData,
-                waybill: waybill,
-              ))),
+                child: SingleChildScrollView(
+                  child: FillingsListWidgetSf(
+                    data: _fillupsData,
+                    waybill: waybill,
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

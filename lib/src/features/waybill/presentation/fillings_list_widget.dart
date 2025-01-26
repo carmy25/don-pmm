@@ -296,7 +296,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
         debugPrint('row added');
       },
       onFilling: (FillingArea area, dynamic value) {
-        widget.data.clear();
+        // widget.data.clear();
         final falTypeString = switch (value) {
           CellEntity() => value.columnInfo.name,
           _ => null,
@@ -306,7 +306,7 @@ class FillingsListWidgetState extends ConsumerState<FillingsListWidget> {
           // set density and type
           setFalTypeByName((value.value as String),
               _editableTableKey.currentState!.currentData.rows, ref);
-          _editableTableKey.currentState!.setState(() {});
+          //_editableTableKey.currentState!.setState(() {});
         }
         widget.data.addAll(_editableTableKey.currentState!.currentData.rows
             .map((e) => e.toJson()));

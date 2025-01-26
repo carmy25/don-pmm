@@ -57,6 +57,7 @@ dependencies:
   easy_splash_screen: ^1.0.4
   updat: ^1.3.2
   collection: ^1.18.0
+  syncfusion_flutter_datagrid: ^28.1.41
 
 dev_dependencies:
   flutter_test:
