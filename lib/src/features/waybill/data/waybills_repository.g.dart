@@ -157,14 +157,14 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillByUuidHash() => r'b3abbdeb6a384194f8f539e17cdd126f84b9b500';
+String _$waybillByUuidHash() => r'a6b3ebc5ce14845b7d71a2d891d656fb9f479c3b';
 
 /// See also [waybillByUuid].
 @ProviderFor(waybillByUuid)
 const waybillByUuidProvider = WaybillByUuidFamily();
 
 /// See also [waybillByUuid].
-class WaybillByUuidFamily extends Family<Waybill> {
+class WaybillByUuidFamily extends Family<Waybill?> {
   /// See also [waybillByUuid].
   const WaybillByUuidFamily();
 
@@ -202,7 +202,7 @@ class WaybillByUuidFamily extends Family<Waybill> {
 }
 
 /// See also [waybillByUuid].
-class WaybillByUuidProvider extends AutoDisposeProvider<Waybill> {
+class WaybillByUuidProvider extends AutoDisposeProvider<Waybill?> {
   /// See also [waybillByUuid].
   WaybillByUuidProvider(
     String uuid,
@@ -237,7 +237,7 @@ class WaybillByUuidProvider extends AutoDisposeProvider<Waybill> {
 
   @override
   Override overrideWith(
-    Waybill Function(WaybillByUuidRef provider) create,
+    Waybill? Function(WaybillByUuidRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -254,7 +254,7 @@ class WaybillByUuidProvider extends AutoDisposeProvider<Waybill> {
   }
 
   @override
-  AutoDisposeProviderElement<Waybill> createElement() {
+  AutoDisposeProviderElement<Waybill?> createElement() {
     return _WaybillByUuidProviderElement(this);
   }
 
@@ -274,12 +274,12 @@ class WaybillByUuidProvider extends AutoDisposeProvider<Waybill> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin WaybillByUuidRef on AutoDisposeProviderRef<Waybill> {
+mixin WaybillByUuidRef on AutoDisposeProviderRef<Waybill?> {
   /// The parameter `uuid` of this provider.
   String get uuid;
 }
 
-class _WaybillByUuidProviderElement extends AutoDisposeProviderElement<Waybill>
+class _WaybillByUuidProviderElement extends AutoDisposeProviderElement<Waybill?>
     with WaybillByUuidRef {
   _WaybillByUuidProviderElement(super.provider);
 
@@ -566,7 +566,7 @@ class _WaybillsByDateProviderElement
   DateTime get after => (origin as WaybillsByDateProvider).after;
 }
 
-String _$waybillListHash() => r'1413e5ac5f1b96094525eed892ec65f78569004a';
+String _$waybillListHash() => r'82763b2f26221a67091b38c56cf0e75e4841587f';
 
 /// See also [WaybillList].
 @ProviderFor(WaybillList)

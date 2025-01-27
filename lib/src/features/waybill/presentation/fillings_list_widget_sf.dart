@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
@@ -15,6 +16,14 @@ class FillupDataSource extends DataGridSource {
   List<DataGridRow> dataGridRow = [];
   Color? rowBackgroundColor;
   late FillupList _fillupsRepo;
+
+  /// Helps to hold the new value of all editable widgets.
+  /// Based on the new value we will commit the new value into the corresponding
+  /// DataGridCell on the onCellSubmit method.
+  dynamic newCellValue;
+
+  /// Helps to control the editable text in the [TextField] widget.
+  TextEditingController editingController = TextEditingController();
 
   FillupDataSource(
       {required List<Fillup> fillups, required FillupList fillupsRepo}) {
@@ -77,6 +86,87 @@ class FillupDataSource extends DataGridSource {
   void updateDataGridSource() {
     notifyListeners();
   }
+
+  @override
+  Future<void> onCellSubmit(DataGridRow dataGridRow,
+      RowColumnIndex rowColumnIndex, GridColumn column) {
+    final dynamic oldValue = dataGridRow
+            .getCells()
+            .firstWhereOrNull((DataGridCell dataGridCell) =>
+                dataGridCell.columnName == column.columnName)
+            ?.value ??
+        '';
+
+    final int dataRowIndex = rows.indexOf(dataGridRow);
+
+    if (newCellValue == null || oldValue == newCellValue) {
+      return Future.value();
+    }
+    rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
+        DataGridCell<double>(
+            columnName: column.columnName, value: newCellValue);
+    if (column.columnName == 'beforeLtrs') {
+      _fillups[dataRowIndex] = _fillups[dataRowIndex].copyWith(
+        beforeLtrs: newCellValue as double,
+      );
+    } else if (column.columnName == 'fillupLtrs') {
+      _fillups[dataRowIndex] = _fillups[dataRowIndex].copyWith(
+        fillupLtrs: newCellValue as double,
+      );
+    } else if (column.columnName == 'burnedLtrs') {
+      _fillups[dataRowIndex] = _fillups[dataRowIndex].copyWith(
+        burnedLtrs: newCellValue as double,
+      );
+    }
+    _fillupsRepo.addFillup(_fillups[dataRowIndex]);
+
+    return Future.value();
+  }
+
+  @override
+  Widget? buildEditWidget(DataGridRow dataGridRow,
+      RowColumnIndex rowColumnIndex, GridColumn column, CellSubmit submitCell) {
+    // Text going to display on editable widget
+    final String displayText = dataGridRow
+            .getCells()
+            .firstWhereOrNull((DataGridCell dataGridCell) =>
+                dataGridCell.columnName == column.columnName)
+            ?.value
+            ?.toString() ??
+        '';
+
+    // The new cell value must be reset.
+    // To avoid committing the [DataGridCell] value that was previously edited
+    // into the current non-modified [DataGridCell].
+    newCellValue = null;
+
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      alignment: Alignment.centerRight,
+      child: TextField(
+        autofocus: true,
+        controller: editingController..text = displayText,
+        textAlign: TextAlign.right,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 16.0),
+        ),
+        keyboardType: TextInputType.number,
+        onChanged: (String value) {
+          if (value.isNotEmpty) {
+            newCellValue = double.tryParse(value);
+          } else {
+            newCellValue = null;
+          }
+        },
+        onSubmitted: (String value) {
+          // In Mobile Platform.
+          // Call [CellSubmit] callback to fire the canSubmitCell and
+          // onCellSubmit to commit the new value in single place.
+          submitCell();
+        },
+      ),
+    );
+  }
 }
 
 class FillingsListWidgetSf extends ConsumerStatefulWidget {
@@ -95,10 +185,12 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
   final _formKey = GlobalKey<FormState>();
   final _densityInput = TextEditingController();
   final _categoryInput = TextEditingController();
+  final _beforeLtrsInput = TextEditingController();
+  final _fillupLtrsInput = TextEditingController();
+  final _burnedLtrsInput = TextEditingController();
   final _falNameFocusNode = FocusNode();
 
   String? _falName;
-  String? _category;
 
   @override
   void dispose() {
@@ -145,6 +237,9 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                               focusNode.addListener(() {
                                 if (!focusNode.hasFocus) {
                                   debugPrint('Focus lost');
+                                  setState(() {
+                                    _falName = textEditingController.text;
+                                  });
                                   onFieldSubmitted();
                                 }
                               });
@@ -204,9 +299,6 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                               controller: _categoryInput,
                               onSelected: (String? value) {
                                 // This is called when the user selects an item.
-                                setState(() {
-                                  _category = value!;
-                                });
                               },
                               dropdownMenuEntries: falCategories
                                   .map<DropdownMenuEntry<String>>(
@@ -225,6 +317,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                       children: [
                         Flexible(
                             child: TextFormField(
+                                controller: _beforeLtrsInput,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
@@ -236,6 +329,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                                     labelText: 'Перед виїздом'))),
                         Flexible(
                             child: TextFormField(
+                                controller: _fillupLtrsInput,
                                 validator: validateNotEmpty,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -247,6 +341,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                                     labelText: 'Отримано'))),
                         Flexible(
                             child: TextFormField(
+                                controller: _burnedLtrsInput,
                                 validator: validateNotEmpty,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -296,26 +391,38 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
             SfDataGrid(
               source: fillupDataSource,
               columnWidthMode: ColumnWidthMode.fill,
+              allowEditing: true,
+              editingGestureType: EditingGestureType.tap,
+              selectionMode: SelectionMode.single,
+              navigationMode: GridNavigationMode.cell,
               footer: MaterialButton(
-                onPressed: () {
-                  _displayTextInputDialog(context, value, () {
-                    final falType = ref.read(falTypeByNameAndDensityProvider(
+                onPressed: () async {
+                  _displayTextInputDialog(context, value, () async {
+                    var falType = ref.read(falTypeByNameAndDensityProvider(
                         _falName!.split(':').first,
                         density: double.tryParse(_densityInput.text)));
-                    if (falType != null) {
-                      final fillup = Fillup(
+                    if (falType == null) {
+                      final falTypesRepo =
+                          ref.read(falTypesRepositoryProvider.notifier);
+                      falType = FALType(
                           uuid: const Uuid().v4(),
-                          falType: falType,
-                          beforeLtrs: double.tryParse(_densityInput.text)!,
-                          fillupLtrs: double.tryParse(_densityInput.text)!,
-                          burnedLtrs: double.tryParse(_densityInput.text)!,
-                          waybill: widget.waybill,
-                          otherMilBase: false);
-                      fillupsRepo.addFillup(fillup);
-                      fillupDataSource._fillups.add(fillup);
-                      fillupDataSource.updateDataGridRows();
-                      fillupDataSource.updateDataGridSource();
+                          name: _falName!.split(':').first,
+                          density: double.tryParse(_densityInput.text)!,
+                          category: FALCategory.fromName(_categoryInput.text));
+                      await falTypesRepo.addFalType(falType);
                     }
+                    final fillup = Fillup(
+                        uuid: const Uuid().v4(),
+                        falType: falType,
+                        beforeLtrs: double.tryParse(_beforeLtrsInput.text)!,
+                        fillupLtrs: double.tryParse(_fillupLtrsInput.text)!,
+                        burnedLtrs: double.tryParse(_burnedLtrsInput.text)!,
+                        waybill: widget.waybill.uuid,
+                        otherMilBase: false);
+                    fillupsRepo.addFillup(fillup);
+                    fillupDataSource._fillups.add(fillup);
+                    fillupDataSource.updateDataGridRows();
+                    fillupDataSource.updateDataGridSource();
                   });
                 },
                 child: Text('Додати нову заправку'),
@@ -325,6 +432,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                     minimumWidth: 90,
                     visible: false,
                     columnName: 'uuid',
+                    allowEditing: false,
                     label: Container(
                         padding: EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -333,6 +441,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                         ))),
                 GridColumn(
                     columnName: 'falType',
+                    allowEditing: false,
                     label: Container(
                         padding: EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -341,6 +450,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                         ))),
                 GridColumn(
                     columnName: 'density',
+                    allowEditing: false,
                     label: Container(
                         padding: EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -349,6 +459,7 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
                         ))),
                 GridColumn(
                     columnName: 'falCategory',
+                    allowEditing: false,
                     label: Container(
                         padding: EdgeInsets.all(8.0),
                         alignment: Alignment.center,

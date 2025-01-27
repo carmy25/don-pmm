@@ -95,11 +95,11 @@ class ReportService {
             '_generateInternalSheetData: wb[${wb.number}], fu[${fu.uuid}]');
         sheet.getRangeByName('q$fuIdx').text = fu.uuid;
         sheet.getRangeByName('r$fuIdx').text = fu.falType.uuid;
-        sheet.getRangeByName('s$fuIdx').value = fu.date;
+        sheet.getRangeByName('s$fuIdx').value = wb.issueDate;
         sheet.getRangeByName('t$fuIdx').value = fu.beforeLtrs;
         sheet.getRangeByName('u$fuIdx').value = fu.fillupLtrs;
         sheet.getRangeByName('v$fuIdx').value = fu.burnedLtrs;
-        sheet.getRangeByName('w$fuIdx').text = fu.waybill.uuid;
+        sheet.getRangeByName('w$fuIdx').text = fu.waybill;
         sheet.getRangeByName('x$fuIdx').value = fu.otherMilBase;
         ++fuIdx;
       }
@@ -852,21 +852,23 @@ class ReportService {
       double outcomeTotal = outcome?.amountLtrs ?? 0;
       final carsBeforeCalculated = <String>{};
       for (final fillup in fillups) {
-        if (fillup.waybill.issueDate == null) {
-          debugPrint('wb without issueDate: ${fillup.waybill.uuid}');
+        final waybill = ref.read(waybillByUuidProvider(fillup.waybill));
+        if (waybill!.issueDate == null) {
+          debugPrint('wb without issueDate: ${waybill.uuid}');
           continue;
         }
-        if (!carsBeforeCalculated.contains(fillup.waybill.carUuid) &&
-            fillup.waybill.issueDate!.isAfter(
+        assert(waybill.issueDate != null, 'Issue date is null');
+        if (!carsBeforeCalculated.contains(waybill.carUuid) &&
+            waybill.issueDate!.isAfter(
                 report.dtRange.start.subtract(const Duration(days: 1)))) {
           beforeLtrs += fillup.beforeLtrs;
-          carsBeforeCalculated.add(fillup.waybill.carUuid);
+          carsBeforeCalculated.add(waybill.carUuid);
         }
-        if (fillup.waybill.issueDate!
+        if (waybill.issueDate!
             .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
           burnedLtrs += fillup.burnedLtrs;
         }
-        if (fillup.waybill.issueDate!
+        if (waybill.issueDate!
             .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
           if (fillup.otherMilBase) {
             fillupOtherMilBaseLtrs += fillup.fillupLtrs;

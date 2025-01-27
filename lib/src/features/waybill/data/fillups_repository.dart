@@ -16,14 +16,6 @@ class FillupList extends _$FillupList {
 
   void addFillup(Fillup fillup) {
     final newState = {fillup, ...state.value!}.toList();
-    newState.sort(
-      (a, b) {
-        if (a.date == null || b.date == null) {
-          return 0;
-        }
-        return a.date!.compareTo(b.date!);
-      },
-    );
     state = AsyncData(newState);
   }
 
@@ -37,7 +29,8 @@ class FillupList extends _$FillupList {
   }
 
   removeFillupsByWaybill(Waybill waybill) {
-    final newState = state.value!.where((fu) => fu.waybill != waybill).toList();
+    final newState =
+        state.value!.where((fu) => fu.waybill != waybill.uuid).toList();
     state = AsyncData(newState);
   }
 }
@@ -45,7 +38,7 @@ class FillupList extends _$FillupList {
 @riverpod
 List<Fillup> fillupsByWaybill(Ref ref, Waybill waybill) {
   final fillups = ref.watch(fillupListProvider).value!;
-  return fillups.where((f) => f.waybill == waybill).toList();
+  return fillups.where((f) => f.waybill == waybill.uuid).toList();
 }
 
 @riverpod

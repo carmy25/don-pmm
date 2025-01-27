@@ -1,16 +1,10 @@
-import 'package:collection/collection.dart';
-import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/common/utils.dart';
-import 'package:donpmm/src/features/fal/domain/fal_type.dart';
-import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
-import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:donpmm/src/features/waybill/presentation/fillings_list_widget_sf.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 import '../data/waybills_repository.dart';
 import '../domain/waybill.dart';
@@ -176,36 +170,9 @@ class WaybillScreenState extends ConsumerState<WaybillScreen> {
           issueDate: DateFormat.yMMMMd('uk').parse(dtString),
           number: _numberInput.text);
       ref.read(waybillListProvider.notifier).addWaybill(wb);
-      final falTypes = await ref.watch(falTypesRepositoryProvider.future);
-      for (final o in _fillupsData) {
-        final falType = falTypes.firstWhereOrNull((e) =>
-                e.name == o['comodity'].split(':')[0] &&
-                e.density == o['density']) ??
-            (await _createNewFalType(o));
-        ref.read(fillupListProvider.notifier).addFillup(Fillup(
-            uuid: o['uuid'] ?? const Uuid().v4(),
-            falType: falType,
-            date: wb.issueDate!,
-            beforeLtrs: o['availableLtrs'] ?? 0,
-            fillupLtrs: o['gainedLtrs'] ?? 0,
-            burnedLtrs: o['spentLtrs'] ?? 0,
-            otherMilBase: o['otherMilBase'] ?? false,
-            waybill: wb));
-      }
       if (context.mounted) {
         Navigator.pop(context);
       }
     }
-  }
-
-  Future<FALType> _createNewFalType(Map<String, dynamic> data) async {
-    final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
-    final falType = FALType(
-        uuid: const Uuid().v4(),
-        name: data['comodity'].split(':')[0],
-        category: FALCategory.fromName(data['category']),
-        density: data['density']);
-    await falTypesRepo.addFalType(falType);
-    return falType;
   }
 }

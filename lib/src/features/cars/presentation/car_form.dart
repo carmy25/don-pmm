@@ -183,8 +183,7 @@ class CarFormState extends ConsumerState<CarForm> {
                 places: fu.falType.category == FALCategory.oil ? 1 : 0),
             fillupLtrs: 0,
             burnedLtrs: 0,
-            date: waybill.issueDate,
-            waybill: waybill,
+            waybill: waybill.uuid,
             otherMilBase: fu.otherMilBase,
           ));
         }

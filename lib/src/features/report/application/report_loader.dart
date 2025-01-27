@@ -148,17 +148,15 @@ class ReportLoader {
       }
       final wb =
           ref.read(waybillByUuidProvider(_getCellValue(sheet, 'w$cidx')));
-      final fuDate = _getCellValue(sheet, 's$cidx');
       fuRepo.addFillup(Fillup(
         uuid: fuUuid.toString(),
         falType: falTypes
             .where((f) => f.uuid == _getCellValue(sheet, 'r$cidx'))
             .first,
-        date: fuDate == 0 ? wb.issueDate : fuDate,
         beforeLtrs: _getCellValue(sheet, 't$cidx'),
         fillupLtrs: _getCellValue(sheet, 'u$cidx'),
         burnedLtrs: _getCellValue(sheet, 'v$cidx'),
-        waybill: wb,
+        waybill: wb!.uuid,
         otherMilBase: _getCellValue(sheet, 'x$cidx') == 'true' ? true : false,
       ));
       ++cidx;

@@ -1,23 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 
-import 'waybill.dart';
+part 'fillup.freezed.dart';
 
-class Fillup {
-  const Fillup(
-      {required this.uuid,
-      required this.falType,
-      this.date,
-      required this.beforeLtrs,
-      required this.fillupLtrs,
-      required this.burnedLtrs,
-      required this.waybill,
-      required this.otherMilBase});
-  final bool otherMilBase;
-  final FALType falType;
-  final DateTime? date;
-  final String uuid;
-  final Waybill waybill;
-  final double beforeLtrs, fillupLtrs, burnedLtrs;
+@Freezed(equal: false)
+class Fillup with _$Fillup {
+  const Fillup._();
+  const factory Fillup(
+      {required String uuid,
+      required FALType falType,
+      required double beforeLtrs,
+      required double fillupLtrs,
+      required double burnedLtrs,
+      required String waybill,
+      required bool otherMilBase}) = _Fillup;
 
   @override
   bool operator ==(Object other) =>

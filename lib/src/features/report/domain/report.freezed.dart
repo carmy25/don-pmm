@@ -25,7 +25,9 @@ mixin _$Report {
   String get checkerName => throw _privateConstructorUsedError;
   String get checkerRank => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Report
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ReportCopyWith<Report> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -55,6 +57,8 @@ class _$ReportCopyWithImpl<$Res, $Val extends Report>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Report
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -130,6 +134,8 @@ class __$$ReportImplCopyWithImpl<$Res>
       _$ReportImpl _value, $Res Function(_$ReportImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Report
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -239,7 +245,9 @@ class _$ReportImpl implements _Report {
   int get hashCode => Object.hash(runtimeType, unitName, milBase, dtRange,
       chiefPosition, chiefRank, chiefName, checkerName, checkerRank);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Report
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ReportImplCopyWith<_$ReportImpl> get copyWith =>
@@ -273,8 +281,11 @@ abstract class _Report implements Report {
   String get checkerName;
   @override
   String get checkerRank;
+
+  /// Create a copy of Report
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ReportImplCopyWith<_$ReportImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
