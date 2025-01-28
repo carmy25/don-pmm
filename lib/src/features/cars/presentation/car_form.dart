@@ -45,6 +45,7 @@ class CarFormState extends ConsumerState<CarForm> {
 
   CarFormState({required this.car});
   Car car;
+  bool _carUnderRepair = false;
 
   @override
   void initState() {
@@ -126,6 +127,32 @@ class CarFormState extends ConsumerState<CarForm> {
                       )),
             ],
           ),
+          const Divider(height: 0),
+          Row(
+            children: [
+              Flexible(
+                child: SwitchListTile(
+                  value: _carUnderRepair,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      // switchValue1 = value!;
+                      _carUnderRepair = value!;
+                    });
+                  },
+                  title: const Text('Машина на ремонті чи знищена?'),
+                  secondary: _carUnderRepair
+                      ? Icon(
+                          Icons.warning,
+                          color: Colors.redAccent,
+                        )
+                      : Icon(Icons.info, color: Colors.lightBlue),
+                  subtitle: const Text(
+                      'Буде враховуватись залишок з останнього шляхового листа перед періодом донесення'),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

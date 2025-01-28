@@ -19,11 +19,17 @@ class WaybillsListWidget extends ConsumerWidget {
       itemBuilder: (_, i) {
         final wb = waybills[i];
         final reportStart = report!.dtRange.start;
+        final isWaybillOld = wb.issueDate!
+            .isAfter(reportStart.subtract(const Duration(days: 1)));
         return ListTile(
-          leading: Icon(wb.issueDate!
-                  .isAfter(reportStart.subtract(const Duration(days: 1)))
-              ? Icons.online_prediction
-              : Icons.warning),
+          leading: isWaybillOld
+              ? Icon(
+                  Icons.online_prediction,
+                  color: Colors.blueAccent,
+                )
+              : Icon(
+                  Icons.grading,
+                ),
           title: Text(wb.number),
           trailing: IconButton(
             icon: const Icon(Icons.delete),
