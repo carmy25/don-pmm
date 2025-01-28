@@ -870,10 +870,6 @@ class ReportService {
             waybill.issueDate!.isAfter(
                 report.dtRange.start.subtract(const Duration(days: 1)))) {
           beforeLtrs += fillup.beforeLtrs;
-          if (falType.name == '10w40') {
-            debugPrint(
-                '${waybill.carUuid}, ${fillup.beforeLtrs}, ${waybill.issueDate}');
-          }
           carsBeforeCalculated.add(waybill.carUuid);
         }
         if (waybill.issueDate!

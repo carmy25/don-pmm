@@ -3,7 +3,7 @@ import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
-import 'package:donpmm/src/features/outcome/presentation/outcome_widget.dart';
+import 'package:donpmm/src/features/outcome/presentation/outcome_widget_sf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -74,8 +74,7 @@ class OutcomeScreenState extends ConsumerState {
               child: Column(
                 children: [
                   Expanded(
-                    child: SingleChildScrollView(
-                        child: OutcomeWidget(data: _outcomeData)),
+                    child: SingleChildScrollView(child: OutcomeWidgetSf()),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

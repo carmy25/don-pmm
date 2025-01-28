@@ -16,7 +16,7 @@ class OutcomesRepository extends _$OutcomesRepository {
     state = {...state, fal}.toList();
   }
 
-  removeOutcomeByUuid(String uuid) {
+  void removeOutcomeByUuid(String uuid) {
     final newState = state.where((fu) => fu.uuid != uuid).toList();
     state = newState;
   }
