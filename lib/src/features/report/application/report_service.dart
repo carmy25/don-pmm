@@ -851,6 +851,14 @@ class ReportService {
       double burnedLtrs = 0;
       double outcomeTotal = outcome?.amountLtrs ?? 0;
       final carsBeforeCalculated = <String>{};
+      // sort fillups by waybills
+      fillups.sort(
+        (a, b) {
+          final aWb = ref.read(waybillByUuidProvider(a.waybill))!;
+          final bWb = ref.read(waybillByUuidProvider(b.waybill))!;
+          return aWb.issueDate!.compareTo(bWb.issueDate!);
+        },
+      );
       for (final fillup in fillups) {
         final waybill = ref.read(waybillByUuidProvider(fillup.waybill));
         if (waybill!.issueDate == null) {
@@ -862,6 +870,10 @@ class ReportService {
             waybill.issueDate!.isAfter(
                 report.dtRange.start.subtract(const Duration(days: 1)))) {
           beforeLtrs += fillup.beforeLtrs;
+          if (falType.name == '10w40') {
+            debugPrint(
+                '${waybill.carUuid}, ${fillup.beforeLtrs}, ${waybill.issueDate}');
+          }
           carsBeforeCalculated.add(waybill.carUuid);
         }
         if (waybill.issueDate!

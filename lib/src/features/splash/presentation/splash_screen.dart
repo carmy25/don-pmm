@@ -29,7 +29,7 @@ class SplashScreenState extends State<SplashScreen> {
           const msg = 'App started';
           Sentry.captureMessage(msg);
           debugPrint(msg);
-          await Future.delayed(const Duration(seconds: 3));
+          await Future.delayed(const Duration(seconds: 2));
           return const ReportScreen();
         }());
   }

@@ -53,6 +53,7 @@ class ReportLoader {
       carsRepo.addCar(Car(
           uuid: carUuid.toString(),
           note: carNote == null ? '' : carNote.toString(),
+          underRepair: false,
           consumptionRate: double.parse(consumptionRate!.toString()),
           consumptionRateMH: double.parse(consumptionRateMH!.toString()),
           name: carName.toString(),

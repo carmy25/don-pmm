@@ -1,12 +1,18 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'fal_type.dart';
 
-class FAL {
-  FAL({required this.uuid, required this.falType, required this.amountLtrs})
-      : weightKgs = amountLtrs * falType.density;
-  final FALType falType;
-  final double amountLtrs;
-  final double weightKgs;
-  final String uuid;
+part 'fal.freezed.dart';
+
+@Freezed(equal: false)
+class FAL with _$FAL {
+  const FAL._();
+  const factory FAL(
+      {required String uuid,
+      required FALType falType,
+      required double amountLtrs}) = _FAL;
+
+  double get weightKgs => amountLtrs * falType.density;
 
   @override
   bool operator ==(Object other) =>

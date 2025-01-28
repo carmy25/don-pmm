@@ -25,7 +25,6 @@ class WaybillScreenState extends ConsumerState<WaybillScreen> {
   final TextEditingController _mhEndInput = TextEditingController();
   final TextEditingController _dateInput = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final List<Map<String, dynamic>> _fillupsData = [];
 
   WaybillScreenState();
 
@@ -133,7 +132,6 @@ class WaybillScreenState extends ConsumerState<WaybillScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: FillingsListWidgetSf(
-                    data: _fillupsData,
                     waybill: waybill,
                   ),
                 ),

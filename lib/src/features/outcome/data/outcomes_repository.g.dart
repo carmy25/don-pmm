@@ -6,7 +6,7 @@ part of 'outcomes_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$outcomeByFalTypeHash() => r'1c0a582e5e3f7b6895666c8a1aec05169d254bc2';
+String _$outcomeByFalTypeHash() => r'4cfd53e1ff89ee8d2303e57440b316291f0c5c65';
 
 /// Copied from Dart SDK
 class _SystemHash {

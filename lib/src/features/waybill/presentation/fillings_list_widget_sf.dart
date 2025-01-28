@@ -1,9 +1,11 @@
-import 'package:collection/collection.dart';
+import 'package:donpmm/src/common/datagrid_source.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
+import 'package:donpmm/src/widgets/fillups_datagrid/datagrid_footer.widget.dart';
+import 'package:donpmm/src/widgets/fillups_datagrid/fillup_gridcolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:flutter/services.dart';
@@ -11,29 +13,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:uuid/uuid.dart';
 
-class FillupDataSource extends DataGridSource {
-  late List<Fillup> _fillups;
-  List<DataGridRow> dataGridRow = [];
+class FillupDataSource extends BaseDataGridSource<Fillup> {
   Color? rowBackgroundColor;
-  late FillupList _fillupsRepo;
+  final FillupList _fillupsRepo;
 
-  /// Helps to hold the new value of all editable widgets.
-  /// Based on the new value we will commit the new value into the corresponding
-  /// DataGridCell on the onCellSubmit method.
-  dynamic newCellValue;
+  FillupDataSource({required FillupList fillupsRepo, required super.data})
+      : _fillupsRepo = fillupsRepo;
 
-  /// Helps to control the editable text in the [TextField] widget.
-  TextEditingController editingController = TextEditingController();
-
-  FillupDataSource(
-      {required List<Fillup> fillups, required FillupList fillupsRepo}) {
-    _fillups = fillups;
-    _fillupsRepo = fillupsRepo;
-    updateDataGridRows();
-  }
-
+  @override
   void updateDataGridRows() {
-    dataGridRow = _fillups.map<DataGridRow>((e) {
+    dataGridRows = data.map<DataGridRow>((e) {
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: 'uuid', value: e.uuid),
         DataGridCell<String>(columnName: 'falName', value: e.falType.name),
@@ -49,130 +38,31 @@ class FillupDataSource extends DataGridSource {
   }
 
   @override
-  List<DataGridRow> get rows => dataGridRow;
-
-  @override
-  DataGridRowAdapter buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((e) {
-      return e.columnName == 'delete'
-          ? Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ),
-                onPressed: () {
-                  final uuid = row.getCells().first.value;
-                  dataGridRow = dataGridRow
-                      .where(
-                          (element) => element.getCells().first.value != uuid)
-                      .toList();
-                  _fillupsRepo.removeFillupByUuid(uuid);
-                  updateDataGridSource();
-                },
-              ),
-            )
-          : Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(e.value.toString()),
-            );
-    }).toList());
-  }
-
-  void updateDataGridSource() {
-    notifyListeners();
+  void onDeleteRowPressed(String uuid) {
+    _fillupsRepo.removeFillupByUuid(uuid);
   }
 
   @override
-  Future<void> onCellSubmit(DataGridRow dataGridRow,
-      RowColumnIndex rowColumnIndex, GridColumn column) {
-    final dynamic oldValue = dataGridRow
-            .getCells()
-            .firstWhereOrNull((DataGridCell dataGridCell) =>
-                dataGridCell.columnName == column.columnName)
-            ?.value ??
-        '';
-
-    final int dataRowIndex = rows.indexOf(dataGridRow);
-
-    if (newCellValue == null || oldValue == newCellValue) {
-      return Future.value();
-    }
-    rows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-        DataGridCell<double>(
-            columnName: column.columnName, value: newCellValue);
+  void onCellSubmitAction(GridColumn column, int dataRowIndex) {
     if (column.columnName == 'beforeLtrs') {
-      _fillups[dataRowIndex] = _fillups[dataRowIndex].copyWith(
+      data[dataRowIndex] = data[dataRowIndex].copyWith(
         beforeLtrs: newCellValue as double,
       );
     } else if (column.columnName == 'fillupLtrs') {
-      _fillups[dataRowIndex] = _fillups[dataRowIndex].copyWith(
+      data[dataRowIndex] = data[dataRowIndex].copyWith(
         fillupLtrs: newCellValue as double,
       );
     } else if (column.columnName == 'burnedLtrs') {
-      _fillups[dataRowIndex] = _fillups[dataRowIndex].copyWith(
+      data[dataRowIndex] = data[dataRowIndex].copyWith(
         burnedLtrs: newCellValue as double,
       );
     }
-    _fillupsRepo.addFillup(_fillups[dataRowIndex]);
-
-    return Future.value();
-  }
-
-  @override
-  Widget? buildEditWidget(DataGridRow dataGridRow,
-      RowColumnIndex rowColumnIndex, GridColumn column, CellSubmit submitCell) {
-    // Text going to display on editable widget
-    final String displayText = dataGridRow
-            .getCells()
-            .firstWhereOrNull((DataGridCell dataGridCell) =>
-                dataGridCell.columnName == column.columnName)
-            ?.value
-            ?.toString() ??
-        '';
-
-    // The new cell value must be reset.
-    // To avoid committing the [DataGridCell] value that was previously edited
-    // into the current non-modified [DataGridCell].
-    newCellValue = null;
-
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      alignment: Alignment.centerRight,
-      child: TextField(
-        autofocus: true,
-        controller: editingController..text = displayText,
-        textAlign: TextAlign.right,
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 16.0),
-        ),
-        keyboardType: TextInputType.number,
-        onChanged: (String value) {
-          if (value.isNotEmpty) {
-            newCellValue = double.tryParse(value);
-          } else {
-            newCellValue = null;
-          }
-        },
-        onSubmitted: (String value) {
-          // In Mobile Platform.
-          // Call [CellSubmit] callback to fire the canSubmitCell and
-          // onCellSubmit to commit the new value in single place.
-          submitCell();
-        },
-      ),
-    );
+    _fillupsRepo.addFillup(data[dataRowIndex]);
   }
 }
 
 class FillingsListWidgetSf extends ConsumerStatefulWidget {
-  const FillingsListWidgetSf(
-      {super.key, required this.data, required this.waybill});
-  final List<Map<String, dynamic>> data;
+  const FillingsListWidgetSf({super.key, required this.waybill});
   final Waybill waybill;
 
   @override
@@ -378,12 +268,42 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
     );
   }
 
+  void _addNewFillupPressed(BuildContext context, List<FALType> falTypes,
+      FillupList fillupsRepo, FillupDataSource fillupDataSource) {
+    _displayTextInputDialog(context, falTypes, () async {
+      var falType = ref.read(falTypeByNameAndDensityProvider(
+          _falName!.split(':').first,
+          density: double.tryParse(_densityInput.text)));
+      if (falType == null) {
+        final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
+        falType = FALType(
+            uuid: const Uuid().v4(),
+            name: _falName!.split(':').first,
+            density: double.tryParse(_densityInput.text)!,
+            category: FALCategory.fromName(_categoryInput.text));
+        await falTypesRepo.addFalType(falType);
+      }
+      final fillup = Fillup(
+          uuid: const Uuid().v4(),
+          falType: falType,
+          beforeLtrs: double.tryParse(_beforeLtrsInput.text)!,
+          fillupLtrs: double.tryParse(_fillupLtrsInput.text)!,
+          burnedLtrs: double.tryParse(_burnedLtrsInput.text)!,
+          waybill: widget.waybill.uuid,
+          otherMilBase: false);
+      fillupsRepo.addFillup(fillup);
+      fillupDataSource.data.add(fillup);
+      fillupDataSource.updateDataGridRows();
+      fillupDataSource.updateDataGridSource();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final fillups = ref.watch(fillupsByWaybillProvider(widget.waybill));
     final fillupsRepo = ref.watch(fillupListProvider.notifier);
     final fillupDataSource =
-        FillupDataSource(fillups: fillups, fillupsRepo: fillupsRepo);
+        FillupDataSource(data: fillups, fillupsRepo: fillupsRepo);
     final falTypesState = ref.watch(falTypesRepositoryProvider);
     return switch (falTypesState) {
       AsyncData(:final value) => Column(
@@ -395,109 +315,48 @@ class FillingsListWidgetSfState extends ConsumerState<FillingsListWidgetSf> {
               editingGestureType: EditingGestureType.tap,
               selectionMode: SelectionMode.single,
               navigationMode: GridNavigationMode.cell,
-              footer: MaterialButton(
-                onPressed: () async {
-                  _displayTextInputDialog(context, value, () async {
-                    var falType = ref.read(falTypeByNameAndDensityProvider(
-                        _falName!.split(':').first,
-                        density: double.tryParse(_densityInput.text)));
-                    if (falType == null) {
-                      final falTypesRepo =
-                          ref.read(falTypesRepositoryProvider.notifier);
-                      falType = FALType(
-                          uuid: const Uuid().v4(),
-                          name: _falName!.split(':').first,
-                          density: double.tryParse(_densityInput.text)!,
-                          category: FALCategory.fromName(_categoryInput.text));
-                      await falTypesRepo.addFalType(falType);
-                    }
-                    final fillup = Fillup(
-                        uuid: const Uuid().v4(),
-                        falType: falType,
-                        beforeLtrs: double.tryParse(_beforeLtrsInput.text)!,
-                        fillupLtrs: double.tryParse(_fillupLtrsInput.text)!,
-                        burnedLtrs: double.tryParse(_burnedLtrsInput.text)!,
-                        waybill: widget.waybill.uuid,
-                        otherMilBase: false);
-                    fillupsRepo.addFillup(fillup);
-                    fillupDataSource._fillups.add(fillup);
-                    fillupDataSource.updateDataGridRows();
-                    fillupDataSource.updateDataGridSource();
-                  });
-                },
-                child: Text('Додати нову заправку'),
+              footer: DataGridFooterWidget(
+                onPressed: () => _addNewFillupPressed(
+                    context, value, fillupsRepo, fillupDataSource),
               ),
               columns: <GridColumn>[
-                GridColumn(
-                    minimumWidth: 90,
-                    visible: false,
-                    columnName: 'uuid',
-                    allowEditing: false,
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'ID',
-                        ))),
-                GridColumn(
-                    columnName: 'falType',
-                    allowEditing: false,
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Тип палива',
-                        ))),
-                GridColumn(
-                    columnName: 'density',
-                    allowEditing: false,
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Густина',
-                        ))),
-                GridColumn(
+                FillupGridColumn(
+                  visible: false,
+                  columnName: 'uuid',
+                  allowEditing: false,
+                  labelText: 'ID',
+                ),
+                FillupGridColumn(
+                  columnName: 'falType',
+                  allowEditing: false,
+                  labelText: 'Тип палива',
+                ),
+                FillupGridColumn(
+                  columnName: 'density',
+                  allowEditing: false,
+                  labelText: 'Густина',
+                ),
+                FillupGridColumn(
                     columnName: 'falCategory',
                     allowEditing: false,
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Категорія',
-                        ))),
-                GridColumn(
-                    columnName: 'beforeLtrs',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Перед виїздом',
-                        ))),
-                GridColumn(
-                    columnName: 'fillupLtrs',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Отримано',
-                        ))),
-                GridColumn(
-                    columnName: 'burnedLtrs',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Витрачено',
-                        ))),
-                GridColumn(
+                    labelText: 'Категорія'),
+                FillupGridColumn(
+                  columnName: 'beforeLtrs',
+                  labelText: 'Перед виїздом',
+                ),
+                FillupGridColumn(
+                  columnName: 'fillupLtrs',
+                  labelText: 'Отримано',
+                ),
+                FillupGridColumn(
+                  columnName: 'burnedLtrs',
+                  labelText: 'Витрачено',
+                ),
+                FillupGridColumn(
                     columnName: 'delete',
                     allowSorting: false,
                     allowFiltering: false,
-                    label: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: const Text('Видалити'))),
+                    labelText: 'Видалити'),
               ],
             ),
           ],

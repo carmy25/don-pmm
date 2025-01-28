@@ -32,6 +32,7 @@ class CarsListScreenState extends ConsumerState {
                       builder: (context) => CarScreen(
                             car: Car(
                               uuid: const Uuid().v4(),
+                              underRepair: false,
                               name: '',
                               number: '',
                               note: '',

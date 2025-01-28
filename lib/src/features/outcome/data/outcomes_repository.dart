@@ -30,5 +30,5 @@ class OutcomesRepository extends _$OutcomesRepository {
 FAL? outcomeByFalType(Ref ref, FALType falType) {
   final outcomes = ref.watch(outcomesRepositoryProvider);
   final outcomeFiltered = outcomes.where((f) => f.falType == falType);
-  return outcomeFiltered.isEmpty ? null : outcomeFiltered.first;
+  return outcomeFiltered.firstOrNull;
 }
