@@ -344,15 +344,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_editable_table:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "4ee09a6f177da0a245effb60aae447b815b2bbc5"
-      url: "https://github.com/carmy25/flutter_editable_table.git"
-    source: git
-    version: "1.1.2"
   flutter_lints:
     dependency: "direct dev"
     description:

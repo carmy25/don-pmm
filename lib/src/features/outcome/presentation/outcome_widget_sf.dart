@@ -1,4 +1,5 @@
 import 'package:donpmm/src/common/datagrid_source.dart';
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
@@ -7,8 +8,10 @@ import 'package:donpmm/src/widgets/fillups_datagrid/datagrid.widget.dart';
 import 'package:donpmm/src/widgets/fillups_datagrid/datagrid_footer.widget.dart';
 import 'package:donpmm/src/widgets/fillups_datagrid/fillup_gridcolumn.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:uuid/uuid.dart';
 
 class OutcomeDataSource extends BaseDataGridSource<FAL> {
   late final OutcomesRepository _outcomesRepo;
@@ -56,8 +59,28 @@ class OutcomeWidgetSf extends BaseDataGridWidget {
 }
 
 class OutcomeWidgetSfState extends BaseDataGridState<OutcomeWidgetSf> {
+  final _amountLtrsInput = TextEditingController();
   void _addNewOutcomePressed(BuildContext context, List<FALType> falTypes,
-      OutcomesRepository outcomesRepo, OutcomeDataSource outcomeDataSource) {}
+      OutcomesRepository outcomesRepo, OutcomeDataSource outcomeDataSource) {
+    displayTextInputDialog(context, falTypes, () async {
+      var falType = ref.read(falTypeByNameAndDensityProvider(
+          falName!.split(':').first,
+          density: double.tryParse(densityInput.text)));
+      falType ??= await createNewFalType(
+          falName!,
+          double.tryParse(densityInput.text)!,
+          FALCategory.fromName(categoryInput.text));
+      final outcome = FAL(
+        uuid: const Uuid().v4(),
+        falType: falType,
+        amountLtrs: double.tryParse(_amountLtrsInput.text)!,
+      );
+      outcomesRepo.addOutcome(fal: outcome);
+      outcomeDataSource.data.add(outcome);
+      outcomeDataSource.updateDataGridRows();
+      outcomeDataSource.updateDataGridSource();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +126,7 @@ class OutcomeWidgetSfState extends BaseDataGridState<OutcomeWidgetSf> {
                     allowEditing: false,
                     labelText: 'Категорія'),
                 FillupGridColumn(
-                  columnName: 'amoutLtrs',
+                  columnName: 'amountLtrs',
                   labelText: 'Кількість(л)',
                 ),
                 FillupGridColumn(
@@ -121,6 +144,20 @@ class OutcomeWidgetSfState extends BaseDataGridState<OutcomeWidgetSf> {
 
   @override
   Widget buildNewFillupDialogInputs() {
-    throw UnimplementedError();
+    return Row(
+      children: [
+        Flexible(
+            child: TextFormField(
+                controller: _amountLtrsInput,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+                ],
+                validator: validateNotEmpty,
+                decoration: const InputDecoration(
+                    icon: Icon(Icons.local_gas_station),
+                    labelText: 'Залишок'))),
+      ],
+    );
   }
 }

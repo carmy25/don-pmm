@@ -1,12 +1,6 @@
-import 'package:collection/collection.dart';
-import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
-import 'package:donpmm/src/features/fal/domain/fal.dart';
-import 'package:donpmm/src/features/fal/domain/fal_type.dart';
-import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/outcome/presentation/outcome_widget_sf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 
 class OutcomeScreen extends ConsumerStatefulWidget {
   const OutcomeScreen({
@@ -18,51 +12,12 @@ class OutcomeScreen extends ConsumerStatefulWidget {
 }
 
 class OutcomeScreenState extends ConsumerState {
-  final List<Map<String, dynamic>> _outcomeData = [];
   final _formKey = GlobalKey<FormState>();
 
   OutcomeScreenState();
 
-  Future<FALType> _createNewFalType(Map<String, dynamic> data) async {
-    final falTypesRepo = ref.read(falTypesRepositoryProvider.notifier);
-    final falType = FALType(
-        uuid: const Uuid().v4(),
-        name: data['comodity'].split(':')[0],
-        category: FALCategory.fromName(data['category']),
-        density: data['density']);
-    await falTypesRepo.addFalType(falType);
-    return falType;
-  }
-
-  Future<void> _saveOutcomes() async {
-    final outcomesRepo = ref.watch(outcomesRepositoryProvider.notifier);
-    final falTypes = await ref.watch(falTypesRepositoryProvider.future);
-
-    for (final o in _outcomeData) {
-      final falType = falTypes.firstWhereOrNull((e) =>
-              e.name == o['comodity'].split(':')[0] &&
-              e.density == o['density']) ??
-          (await _createNewFalType(o));
-      outcomesRepo.addOutcome(
-          fal: FAL(
-              falType: falType,
-              uuid: o['uuid'] ?? const Uuid().v4(),
-              amountLtrs: o['availableLtrs']));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final outcomes = ref.watch(outcomesRepositoryProvider);
-    for (final outcome in outcomes) {
-      _outcomeData.add({
-        'uuid': outcome.uuid,
-        'comodity': '${outcome.falType.name}: ${outcome.falType.density}',
-        'availableLtrs': outcome.amountLtrs,
-        'density': outcome.falType.density,
-        'category': outcome.falType.category.name
-      });
-    }
     return Scaffold(
         appBar: AppBar(
           title: const Text('ПММ передано в інші в/ч'),
@@ -84,9 +39,7 @@ class OutcomeScreenState extends ConsumerState {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              _saveOutcomes().then((value) {
-                                if (context.mounted) Navigator.pop(context);
-                              });
+                              Navigator.pop(context);
                             }
                           },
                           child: const Text('Зберегти'),

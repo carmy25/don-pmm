@@ -1,9 +1,5 @@
 import 'dart:math';
 
-import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_editable_table/entities/row_entity.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class NumericToWords {
@@ -168,29 +164,4 @@ double roundDouble(double value, {int places = 1}) {
 
 String removeDecimalZeroFormat(double n) {
   return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1);
-}
-
-void setFalTypeByName(String name, List<RowEntity> rows, WidgetRef ref) {
-  final [falName, ...density] = name.split(':');
-  final densityStr = density.isEmpty ? '' : density[0];
-  double densityParsed = 0;
-  try {
-    densityParsed = double.parse(densityStr.trim());
-  } catch (e) {
-    debugPrint('Unable to parse: [$densityStr]');
-  }
-  final falType = ref.read(falTypeByNameAndDensityProvider(falName,
-      density: densityStr.isEmpty ? null : densityParsed));
-  if (falType == null) {
-    return;
-  }
-  for (final row in rows) {
-    final cells = row.cells!;
-    if (cells[0].value == null &&
-        cells[1].value == name &&
-        cells[2].value == null) {
-      cells[2].value = falType.density;
-      cells[3].value = falType.category.name;
-    }
-  }
 }
