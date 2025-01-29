@@ -57,7 +57,7 @@ List<Waybill> waybillsByCar(Ref ref, Car car) {
 @riverpod
 Waybill? waybillByUuid(Ref ref, String uuid) {
   final waybills = ref.watch(waybillListProvider);
-  return waybills.where((wb) => wb.uuid == uuid).firstOrNull!;
+  return waybills.where((wb) => wb.uuid == uuid).firstOrNull;
 }
 
 @riverpod

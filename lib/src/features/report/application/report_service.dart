@@ -861,6 +861,11 @@ class ReportService {
       );
       for (final fillup in fillups) {
         final waybill = ref.read(waybillByUuidProvider(fillup.waybill));
+        if (waybill == null) {
+          debugPrint(
+              'fillup was created, but wb was not saved: ${fillup.waybill}');
+          continue;
+        }
         if (waybill!.issueDate == null) {
           debugPrint('wb without issueDate: ${waybill.uuid}');
           continue;

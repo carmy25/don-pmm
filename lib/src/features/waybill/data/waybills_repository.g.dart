@@ -157,7 +157,7 @@ class _WaybillsByCarProviderElement
   Car get car => (origin as WaybillsByCarProvider).car;
 }
 
-String _$waybillByUuidHash() => r'a6b3ebc5ce14845b7d71a2d891d656fb9f479c3b';
+String _$waybillByUuidHash() => r'b2d7a630687452364da5dd3d45d7926d9f99444a';
 
 /// See also [waybillByUuid].
 @ProviderFor(waybillByUuid)

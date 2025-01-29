@@ -5,6 +5,7 @@ import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
 import 'package:donpmm/src/features/waybill/domain/fillup.dart';
 import 'package:donpmm/src/widgets/input_form_field.dart';
 import 'package:donpmm/src/widgets/subheader_text.dart';
+import 'package:donpmm/src/widgets/switch_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -35,6 +36,7 @@ class CarFormState extends ConsumerState<CarForm> {
   final TextEditingController _remarkInput = TextEditingController();
   final TextEditingController _consumptionRateInput = TextEditingController();
   final TextEditingController _consumptionRateMHInput = TextEditingController();
+  final _underRepairSwitch = SwitchController();
 
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
@@ -45,7 +47,6 @@ class CarFormState extends ConsumerState<CarForm> {
 
   CarFormState({required this.car});
   Car car;
-  bool _carUnderRepair = false;
 
   @override
   void initState() {
@@ -53,12 +54,15 @@ class CarFormState extends ConsumerState<CarForm> {
   }
 
   _addCar() {
+    final carName = nameInput.text;
+    final underRepair = _underRepairSwitch.isSwitchOn;
+    debugPrint('Car added/updated: $carName, under repair: $underRepair');
     ref.read(carListProvider.notifier).addCar(Car(
         uuid: car.uuid,
-        name: nameInput.text,
+        name: carName,
         number: numberInput.text,
         note: _remarkInput.text,
-        underRepair: false,
+        underRepair: underRepair,
         consumptionRate: double.parse(_consumptionRateInput.text.isNotEmpty
             ? _consumptionRateInput.text
             : '0.0'),
@@ -72,6 +76,7 @@ class CarFormState extends ConsumerState<CarForm> {
     nameInput.text = car.name;
     numberInput.text = car.number;
     _remarkInput.text = car.note;
+    _underRepairSwitch.isSwitchOn = car.underRepair;
     _consumptionRateInput.text = car.consumptionRate.toString();
     _consumptionRateMHInput.text = car.consumptionRateMH.toString();
     return Form(
@@ -131,24 +136,16 @@ class CarFormState extends ConsumerState<CarForm> {
           Row(
             children: [
               Flexible(
-                child: SwitchListTile(
-                  value: _carUnderRepair,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      // switchValue1 = value!;
-                      _carUnderRepair = value!;
-                    });
-                  },
-                  title: const Text('Машина на ремонті чи знищена?'),
-                  secondary: _carUnderRepair
-                      ? Icon(
-                          Icons.warning,
-                          color: Colors.redAccent,
-                        )
-                      : Icon(Icons.info, color: Colors.lightBlue),
-                  subtitle: const Text(
-                      'Буде враховуватись залишок з останнього шляхового листа перед періодом донесення'),
-                ),
+                child: ListenableBuilder(
+                    listenable: _underRepairSwitch,
+                    builder: (BuildContext context, Widget? child) {
+                      return SwitchFormField(
+                        controller: _underRepairSwitch,
+                        title: 'Машина на ремонті чи знищена?',
+                        subtitle:
+                            'Буде враховуватись залишок з останнього шляхового листа перед періодом донесення',
+                      );
+                    }),
               ),
             ],
           ),
