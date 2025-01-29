@@ -43,6 +43,8 @@ class ReportLoader {
       if (carName == null || carName.toString().isEmpty) {
         break;
       }
+      final carUnderRepair =
+          sheet.cell(CellIndex.indexByString('B$cidx')).value;
       final carNumber = sheet.cell(CellIndex.indexByString('D$cidx')).value;
       final carNote = sheet.cell(CellIndex.indexByString('e$cidx')).value;
       final consumptionRate =
@@ -53,7 +55,7 @@ class ReportLoader {
       carsRepo.addCar(Car(
           uuid: carUuid.toString(),
           note: carNote == null ? '' : carNote.toString(),
-          underRepair: false,
+          underRepair: carUnderRepair?.toString().parseBool() ?? false,
           consumptionRate: double.parse(consumptionRate!.toString()),
           consumptionRateMH: double.parse(consumptionRateMH!.toString()),
           name: carName.toString(),

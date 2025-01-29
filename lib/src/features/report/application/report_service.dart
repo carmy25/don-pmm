@@ -636,6 +636,7 @@ class ReportService {
     final internalSheet = workbook.worksheets['__internal__'];
     for (final (idx, car) in cars.indexed) {
       debugPrint('Transcript for car: [${car.name}]');
+      internalSheet.getRangeByName('B${idx + 1}').value = car.underRepair;
       internalSheet.getRangeByName('C${idx + 1}').text = car.name;
       internalSheet.getRangeByName('d${idx + 1}').text = car.number;
       internalSheet.getRangeByName('e${idx + 1}').text = car.note;
