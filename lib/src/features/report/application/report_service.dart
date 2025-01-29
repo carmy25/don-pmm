@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/cars/data/cars_repository.dart';
+import 'package:donpmm/src/features/cars/domain/car.dart';
 import 'package:donpmm/src/features/fal/data/fal_types_repository.dart';
 import 'package:donpmm/src/features/fal/domain/fal_type.dart';
 import 'package:donpmm/src/features/outcome/data/outcomes_repository.dart';
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
 import 'package:donpmm/src/features/waybill/data/waybills_repository.dart';
+import 'package:donpmm/src/features/waybill/domain/waybill.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -189,10 +191,32 @@ class ReportService {
         '${report.chiefPosition} ${report.unitName} ${report.chiefRank}              ${report.chiefName}';
   }
 
+  List<Waybill> _lastWaybillsForCarsUnderRepair() {
+    final report = ref.read(reportRepositoryProvider)!;
+    final waybills = ref.read(waybillListProvider);
+    final res = <Waybill>[];
+    final processedCars = <Car>[];
+    for (final wb in waybills) {
+      final car = ref.read(carByUuidProvider(wb.carUuid));
+      if (car.underRepair && processedCars.contains(car) == false) {
+        final lastWb = waybills.where((w) => w.carUuid == wb.carUuid).last;
+        if (lastWb.issueDate!.isBefore(report.dtRange.start)) {
+          res.add(lastWb);
+        }
+        processedCars.add(car);
+      }
+    }
+    return res;
+  }
+
   int _waybillsRegistryAddTableCells(Worksheet sheet) {
     final report = ref.read(reportRepositoryProvider)!;
-    final waybills = ref.read(waybillListProvider).where((wb) => wb.issueDate!
-        .isAfter(report.dtRange.start.subtract(const Duration(days: 1))));
+    final waybills = ref
+            .read(waybillListProvider)
+            .where((wb) => wb.issueDate!.isAfter(
+                report.dtRange.start.subtract(const Duration(days: 1))))
+            .toList() +
+        _lastWaybillsForCarsUnderRepair();
 
     var cidx = 4;
     for (final waybill in waybills) {
@@ -866,16 +890,33 @@ class ReportService {
               'fillup was created, but wb was not saved: ${fillup.waybill}');
           continue;
         }
-        if (waybill!.issueDate == null) {
-          debugPrint('wb without issueDate: ${waybill.uuid}');
-          continue;
-        }
         assert(waybill.issueDate != null, 'Issue date is null');
+        final car = ref.read(carByUuidProvider(waybill.carUuid));
         if (!carsBeforeCalculated.contains(waybill.carUuid) &&
             waybill.issueDate!.isAfter(
                 report.dtRange.start.subtract(const Duration(days: 1)))) {
           beforeLtrs += fillup.beforeLtrs;
           carsBeforeCalculated.add(waybill.carUuid);
+        } else if (!carsBeforeCalculated.contains(waybill.carUuid) &&
+            car.underRepair) {
+          final carWaybills = ref.read(waybillsByCarProvider(car));
+          if (!carWaybills.last.issueDate!.isAfter(
+              report.dtRange.start.subtract(const Duration(days: 1)))) {
+            final lastFillup = ref
+                .read(fillupsByWaybillProvider(carWaybills.last))
+                .where((e) => e.falType == falType)
+                .firstOrNull;
+            if (lastFillup == null) {
+              debugPrint(
+                  'Something went wrong. Car [${car.name}, ${car.uuid}]');
+            } else {
+              debugPrint('Car [${car.name}, ${car.uuid}] under repair');
+              beforeLtrs += lastFillup.beforeLtrs +
+                  lastFillup.fillupLtrs -
+                  lastFillup.burnedLtrs;
+              carsBeforeCalculated.add(car.uuid);
+            }
+          }
         }
         if (waybill.issueDate!
             .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
