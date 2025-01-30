@@ -879,9 +879,14 @@ class ReportService {
       // sort fillups by waybills
       fillups.sort(
         (a, b) {
-          final aWb = ref.read(waybillByUuidProvider(a.waybill))!;
-          final bWb = ref.read(waybillByUuidProvider(b.waybill))!;
-          return aWb.issueDate!.compareTo(bWb.issueDate!);
+          try {
+            final aWb = ref.read(waybillByUuidProvider(a.waybill))!;
+            final bWb = ref.read(waybillByUuidProvider(b.waybill))!;
+            return aWb.issueDate!.compareTo(bWb.issueDate!);
+          } catch (e) {
+            debugPrint('Error on sorting waybills: $e');
+            return -1;
+          }
         },
       );
       for (final fillup in fillups) {
