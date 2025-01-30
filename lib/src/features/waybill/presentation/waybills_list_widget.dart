@@ -1,5 +1,6 @@
 import 'package:donpmm/src/features/report/data/report_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../cars/domain/car.dart';
@@ -31,6 +32,9 @@ class WaybillsListWidget extends ConsumerWidget {
                   Icons.grading,
                 ),
           title: Text(wb.number),
+          subtitle: wb.issueDate != null
+              ? Text('Дата: ${DateFormat('dd/MM/yyyy').format(wb.issueDate!)}')
+              : null,
           trailing: IconButton(
             icon: const Icon(Icons.delete),
             tooltip: 'Видалити лист',
