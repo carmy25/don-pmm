@@ -119,7 +119,7 @@ class ReportScreenState extends ConsumerState<ReportScreen> {
     return true;
   }
 
-  _validateAndNavigate(Widget screen) {
+  void _validateAndNavigate(Widget screen) {
     if (_formKey.currentState!.validate()) {
       ref.read(reportRepositoryProvider.notifier).createReport(
           milBase: _milBaseInput.text,

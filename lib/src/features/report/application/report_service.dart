@@ -213,8 +213,7 @@ class ReportService {
     final report = ref.read(reportRepositoryProvider)!;
     final waybills = ref
             .read(waybillListProvider)
-            .where((wb) => wb.issueDate!.isAfter(
-                report.dtRange.start.subtract(const Duration(days: 1))))
+            .where((wb) => dateInRange(wb.issueDate!, report.dtRange))
             .toList() +
         _lastWaybillsForCarsUnderRepair();
 
@@ -455,7 +454,7 @@ class ReportService {
     var waybillsAvailable = false;
     for (final car in cars) {
       final waybills =
-          ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
+          ref.read(waybillsByCarAndDateProvider(car, report.dtRange));
       if (waybills.isEmpty) continue;
       waybillsAvailable = true;
       ++cidx;
@@ -645,7 +644,7 @@ class ReportService {
       internalSheet.getRangeByName('h${idx + 1}').text = car.uuid;
 
       final waybills =
-          ref.read(waybillsByCarAndDateProvider(car, report.dtRange.start));
+          ref.read(waybillsByCarAndDateProvider(car, report.dtRange));
       if (waybills.isEmpty) {
         continue;
       }
@@ -899,8 +898,7 @@ class ReportService {
         assert(waybill.issueDate != null, 'Issue date is null');
         final car = ref.read(carByUuidProvider(waybill.carUuid));
         if (!carsBeforeCalculated.contains(waybill.carUuid) &&
-            waybill.issueDate!.isAfter(
-                report.dtRange.start.subtract(const Duration(days: 1)))) {
+            dateInRange(waybill.issueDate!, report.dtRange)) {
           beforeLtrs += fillup.beforeLtrs;
           carsBeforeCalculated.add(waybill.carUuid);
         } else if (!carsBeforeCalculated.contains(waybill.carUuid) &&
@@ -924,12 +922,10 @@ class ReportService {
             }
           }
         }
-        if (waybill.issueDate!
-            .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
+        if (dateInRange(waybill.issueDate!, report.dtRange)) {
           burnedLtrs += fillup.burnedLtrs;
         }
-        if (waybill.issueDate!
-            .isAfter(report.dtRange.start.subtract(const Duration(days: 1)))) {
+        if (dateInRange(waybill.issueDate!, report.dtRange)) {
           if (fillup.otherMilBase) {
             fillupOtherMilBaseLtrs += fillup.fillupLtrs;
           } else {
@@ -1003,7 +999,8 @@ class ReportService {
 
     ++cidx;
     // List of waybills
-    final waybills = ref.read(waybillsByDateProvider(report.dtRange.start));
+    final waybills = ref
+        .read(waybillsByDateProvider(report.dtRange.start, report.dtRange.end));
     final waybillsListString = waybills.map((w) => w.number).join(', ');
 
     c = sheet.getRangeByName('A$cidx:K$cidx');
@@ -1109,7 +1106,8 @@ class ReportService {
 
     // Waybills registry
     var cidx = 7;
-    final waybills = ref.read(waybillsByDateProvider(report.dtRange.start));
+    final waybills = ref
+        .read(waybillsByDateProvider(report.dtRange.start, report.dtRange.end));
     for (final (idx, wb) in waybills.indexed) {
       ++cidx;
       // waybill index

@@ -288,7 +288,7 @@ class _WaybillByUuidProviderElement extends AutoDisposeProviderElement<Waybill?>
 }
 
 String _$waybillsByCarAndDateHash() =>
-    r'9ccee93780fd645b0af7a291ebd20f52406278a5';
+    r'c9dbd66bd73e7e9ee2399788121597a9e33831cb';
 
 /// See also [waybillsByCarAndDate].
 @ProviderFor(waybillsByCarAndDate)
@@ -302,11 +302,11 @@ class WaybillsByCarAndDateFamily extends Family<List<Waybill>> {
   /// See also [waybillsByCarAndDate].
   WaybillsByCarAndDateProvider call(
     Car car,
-    DateTime after,
+    DateTimeRange range,
   ) {
     return WaybillsByCarAndDateProvider(
       car,
-      after,
+      range,
     );
   }
 
@@ -316,7 +316,7 @@ class WaybillsByCarAndDateFamily extends Family<List<Waybill>> {
   ) {
     return call(
       provider.car,
-      provider.after,
+      provider.range,
     );
   }
 
@@ -340,12 +340,12 @@ class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
   /// See also [waybillsByCarAndDate].
   WaybillsByCarAndDateProvider(
     Car car,
-    DateTime after,
+    DateTimeRange range,
   ) : this._internal(
           (ref) => waybillsByCarAndDate(
             ref as WaybillsByCarAndDateRef,
             car,
-            after,
+            range,
           ),
           from: waybillsByCarAndDateProvider,
           name: r'waybillsByCarAndDateProvider',
@@ -357,7 +357,7 @@ class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
           allTransitiveDependencies:
               WaybillsByCarAndDateFamily._allTransitiveDependencies,
           car: car,
-          after: after,
+          range: range,
         );
 
   WaybillsByCarAndDateProvider._internal(
@@ -368,11 +368,11 @@ class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.car,
-    required this.after,
+    required this.range,
   }) : super.internal();
 
   final Car car;
-  final DateTime after;
+  final DateTimeRange range;
 
   @override
   Override overrideWith(
@@ -388,7 +388,7 @@ class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         car: car,
-        after: after,
+        range: range,
       ),
     );
   }
@@ -402,14 +402,14 @@ class WaybillsByCarAndDateProvider extends AutoDisposeProvider<List<Waybill>> {
   bool operator ==(Object other) {
     return other is WaybillsByCarAndDateProvider &&
         other.car == car &&
-        other.after == after;
+        other.range == range;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, car.hashCode);
-    hash = _SystemHash.combine(hash, after.hashCode);
+    hash = _SystemHash.combine(hash, range.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -421,8 +421,8 @@ mixin WaybillsByCarAndDateRef on AutoDisposeProviderRef<List<Waybill>> {
   /// The parameter `car` of this provider.
   Car get car;
 
-  /// The parameter `after` of this provider.
-  DateTime get after;
+  /// The parameter `range` of this provider.
+  DateTimeRange get range;
 }
 
 class _WaybillsByCarAndDateProviderElement
@@ -433,10 +433,10 @@ class _WaybillsByCarAndDateProviderElement
   @override
   Car get car => (origin as WaybillsByCarAndDateProvider).car;
   @override
-  DateTime get after => (origin as WaybillsByCarAndDateProvider).after;
+  DateTimeRange get range => (origin as WaybillsByCarAndDateProvider).range;
 }
 
-String _$waybillsByDateHash() => r'8caaf8a7d941ddb3e9834a941de1acd84977756e';
+String _$waybillsByDateHash() => r'872af80077e50e34d2a4e8a151884d8e8b83361b';
 
 /// See also [waybillsByDate].
 @ProviderFor(waybillsByDate)
@@ -450,9 +450,11 @@ class WaybillsByDateFamily extends Family<List<Waybill>> {
   /// See also [waybillsByDate].
   WaybillsByDateProvider call(
     DateTime after,
+    DateTime before,
   ) {
     return WaybillsByDateProvider(
       after,
+      before,
     );
   }
 
@@ -462,6 +464,7 @@ class WaybillsByDateFamily extends Family<List<Waybill>> {
   ) {
     return call(
       provider.after,
+      provider.before,
     );
   }
 
@@ -485,10 +488,12 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
   /// See also [waybillsByDate].
   WaybillsByDateProvider(
     DateTime after,
+    DateTime before,
   ) : this._internal(
           (ref) => waybillsByDate(
             ref as WaybillsByDateRef,
             after,
+            before,
           ),
           from: waybillsByDateProvider,
           name: r'waybillsByDateProvider',
@@ -500,6 +505,7 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
           allTransitiveDependencies:
               WaybillsByDateFamily._allTransitiveDependencies,
           after: after,
+          before: before,
         );
 
   WaybillsByDateProvider._internal(
@@ -510,9 +516,11 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.after,
+    required this.before,
   }) : super.internal();
 
   final DateTime after;
+  final DateTime before;
 
   @override
   Override overrideWith(
@@ -528,6 +536,7 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         after: after,
+        before: before,
       ),
     );
   }
@@ -539,13 +548,16 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
 
   @override
   bool operator ==(Object other) {
-    return other is WaybillsByDateProvider && other.after == after;
+    return other is WaybillsByDateProvider &&
+        other.after == after &&
+        other.before == before;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, after.hashCode);
+    hash = _SystemHash.combine(hash, before.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -556,6 +568,9 @@ class WaybillsByDateProvider extends AutoDisposeProvider<List<Waybill>> {
 mixin WaybillsByDateRef on AutoDisposeProviderRef<List<Waybill>> {
   /// The parameter `after` of this provider.
   DateTime get after;
+
+  /// The parameter `before` of this provider.
+  DateTime get before;
 }
 
 class _WaybillsByDateProviderElement
@@ -564,6 +579,8 @@ class _WaybillsByDateProviderElement
 
   @override
   DateTime get after => (origin as WaybillsByDateProvider).after;
+  @override
+  DateTime get before => (origin as WaybillsByDateProvider).before;
 }
 
 String _$waybillListHash() => r'82763b2f26221a67091b38c56cf0e75e4841587f';

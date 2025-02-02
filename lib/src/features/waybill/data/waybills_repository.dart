@@ -1,4 +1,6 @@
+import 'package:donpmm/src/common/utils.dart';
 import 'package:donpmm/src/features/waybill/data/fillups_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -61,19 +63,17 @@ Waybill? waybillByUuid(Ref ref, String uuid) {
 }
 
 @riverpod
-List<Waybill> waybillsByCarAndDate(Ref ref, Car car, DateTime after) {
+List<Waybill> waybillsByCarAndDate(Ref ref, Car car, DateTimeRange range) {
   final waybills = ref.read(waybillsByCarProvider(car));
-  return waybills
-      .where((wb) =>
-          wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))))
-      .toList();
+  return waybills.where((wb) => dateInRange(wb.issueDate!, range)).toList();
 }
 
 @riverpod
-List<Waybill> waybillsByDate(Ref ref, DateTime after) {
+List<Waybill> waybillsByDate(Ref ref, DateTime after, DateTime before) {
   final waybills = ref.watch(waybillListProvider);
   return waybills
       .where((wb) =>
-          wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))))
+          wb.issueDate!.isAfter(after.subtract(const Duration(days: 1))) &&
+          wb.issueDate!.isBefore(before.add(const Duration(days: 1))))
       .toList();
 }

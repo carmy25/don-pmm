@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NumericToWords {
@@ -164,4 +165,9 @@ double roundDouble(double value, {int places = 1}) {
 
 String removeDecimalZeroFormat(double n) {
   return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1);
+}
+
+bool dateInRange(DateTime date, DateTimeRange range) {
+  return date.isAfter(range.start.subtract(const Duration(days: 1))) &&
+      date.isBefore(range.end.add(const Duration(days: 1)));
 }
